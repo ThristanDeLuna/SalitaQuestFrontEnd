@@ -1,122 +1,54 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { Navigate, Route, Routes } from 'react-router-dom';
+import Layout from './components/Layout';
+import Guard from './components/Guard';
+import AdminLayout from './components/AdminLayout';
+import Placeholder from './pages/Placeholder';
+import SignIn from './pages/SignIn';
+import Profile from './pages/Profile';
+import NotFound from './pages/NotFound';
+import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Routes follow the site map (DEC-38). Owners replace the element of their own route, not the route itself.
+const ADMIN_PAGES = [
+  ['approvals', 'Pending', 'D'],
+  ['words', 'Admin: words', 'B'],
+  ['regions', 'Admin: regions', 'B'],
+  ['audio', 'Admin: audio', 'C'],
+];
 
+const signedIn = (title, owner) => (
+  <Guard allow={isSignedIn}><Placeholder title={title} owner={owner} /></Guard>
+);
+
+export default function App() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <Routes>
+      <Route element={<Layout />}>
+        {/* Open to everyone, read-only (DEC-46) */}
+        <Route index element={<Placeholder title="Choose a region" owner="B" />} />
+        <Route path="regions/:code" element={<Placeholder title="Word list" owner="B" />} />
+        <Route path="signin" element={<SignIn />} />
 
-      <div className="ticks"></div>
+        {/* Signed-in users */}
+        <Route path="profile" element={<Profile />} />   {/* checks sign-in itself */}
+        <Route path="passport" element={signedIn('Passport', 'C')} />
+        <Route path="play/matching/:region" element={signedIn('Word Pond', 'C')} />
+        <Route path="play/listening/:region" element={signedIn('Jeepney stop', 'C')} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {/* Contributors and Admins (DEC-60) */}
+        <Route path="submit" element={
+          <Guard allow={canSuggest}><Placeholder title="Suggest a word" owner="D" /></Guard>} />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {/* Admins only: one tab, four sub-tabs (DEC-62) */}
+        <Route path="admin" element={<Guard allow={isAdmin}><AdminLayout /></Guard>}>
+          <Route index element={<Navigate to="approvals" replace />} />
+          {ADMIN_PAGES.map(([path, title, owner]) => (
+            <Route key={path} path={path} element={<Placeholder title={title} owner={owner} />} />
+          ))}
+        </Route>
+
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
+  );
 }
-
-export default App
