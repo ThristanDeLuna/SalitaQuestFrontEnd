@@ -26,7 +26,12 @@ export function AuthProvider({ children }) {
       tokens.set(d.tokens);
       setUser(d.user);
     } catch (e) {
-      setError(e.status === 401 ? 'Google sign-in failed. Please try again.' : 'Could not sign in. Please try again.');
+      console.error('Sign-in failed:', e.status, e.message);   // status only, never a token
+      setError(
+        e.status === 401 ? 'Google sign-in failed. Please try again.'
+        : e.status === 0 ? 'Cannot reach the server. If it was asleep, wait a minute and try again.'
+        : 'Could not sign in. Please try again.'
+      );
     }
   }
 
