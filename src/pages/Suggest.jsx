@@ -23,13 +23,14 @@ function NewWord({ onSent }) {
   const [busy, setBusy] = useState(false);
 
   // "Suggest meaning" runs on a button press (not on every key), to save MyMemory's daily quota.
+  // The hint is NOT copied into the meaning box: the contributor must choose "Use this" on purpose,
+  // because MyMemory can return junk (for example for "mahal").
   async function suggest() {
     if (!word.trim()) { setNote({ kind: 'error', text: 'Type the word first.' }); return; }
     setBusy(true); setNote(null);
     try {
       const d = await api(`/api/submissions/suggest?word=${encodeURIComponent(word.trim())}&region_code=${region}`);
       setHint(d.suggestion);                    // null when MyMemory has no usable answer
-      if (d.suggestion && !meaning) setMeaning(d.suggestion);
       if (!d.suggestion) setNote({ kind: 'info', text: 'No suggestion this time. Type the meaning yourself.' });
     } catch (e) {
       setNote({ kind: 'error', text: errorText(e) });
@@ -66,7 +67,12 @@ function NewWord({ onSent }) {
       <input id="word" value={word} maxLength={100} required onChange={(e) => setWord(e.target.value)} />
 
       <button type="button" className="btn" onClick={suggest} disabled={busy}>Suggest meaning</button>
-      {hint && <p className="muted">Machine suggestion (it may be wrong): {hint}</p>}
+      {hint && (
+        <p className="muted">
+          Machine suggestion (it may be wrong): {hint}{' '}
+          <button type="button" className="btn" onClick={() => setMeaning(hint)}>Use this</button>
+        </p>
+      )}
 
       <label htmlFor="meaning">Meaning in English</label>
       <input id="meaning" value={meaning} maxLength={255} required onChange={(e) => setMeaning(e.target.value)} />
