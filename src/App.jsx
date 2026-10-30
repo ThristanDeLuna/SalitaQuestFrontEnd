@@ -5,6 +5,7 @@ import AdminLayout from './components/AdminLayout';
 import Placeholder from './pages/Placeholder';
 import SignIn from './pages/SignIn';
 import Profile from './pages/Profile';
+import Suggest from './pages/Suggest';          // CHANGE 1: D's screen
 import NotFound from './pages/NotFound';
 import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
 
@@ -37,7 +38,7 @@ export default function App() {
 
         {/* Contributors and Admins (DEC-60) */}
         <Route path="submit" element={
-          <Guard allow={canSuggest}><Placeholder title="Suggest a word" owner="D" /></Guard>} />
+          <Guard allow={canSuggest}><Suggest /></Guard>} />   {/* CHANGE 2: was a Placeholder */}
 
         {/* Admins only: one tab, four sub-tabs (DEC-62) */}
         <Route path="admin" element={<Guard allow={isAdmin}><AdminLayout /></Guard>}>
