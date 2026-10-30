@@ -38,13 +38,28 @@ function formatSize(bytes) {
 }
 
 // ---------- Dialog frame, like ConfirmSignOut: Cancel gets focus, Escape closes ----------
-function Dialog({ id, title, busy, confirmLabel, confirmDisabled, onConfirm, onClose, children }) {
+function Dialog({ id, title, busy, err, confirmLabel, confirmDisabled, onConfirm, onClose, children }) {
   const cancelRef = useRef(null);
+  const boxRef = useRef(null);
   useEffect(() => { cancelRef.current?.focus(); }, []);
 
+  // Escape closes the dialog wherever the focus is (so it still works after the buttons were disabled),
+  // except while a request is running. The listener is removed when the dialog closes.
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && !busy && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [busy, onClose]);
+
+  // After a failed attempt the disabled Cancel button lost the focus: give it back,
+  // unless the user is already inside the dialog (for example on the file input).
+  useEffect(() => {
+    if (err && !busy && !boxRef.current?.contains(document.activeElement)) cancelRef.current?.focus();
+  }, [err, busy]);
+
   return (
-    <div className="overlay" onKeyDown={(e) => e.key === 'Escape' && !busy && onClose()}>
-      <div className="dialog audio-dialog" role="dialog" aria-modal="true" aria-labelledby={id}>
+    <div className="overlay">
+      <div className="dialog audio-dialog" ref={boxRef} role="dialog" aria-modal="true" aria-labelledby={id}>
         <h2 id={id}>{title}</h2>
         {children}
         <div className="actions">
@@ -85,7 +100,7 @@ function UploadDialog({ row, onClose, onDone }) {
   }
 
   return (
-    <Dialog id="au-up-title" title={`${verb} audio for “${row.word}”`} busy={busy}
+    <Dialog id="au-up-title" title={`${verb} audio for “${row.word}”`} busy={busy} err={err}
             confirmLabel={busy ? `${verb}ing…` : verb}
             confirmDisabled={!file || Boolean(checkFile(file))}
             onConfirm={upload} onClose={onClose}>
@@ -116,7 +131,7 @@ function DeleteDialog({ row, onClose, onDone }) {
   }
 
   return (
-    <Dialog id="au-del-title" title={`Delete the recording for “${row.word}”?`} busy={busy}
+    <Dialog id="au-del-title" title={`Delete the recording for “${row.word}”?`} busy={busy} err={err}
             confirmLabel={busy ? 'Deleting…' : 'Delete'} onConfirm={remove} onClose={onClose}>
       <p>The word stays in the list, without audio.</p>
       {err && <p className="banner error" role="alert">{err}</p>}
