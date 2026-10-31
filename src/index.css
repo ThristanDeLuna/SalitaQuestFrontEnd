@@ -1,111 +1,124 @@
+/* Colors, fonts and spacing come from the UI Design Guide. Phone first (390 px): wider screens only rearrange it. */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --background: #fdf8f2;
+  --surface: #ffffff;
+  --sidebar: #ddd3f5;
+  --sidebar-active: #c7baef;
+  --ink: #25184e;
+  --text: #000c18;
+  --text-muted: #473d34;
+  --accent: #ffb59e;
+  --accent-text: #400400;
+  --info-tint: #cee5f5;
+  --serif: Georgia, 'Times New Roman', serif;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+* { box-sizing: border-box; }
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+body { margin: 0; background: var(--background); color: var(--text); font: 16px/1.5 var(--sans); }
+
+h1 { font: 700 28px/1.2 var(--serif); color: var(--ink); margin: 0 0 8px; }
+/* Section label above the Admin sub-tabs (not a heading, so each page keeps one h1). */
+.kicker { font: 700 20px/1.2 var(--serif); color: var(--ink); margin: 0 0 8px; }
+h2 { font: 700 20px/1.2 var(--serif); color: var(--ink); margin: 0 0 8px; }
+.muted { color: var(--text-muted); font-size: 14px; }
+a { color: var(--ink); }
+
+/* Keyboard users always see where they are. */
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+.skip { position: absolute; left: -999px; top: 8px; background: var(--surface); color: var(--ink); padding: 8px 12px; }
+.skip:focus { left: 8px; z-index: 30; }
+
+/* ---------- Phone layout: top bar, content, bottom tabs ---------- */
+.app { display: grid; grid-template-rows: auto 1fr; min-height: 100vh; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 5; min-height: 56px; padding: 0 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface); border-bottom: 1px solid var(--sidebar-active);
+}
+.logo { display: inline-flex; align-items: center; min-height: 44px; font: 700 20px/1.2 var(--serif); color: var(--ink); text-decoration: none; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+
+.avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 50%; background: var(--ink); color: var(--surface);
+  font: 700 18px var(--sans); text-decoration: none;
+}
+.avatar.big { width: 72px; height: 72px; font-size: 28px; margin: 0 auto 8px; }
+
+.chip { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--info-tint); color: var(--ink); font-size: 14px; font-weight: 700; }
+
+.tabbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+  background: var(--sidebar); border-top: 1px solid var(--sidebar-active);
+}
+.tabbar ul { display: flex; list-style: none; margin: 0; padding: 0; }
+.tabbar li { flex: 1; }
+.tabbar a {
+  display: flex; align-items: center; justify-content: center; min-height: 56px; padding: 0 8px;
+  color: var(--ink); text-decoration: none; font-size: 15px;
+}
+.tabbar a:hover { background: var(--sidebar-active); }
+/* Selected tab: darker fill and a dark bar on top. */
+.tabbar a.active { background: var(--sidebar-active); box-shadow: inset 0 4px 0 var(--ink); font-weight: 700; }
+.tabbar-logo { display: none; }
+
+main { padding: 16px 16px 88px; min-width: 0; width: 100%; max-width: 960px; margin: 0 auto; }
+
+/* ---------- Buttons, banners, small pieces ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--ink); border-radius: 3px;
+  font: 700 15px var(--sans); text-decoration: none; cursor: pointer;
+}
+.btn:hover { background: var(--info-tint); }
+.btn.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent-text); }
+.btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+/* Messages always use words, never color alone. */
+.banner { margin: 0 0 16px; padding: 12px 16px; border-radius: 3px; color: var(--text); }
+.banner.info { background: var(--info-tint); }
+.banner.error { background: var(--accent); color: var(--accent-text); }
+.banner .btn { margin-left: 8px; min-height: 44px; }
+
+/* System screens: one friendly card, one clear next step. */
+.system { max-width: 480px; margin: 24px auto; padding: 24px; text-align: center; background: var(--surface); border: 1px solid var(--sidebar-active); border-radius: 6px; }
+.actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+
+.welcome { max-width: 420px; margin: 0 auto; text-align: center; display: grid; gap: 12px; justify-items: center; }
+.boat { width: 200px; height: auto; }
+@media (prefers-reduced-motion: no-preference) {
+  .boat { animation: bob 3s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(6px); } }
 }
 
-body {
-  margin: 0;
-}
+.profile { text-align: center; }
+.stats { list-style: none; padding: 0; margin: 12px 0; display: flex; justify-content: center; gap: 24px; }
+.stack { display: grid; gap: 12px; max-width: 320px; margin: 16px auto 0; }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
+.subtabs { display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--sidebar-active); margin-bottom: 16px; }
+.subtabs a { display: flex; align-items: center; min-height: 44px; padding: 0 16px; white-space: nowrap; text-decoration: none; color: var(--ink); }
+.subtabs a.active { box-shadow: inset 0 -3px 0 var(--ink); font-weight: 700; }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
+.overlay { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(37, 24, 78, 0.5); }
+.dialog { width: 90%; max-width: 340px; padding: 24px; background: var(--surface); border-radius: 6px; text-align: center; }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
+.dev { margin-top: 16px; padding: 12px; border: 1px dashed var(--ink); border-radius: 3px; display: grid; gap: 8px; width: 100%; }
+.dev label { font-size: 14px; font-weight: 700; }
+.dev select { min-height: 44px; border: 1px solid var(--ink); border-radius: 3px; background: var(--surface); color: var(--ink); font: 16px var(--sans); }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* ---------- Wider screens: the bottom tabs become the lavender side menu ---------- */
+@media (min-width: 769px) {
+  .app { grid-template-columns: 200px 1fr; }
+  .tabbar { position: sticky; top: 0; left: auto; right: auto; bottom: auto; height: 100vh; grid-column: 1; grid-row: 1 / span 2; border-top: 0; padding: 16px 0; }
+  .tabbar-logo { display: block; padding: 0 16px 16px; font: 700 20px/1.2 var(--serif); color: var(--ink); }
+  .tabbar ul { display: block; }
+  .tabbar a { justify-content: flex-start; min-height: 44px; padding: 0 16px; }
+  .tabbar a.active { box-shadow: inset 4px 0 0 var(--ink); }
+  .topbar { grid-column: 2; justify-content: flex-end; }
+  .topbar .logo { display: none; }
+  main { grid-column: 2; padding: 32px; }
 }
