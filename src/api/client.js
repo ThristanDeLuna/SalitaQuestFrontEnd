@@ -57,6 +57,6 @@ export async function api(path, options = {}) {
     // 200 but not JSON: we reached a web page, not our API (wrong address).
     throw Object.assign(new Error('Unexpected response from the server'), { status: 0 });
   }
-  if (!res.ok) throw Object.assign(new Error(data?.error || 'Request failed'), { status: res.status });
+  if (!res.ok) throw Object.assign(new Error(data?.error || 'Request failed'), { status: res.status, reason: data?.reason });
   return data;
 }

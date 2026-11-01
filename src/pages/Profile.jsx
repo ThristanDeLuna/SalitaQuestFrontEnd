@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { initial, roleLabel } from '../auth/roles';
-import { useSummary } from '../auth/useSummary';
+import { stampCount, useSummary } from '../auth/useSummary';
 import ReportLink from '../components/ReportLink';
 
 // "Sign out of Salita Quest? Your progress is saved." (wireframe page 4). Escape also cancels.
@@ -26,7 +26,7 @@ function ConfirmSignOut({ onCancel, onConfirm }) {
 // Profile (wireframe page 4): the user's own name and email only. Never show another user's email.
 export default function Profile() {
   const { user, ready, signOut } = useAuth();
-  const summary = useSummary();   // null until C's endpoint exists, so the numbers are hidden
+  const { summary } = useSummary();   // null until GET /api/me/summary answers, so the numbers are hidden
   const location = useLocation();
   const [confirming, setConfirming] = useState(false);
   const [leaving, setLeaving] = useState(false);   // true when the user chose to sign out
@@ -50,8 +50,8 @@ export default function Profile() {
       {summary && (
         <ul className="stats">
           <li><strong>{summary.stars}</strong> stars</li>
-          <li><strong>{summary.streak}</strong> day streak</li>
-          <li><strong>{summary.stamps}</strong> stamps</li>
+          <li><strong>{summary.streak.current}</strong> day streak</li>
+          <li><strong>{stampCount(summary)}</strong> stamps</li>
         </ul>
       )}
 
