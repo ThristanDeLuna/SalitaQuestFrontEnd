@@ -10,6 +10,8 @@ function errorText(e) {
   if (e.status === 422) return 'Please check the word and the meaning.';
   if (e.status === 429) return 'You have too many suggestions waiting. Wait for a review first.';
   if (e.status === 0)   return 'Cannot reach the server. If it was asleep, wait a minute and try again.';
+  if (e.status === 401) return 'Your session expired. Please sign out and sign in again.';
+  if (e.status === 403) return 'This account is not allowed to do that.';
   return 'Something went wrong. Please try again.';
 }
 
