@@ -5,6 +5,7 @@ import AdminLayout from './components/AdminLayout';
 import Placeholder from './pages/Placeholder';
 import SignIn from './pages/SignIn';
 import Profile from './pages/Profile';
+import AdminAudio from './pages/AdminAudio';         // C: Admin audio
 import NotFound from './pages/NotFound';
 import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
 
@@ -13,7 +14,6 @@ const ADMIN_PAGES = [
   ['approvals', 'Pending', 'D'],
   ['words', 'Admin: words', 'B'],
   ['regions', 'Admin: regions', 'B'],
-  ['audio', 'Admin: audio', 'C'],
 ];
 
 const signedIn = (title, owner) => (
@@ -42,6 +42,7 @@ export default function App() {
         {/* Admins only: one tab, four sub-tabs (DEC-62) */}
         <Route path="admin" element={<Guard allow={isAdmin}><AdminLayout /></Guard>}>
           <Route index element={<Navigate to="approvals" replace />} />
+          <Route path="audio" element={<AdminAudio />} />
           {ADMIN_PAGES.map(([path, title, owner]) => (
             <Route key={path} path={path} element={<Placeholder title={title} owner={owner} />} />
           ))}
