@@ -6,6 +6,7 @@ import Placeholder from './pages/Placeholder';
 import SignIn from './pages/SignIn';
 import Profile from './pages/Profile';
 import AdminAudio from './pages/AdminAudio';         // C: Admin audio
+import WordList from './pages/WordList';             // B: word list of one region
 import NotFound from './pages/NotFound';
 import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
 
@@ -26,7 +27,7 @@ export default function App() {
       <Route element={<Layout />}>
         {/* Open to everyone, read-only (DEC-46) */}
         <Route index element={<Placeholder title="Choose a region" owner="B" />} />
-        <Route path="regions/:code" element={<Placeholder title="Word list" owner="B" />} />
+        <Route path="regions/:code" element={<WordList />} />
         <Route path="signin" element={<SignIn />} />
 
         {/* Signed-in users */}
