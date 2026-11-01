@@ -3,8 +3,10 @@ import { api } from '../api/client';
 
 // Friendly text for the errors the API can answer (the server is the real check).
 function errorText(e) {
+  if (e.status === 401) return 'Your session expired. Please sign out and sign in again.';
+  if (e.status === 403) return 'This account is not allowed to do that.';
   if (e.status === 404) return 'That suggestion no longer exists.';
-  if (e.status === 409) return 'Someone already reviewed this one.';
+  if (e.status === 409) return 'Someone already reviewed this one, or the word is already in this region.';
   if (e.status === 422) return 'The reason is too long (255 characters at most).';
   if (e.status === 0)   return 'Cannot reach the server. If it was asleep, wait a minute and try again.';
   return 'Something went wrong. Please try again.';
@@ -61,6 +63,7 @@ export default function AdminPending() {
   const [target, setTarget] = useState(null);  // the row being rejected (opens the dialog)
   const [note, setNote] = useState('');
   const [reload, setReload] = useState(0);     // change it to load the queue again
+  const [approvingId, setApprovingId] = useState(null); // the row being approved (blocks double clicks)
 
   useEffect(() => {
     let alive = true;                          // ignore answers that arrive after we left
@@ -75,6 +78,20 @@ export default function AdminPending() {
     setNote(emailSent ? 'Rejected. The contributor was emailed.'
                       : 'Rejected. The email could not be sent.');
     setReload((n) => n + 1);
+  }
+
+  // Approve: no body. The API adds the word and marks the suggestion approved in one transaction.
+  async function approve(r) {
+    setApprovingId(r.id); setNote(''); setErr('');
+    try {
+      const d = await api(`/api/admin/submissions/${r.id}/approve`, { method: 'POST' });
+      setNote(d.email_sent ? `Approved “${r.word}”. It is now in the word list and the contributor was emailed.`
+                           : `Approved “${r.word}”. It is now in the word list. The email could not be sent.`);
+    } catch (e) {
+      setErr(errorText(e));
+    }
+    setApprovingId(null);
+    setReload((n) => n + 1);                   // reload the queue: the row left it, or someone else decided it
   }
 
   return (
@@ -93,9 +110,12 @@ export default function AdminPending() {
             {r.mymemory_text && <p className="muted">Machine suggestion: {r.mymemory_text}</p>}
             <p className="muted">From {r.user_name || r.user_email}</p>
             <div className="actions">
-              {/* Approve needs B's Word_model and the approve endpoint */}
-              <button type="button" className="btn primary" disabled title="Coming soon">Approve</button>
-              <button type="button" className="btn" onClick={() => setTarget(r)}>Reject</button>
+              <button type="button" className="btn primary" onClick={() => approve(r)}
+                      disabled={approvingId !== null}>
+                {approvingId === r.id ? 'Approving…' : 'Approve'}
+              </button>
+              <button type="button" className="btn" onClick={() => setTarget(r)}
+                      disabled={approvingId !== null}>Reject</button>
             </div>
           </li>
         ))}
