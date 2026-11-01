@@ -7,15 +7,15 @@ import SignIn from './pages/SignIn';
 import Profile from './pages/Profile';
 import Suggest from './pages/Suggest';               // D: Suggest a word
 import AdminPending from './pages/AdminPending';     // D: Admin pending queue
+import AdminAudio from './pages/AdminAudio';         // C: Admin audio
 import NotFound from './pages/NotFound';
 import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
 
 // Routes follow the site map (DEC-38). Owners replace the element of their own route, not the route itself.
-// 'approvals' (D) now has its own route below, so it is no longer in this list.
+// 'approvals' (D) and 'audio' (C) now have their own routes below, so they are no longer in this list.
 const ADMIN_PAGES = [
   ['words', 'Admin: words', 'B'],
   ['regions', 'Admin: regions', 'B'],
-  ['audio', 'Admin: audio', 'C'],
 ];
 
 const signedIn = (title, owner) => (
@@ -45,6 +45,7 @@ export default function App() {
         <Route path="admin" element={<Guard allow={isAdmin}><AdminLayout /></Guard>}>
           <Route index element={<Navigate to="approvals" replace />} />
           <Route path="approvals" element={<AdminPending />} />
+          <Route path="audio" element={<AdminAudio />} />
           {ADMIN_PAGES.map(([path, title, owner]) => (
             <Route key={path} path={path} element={<Placeholder title={title} owner={owner} />} />
           ))}

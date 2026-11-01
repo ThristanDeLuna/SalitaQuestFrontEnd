@@ -14,7 +14,9 @@ export const setSlowHandler = (fn) => { onSlow = fn; };   // the layout shows th
 
 async function send(path, options = {}) {
   const t = tokens.get();
-  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  // A FormData body (file upload) must not get a Content-Type: the browser adds it with the multipart boundary.
+  const json = !(options.body instanceof FormData);
+  const headers = { ...(json && { 'Content-Type': 'application/json' }), ...(options.headers || {}) };
   if (t?.access_token) headers.Authorization = `Bearer ${t.access_token}`;
   // Without an API address the call would go to the Vercel site itself and quietly get the web page back.
   if (!BASE) {
