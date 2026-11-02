@@ -5,14 +5,16 @@ import AdminLayout from './components/AdminLayout';
 import Placeholder from './pages/Placeholder';
 import SignIn from './pages/SignIn';
 import Profile from './pages/Profile';
+import Suggest from './pages/Suggest';               // D: Suggest a word
+import AdminPending from './pages/AdminPending';     // D: Admin pending queue
 import AdminAudio from './pages/AdminAudio';         // C: Admin audio
 import WordList from './pages/WordList';             // B: word list of one region
 import NotFound from './pages/NotFound';
 import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
 
 // Routes follow the site map (DEC-38). Owners replace the element of their own route, not the route itself.
+// 'approvals' (D) and 'audio' (C) now have their own routes below, so they are no longer in this list.
 const ADMIN_PAGES = [
-  ['approvals', 'Pending', 'D'],
   ['words', 'Admin: words', 'B'],
   ['regions', 'Admin: regions', 'B'],
 ];
@@ -38,11 +40,12 @@ export default function App() {
 
         {/* Contributors and Admins (DEC-60) */}
         <Route path="submit" element={
-          <Guard allow={canSuggest}><Placeholder title="Suggest a word" owner="D" /></Guard>} />
+          <Guard allow={canSuggest}><Suggest /></Guard>} />
 
         {/* Admins only: one tab, four sub-tabs (DEC-62) */}
         <Route path="admin" element={<Guard allow={isAdmin}><AdminLayout /></Guard>}>
           <Route index element={<Navigate to="approvals" replace />} />
+          <Route path="approvals" element={<AdminPending />} />
           <Route path="audio" element={<AdminAudio />} />
           {ADMIN_PAGES.map(([path, title, owner]) => (
             <Route key={path} path={path} element={<Placeholder title={title} owner={owner} />} />
