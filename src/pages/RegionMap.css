@@ -1,0 +1,47 @@
+/* Map screen. Classes start with rm- so they never clash with other screens. */
+.rm-box { position: relative; margin: 12px 0 16px; }
+
+/* isolation keeps Leaflet's own z-index numbers inside the map, so the sheet can sit above them. */
+.rm-map {
+  height: min(62vh, 520px); min-height: 340px; isolation: isolate;
+  border: 1px solid var(--sidebar-active); border-radius: 6px; background: var(--info-tint);
+}
+.rm-loading { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 2; margin: 0; padding: 4px 12px; background: var(--surface); border-radius: 999px; }
+
+/* ---------- Pins: a round dot with a glyph, and the region name under it ---------- */
+.rm-icon { background: none; border: 0; }
+.rm-pin { display: flex; flex-direction: column; align-items: center; width: 110px; cursor: pointer; }
+.rm-dot {
+  display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%;
+  border: 3px solid var(--ink); background: var(--surface); color: var(--ink); font: 700 16px/1 var(--sans);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.rm-name { margin-top: 2px; padding: 0 6px; background: rgba(255, 255, 255, 0.92); border-radius: 3px; color: var(--ink); font: 700 13px/1.4 var(--sans); white-space: nowrap; }
+.rm-stamped .rm-dot { background: var(--ink); color: var(--surface); }
+.rm-in_progress .rm-dot { background: var(--accent); color: var(--accent-text); }
+.rm-locked .rm-dot { background: #d9d4df; border-style: dashed; }
+.rm-coming_soon .rm-dot { background: var(--info-tint); border-style: dashed; }
+.rm-selected .rm-dot { transform: scale(1.25); outline: 3px solid var(--accent); }
+.leaflet-marker-icon:focus-visible .rm-dot { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+/* ---------- Bottom sheet: slides up over the lower part of the map ---------- */
+.rm-sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 12px 16px 16px;
+  background: var(--surface); border: 1px solid var(--sidebar-active); border-radius: 12px 12px 6px 6px;
+  box-shadow: 0 -4px 12px rgba(37, 24, 78, 0.25); max-height: 70%; overflow-y: auto;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rm-sheet { animation: rm-up 0.2s ease-out; }
+  @keyframes rm-up { from { transform: translateY(100%); } }
+}
+.rm-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.rm-sheet-head h2 { margin: 0; }
+.rm-state { margin: 4px 0; }
+.rm-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+.rm-list-title { margin-top: 8px; }
+.rm-list .card p { margin: 4px 0 8px; }
+
+@media (min-width: 600px) {
+  .rm-sheet { left: auto; width: 360px; right: 12px; bottom: 12px; border-radius: 6px; }
+}

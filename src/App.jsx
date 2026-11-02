@@ -8,7 +8,8 @@ import Profile from './pages/Profile';
 import Suggest from './pages/Suggest';               // D: Suggest a word
 import AdminPending from './pages/AdminPending';     // D: Admin pending queue
 import AdminAudio from './pages/AdminAudio';         // C: Admin audio
-import WordList from './pages/WordList';             // B: word list of one region
+import WordList from './pages/WordList'; 
+import RegionMap from './pages/RegionMap';           // B: the Map (home page)            // B: word list of one region
 import NotFound from './pages/NotFound';
 import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
 
@@ -28,7 +29,7 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         {/* Open to everyone, read-only (DEC-46) */}
-        <Route index element={<Placeholder title="Choose a region" owner="B" />} />
+        <Route index element={<RegionMap />} />
         <Route path="regions/:code" element={<WordList />} />
         <Route path="signin" element={<SignIn />} />
 
