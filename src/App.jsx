@@ -8,10 +8,11 @@ import Profile from './pages/Profile';
 import Suggest from './pages/Suggest';               // D: Suggest a word
 import AdminPending from './pages/AdminPending';     // D: Admin pending queue
 import AdminAudio from './pages/AdminAudio';         // C: Admin audio
-import WordList from './pages/WordList';             // B: word list of one region
-import WordPond from './games/WordPond';             // C: Word Pond matching game
-import Passport from './passport/Passport';          // C: Passport
-import JeepneyStop from './games/JeepneyStop';       // C: Jeepney stop listening game
+import WordList from './pages/WordList';           // B: word list of one region
+import RegionMap from './pages/RegionMap';         // B: the Map (home page)
+import WordPond from './games/WordPond';           // C: Word Pond matching game
+import Passport from './passport/Passport';        // C: Passport
+import JeepneyStop from './games/JeepneyStop';     // C: Jeepney stop listening game
 import NotFound from './pages/NotFound';
 import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
 
@@ -27,7 +28,7 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         {/* Open to everyone, read-only (DEC-46) */}
-        <Route index element={<Placeholder title="Choose a region" owner="B" />} />
+        <Route index element={<RegionMap />} />
         <Route path="regions/:code" element={<WordList />} />
         <Route path="signin" element={<SignIn />} />
 
