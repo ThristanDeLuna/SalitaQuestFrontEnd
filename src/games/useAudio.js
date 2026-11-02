@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 //   const { playingUrl, failed, play, stop } = useAudio();
 // - play(url) is only ever called from a tap handler: we never autoplay (browsers block it anyway).
 // - A tap always restarts the sound from the beginning, even if the same one is playing.
-// - playingUrl is the url that is playing now (or null). failed is true when the last play was refused.
+// - playingUrl is the url that is playing now (or null). failed is true when the last play was refused;
+//   it is cleared on the next play() or on stop(), so the note does not carry over to the next question.
 // - The sound stops when the screen goes away.
 // Same pattern as src/pages/WordList.jsx: the ref holds the one Audio that is "current".
 // Each play makes a fresh Audio (so it starts at 0:00), and any older one is paused first.
@@ -23,6 +24,7 @@ export default function useAudio() {
   const stop = useCallback(() => {
     release();
     setPlayingUrl(null);
+    setFailed(false);
   }, [release]);
 
   const play = useCallback((url) => {
