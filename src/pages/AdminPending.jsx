@@ -64,6 +64,7 @@ export default function AdminPending() {
   const [note, setNote] = useState('');
   const [reload, setReload] = useState(0);     // change it to load the queue again
   const [approvingId, setApprovingId] = useState(null); // the row being approved (blocks double clicks)
+  const [actionErr, setActionErr] = useState('');   // an Approve error: stays until the next action
 
   useEffect(() => {
     let alive = true;                          // ignore answers that arrive after we left
@@ -74,6 +75,7 @@ export default function AdminPending() {
   }, [reload]);
 
   function rejected(emailSent) {
+    setActionErr('');
     setTarget(null);
     setNote(emailSent ? 'Rejected. The contributor was emailed.'
                       : 'Rejected. The email could not be sent.');
@@ -82,13 +84,13 @@ export default function AdminPending() {
 
   // Approve: no body. The API adds the word and marks the suggestion approved in one transaction.
   async function approve(r) {
-    setApprovingId(r.id); setNote(''); setErr('');
+    setApprovingId(r.id); setNote(''); setActionErr('');
     try {
       const d = await api(`/api/admin/submissions/${r.id}/approve`, { method: 'POST' });
       setNote(d.email_sent ? `Approved “${r.word}”. It is now in the word list and the contributor was emailed.`
                            : `Approved “${r.word}”. It is now in the word list. The email could not be sent.`);
     } catch (e) {
-      setErr(errorText(e));
+      setActionErr(errorText(e));
     }
     setApprovingId(null);
     setReload((n) => n + 1);                   // reload the queue: the row left it, or someone else decided it
@@ -99,6 +101,7 @@ export default function AdminPending() {
       <h1>Pending suggestions</h1>
       {note && <p className="banner info" role="status" aria-live="polite">{note}</p>}
       {err && <p className="banner error" role="alert">{err}</p>}
+      {actionErr && <p className="banner error" role="alert">{actionErr}</p>}
       {!rows && !err && <p className="muted">Loading…</p>}
       {rows && rows.length === 0 && <p className="muted">Nothing is waiting for review.</p>}
 
