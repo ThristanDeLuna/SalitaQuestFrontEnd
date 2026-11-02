@@ -11,6 +11,7 @@ import AdminAudio from './pages/AdminAudio';         // C: Admin audio
 import WordList from './pages/WordList';             // B: word list of one region
 import WordPond from './games/WordPond';             // C: Word Pond matching game
 import Passport from './passport/Passport';          // C: Passport
+import JeepneyStop from './games/JeepneyStop';       // C: Jeepney stop listening game
 import NotFound from './pages/NotFound';
 import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
 
@@ -20,10 +21,6 @@ const ADMIN_PAGES = [
   ['words', 'Admin: words', 'B'],
   ['regions', 'Admin: regions', 'B'],
 ];
-
-const signedIn = (title, owner) => (
-  <Guard allow={isSignedIn}><Placeholder title={title} owner={owner} /></Guard>
-);
 
 export default function App() {
   return (
@@ -40,7 +37,8 @@ export default function App() {
           <Guard allow={isSignedIn}><Passport /></Guard>} />
         <Route path="play/matching/:region" element={
           <Guard allow={isSignedIn}><WordPond /></Guard>} />
-        <Route path="play/listening/:region" element={signedIn('Jeepney stop', 'C')} />
+        <Route path="play/listening/:region" element={
+          <Guard allow={isSignedIn}><JeepneyStop /></Guard>} />
 
         {/* Contributors and Admins (DEC-60) */}
         <Route path="submit" element={

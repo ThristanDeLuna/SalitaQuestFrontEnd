@@ -5,7 +5,8 @@ import './ResultsCard.css';
 // nothing about either game: the screen hands it the server's answer and ready-made rows.
 // Props:
 //   result  the submit answer: score, max_score, passed, pass_mark, medal, stars_gained, stamp_earned
-//   rows    [{ key, word, rightMeaning, yourMeaning, correct }], one per answer
+//   rows    [{ key, word, rightMeaning, yourMeaning, correct, summary? }], one per answer
+//           (summary, if given, replaces the "<word> means <meaning>" sentence)
 //   onAgain called by "Try again"
 //   backTo  where "Back to the Map" goes
 // Everything is said in words; symbols and colour are only an extra hint.
@@ -33,7 +34,10 @@ function AnswerRow({ row }) {
       <span className="rc-mark">
         <span aria-hidden="true">{row.correct ? '✓' : '✗'}</span> {row.correct ? 'Correct' : 'Incorrect'}
       </span>
-      <span className="rc-word"><strong>{row.word}</strong> means {row.rightMeaning}</span>
+      {/* A game can give the row its own sentence (row.summary); otherwise "<word> means <meaning>". */}
+      <span className="rc-word">
+        {row.summary ?? <><strong>{row.word}</strong> means {row.rightMeaning}</>}
+      </span>
       {!row.correct && <span className="muted">You chose: {row.yourMeaning}</span>}
     </li>
   );
