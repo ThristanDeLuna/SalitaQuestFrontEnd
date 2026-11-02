@@ -1,0 +1,30 @@
+/* Region word list (wireframe page 7). Phone first at 390 px; wider screens only rearrange it.
+   Every class here starts with wl- so it cannot clash with other pages. Colors come from the :root tokens. */
+
+.wl-list { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 12px; }
+.wl-row { background: var(--surface); border: 1px solid var(--sidebar-active); border-radius: 6px; }
+.wl-row-main { display: flex; align-items: center; gap: 8px; padding-right: 12px; }
+
+/* The whole left side is one big button (at least 44 px high) that opens the example sentence. */
+.wl-word {
+  flex: 1; min-height: 56px; min-width: 0; display: grid; gap: 2px; align-content: center; text-align: left;
+  padding: 8px 16px; background: none; border: 0; border-radius: 6px 0 0 6px; cursor: pointer;
+  color: var(--ink); font: 16px var(--sans);
+}
+.wl-word strong { font-size: 17px; overflow-wrap: anywhere; }
+.wl-word:hover strong { text-decoration: underline; }
+.wl-translation { font-size: 14px; color: var(--text-muted); overflow-wrap: anywhere; }
+
+/* Words always say the state; color is only a second hint. */
+.wl-none { white-space: nowrap; background: var(--accent); color: var(--accent-text); }
+
+.wl-example { padding: 8px 16px 12px; border-top: 1px solid var(--sidebar-active); }
+.wl-example p { margin: 4px 0 0; }
+.wl-label { font-size: 14px; font-weight: 700; color: var(--ink); }
+
+.wl-games { margin-bottom: 16px; }
+
+/* ---------- Wider screens: two columns of words where there is room ---------- */
+@media (min-width: 600px) {
+  .wl-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); align-items: start; }
+}
