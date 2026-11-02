@@ -1,0 +1,27 @@
+/* Jeepney stop screen. Phone first at 390 px; wider screens only rearrange it.
+   Every class starts with jp- so it cannot clash. Colours come from the :root tokens in src/index.css.
+   The chosen option says "Selected:" in words; the border and fill are only a second hint. */
+
+.jp-head { margin-bottom: 8px; }
+.jp-head p { margin: 0; }
+.jp-progress { margin: 0 0 12px; font-weight: 700; color: var(--ink); }
+
+.jp-question { display: grid; gap: 12px; max-width: 520px; }
+.jp-question p { margin: 0; }
+.jp-question h2 { margin: 4px 0 0; }
+.jp-hear { justify-self: start; }
+
+.jp-options { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.jp-option {
+  width: 100%; min-height: 56px; padding: 8px 16px; text-align: left;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--sidebar-active); border-radius: 6px;
+  font: 16px var(--sans); cursor: pointer; overflow-wrap: anywhere;
+}
+.jp-option:hover { background: var(--info-tint); }
+.jp-chosen { border: 2px solid var(--ink); background: var(--sidebar); }
+.jp-now { font-weight: 700; }
+.jp-option[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+@media (min-width: 600px) {
+  .jp-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

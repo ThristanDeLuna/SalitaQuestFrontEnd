@@ -10,6 +10,7 @@ import AdminPending from './pages/AdminPending';     // D: Admin pending queue
 import AdminAudio from './pages/AdminAudio';         // C: Admin audio
 import WordList from './pages/WordList';             // B: word list of one region
 import WordPond from './games/WordPond';             // C: Word Pond matching game
+import JeepneyStop from './games/JeepneyStop';       // C: Jeepney stop listening game
 import NotFound from './pages/NotFound';
 import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
 
@@ -38,7 +39,8 @@ export default function App() {
         <Route path="passport" element={signedIn('Passport', 'C')} />
         <Route path="play/matching/:region" element={
           <Guard allow={isSignedIn}><WordPond /></Guard>} />
-        <Route path="play/listening/:region" element={signedIn('Jeepney stop', 'C')} />
+        <Route path="play/listening/:region" element={
+          <Guard allow={isSignedIn}><JeepneyStop /></Guard>} />
 
         {/* Contributors and Admins (DEC-60) */}
         <Route path="submit" element={
