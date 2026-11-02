@@ -1,15 +1,14 @@
 import { useReducer, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useSummary } from '../auth/useSummary';
-import SystemScreen from '../components/SystemScreen';
-import NotFound from '../pages/NotFound';
 import { errorKind, errorMessage } from './errors';
 import useAudio from './useAudio';
 import useCountUp from './useCountUp';
 import useRegionName from './useRegionName';
 import useRound from './useRound';
 import ResultsCard from './ResultsCard';
+import RoundGate from './RoundGate';
 import {
   buildPairs, canFinish, fishForMeaning, formatTime, initialPond, matchingRows, pondReducer,
 } from './pondLogic';
@@ -153,29 +152,15 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
   );
 }
 
-// ---------- Loading and error screens for one region ----------
+// ---------- One region: the loading/error screens, then the game ----------
 function PondScreen({ region }) {
   const { round, status, kind, attempt, again } = useRound(`/api/games/matching/${encodeURIComponent(region)}`);
   const regionName = useRegionName(region);
   const audio = useAudio();                          // lives here, so it stops when the screen goes away
 
-  if (status === 'loading') return <p className="muted">Filling the pond...</p>;
-
-  if (status === 'error') {
-    if (kind === 'not_found') return <NotFound />;
-    if (kind === 'coming_soon' || kind === 'locked') {
-      return (
-        <SystemScreen title={kind === 'locked' ? 'Locked for now' : 'Coming soon'}
-                      actions={<Link className="btn" to="/">Back to the Map</Link>}>
-          {errorMessage(kind)}
-        </SystemScreen>
-      );
-    }
-    return (
-      <p className="banner error" role="alert">
-        {errorMessage(kind)} <button type="button" className="btn" onClick={again}>Try again</button>
-      </p>
-    );
+  // Loading and error screens are shared with Jeepney stop (RoundGate.jsx).
+  if (status !== 'ready') {
+    return <RoundGate status={status} kind={kind} again={again} loadingText="Filling the pond..." />;
   }
 
   // The key makes React throw away the old pond, timer and results when a new round arrives.
