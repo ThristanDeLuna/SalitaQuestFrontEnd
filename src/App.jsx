@@ -22,10 +22,6 @@ const ADMIN_PAGES = [
   ['regions', 'Admin: regions', 'B'],
 ];
 
-const signedIn = (title, owner) => (
-  <Guard allow={isSignedIn}><Placeholder title={title} owner={owner} /></Guard>
-);
-
 export default function App() {
   return (
     <Routes>
