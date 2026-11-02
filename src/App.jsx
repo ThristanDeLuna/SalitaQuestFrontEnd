@@ -8,8 +8,11 @@ import Profile from './pages/Profile';
 import Suggest from './pages/Suggest';               // D: Suggest a word
 import AdminPending from './pages/AdminPending';     // D: Admin pending queue
 import AdminAudio from './pages/AdminAudio';         // C: Admin audio
-import WordList from './pages/WordList'; 
-import RegionMap from './pages/RegionMap';           // B: the Map (home page)            // B: word list of one region
+import WordList from './pages/WordList';           // B: word list of one region
+import RegionMap from './pages/RegionMap';         // B: the Map (home page)
+import WordPond from './games/WordPond';           // C: Word Pond matching game
+import Passport from './passport/Passport';        // C: Passport
+import JeepneyStop from './games/JeepneyStop';     // C: Jeepney stop listening game
 import NotFound from './pages/NotFound';
 import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
 
@@ -19,10 +22,6 @@ const ADMIN_PAGES = [
   ['words', 'Admin: words', 'B'],
   ['regions', 'Admin: regions', 'B'],
 ];
-
-const signedIn = (title, owner) => (
-  <Guard allow={isSignedIn}><Placeholder title={title} owner={owner} /></Guard>
-);
 
 export default function App() {
   return (
@@ -35,9 +34,12 @@ export default function App() {
 
         {/* Signed-in users */}
         <Route path="profile" element={<Profile />} />   {/* checks sign-in itself */}
-        <Route path="passport" element={signedIn('Passport', 'C')} />
-        <Route path="play/matching/:region" element={signedIn('Word Pond', 'C')} />
-        <Route path="play/listening/:region" element={signedIn('Jeepney stop', 'C')} />
+        <Route path="passport" element={
+          <Guard allow={isSignedIn}><Passport /></Guard>} />
+        <Route path="play/matching/:region" element={
+          <Guard allow={isSignedIn}><WordPond /></Guard>} />
+        <Route path="play/listening/:region" element={
+          <Guard allow={isSignedIn}><JeepneyStop /></Guard>} />
 
         {/* Contributors and Admins (DEC-60) */}
         <Route path="submit" element={

@@ -1,0 +1,49 @@
+/* Passport (wireframe page 11). Phone first: one column at 390 px; wider screens only add room.
+   Every class starts with pp- so it cannot clash. Colours come from the :root tokens in src/index.css. */
+
+/* Tabs: the selected one is bold with a thick bar under it (shape, not only colour). */
+.pp-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--sidebar-active); margin-bottom: 16px; }
+.pp-tab {
+  min-height: 44px; padding: 0 16px; background: none; border: 0; cursor: pointer;
+  color: var(--ink); font: 15px var(--sans);
+}
+.pp-tab:hover { background: var(--info-tint); }
+.pp-active { font-weight: 700; box-shadow: inset 0 -4px 0 var(--ink); }
+
+.pp-panel h2 { margin-top: 20px; }
+.pp-big { margin: 0; font: 700 24px/1.2 var(--serif); color: var(--ink); }
+
+/* Text only screen readers hear (the week dot labels). */
+.pp-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Week dots: a filled dot is played, a hollow ring is not. */
+.pp-week { list-style: none; margin: 8px 0 0; padding: 0; display: flex; gap: 8px; }
+.pp-dot { display: grid; justify-items: center; gap: 2px; min-width: 32px; font-size: 14px; color: var(--text-muted); }
+.pp-dot-mark { font-size: 20px; line-height: 1; color: var(--ink); }
+.pp-played { color: var(--ink); font-weight: 700; }
+
+.pp-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-width: 520px; }
+.pp-region, .pp-badge { display: grid; gap: 2px; }
+.pp-region-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.pp-quest { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; }
+.pp-done { font-weight: 700; color: var(--ink); }
+
+/* Stickers: small cards in a grid that wraps; "?" cards are dashed. */
+.pp-stickers { margin-bottom: 8px; }
+.pp-grid {
+  list-style: none; margin: 0 0 8px; padding: 0;
+  display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}
+.pp-sticker {
+  display: grid; gap: 2px; justify-items: center; align-content: center; min-height: 64px; padding: 8px;
+  text-align: center; background: var(--surface); border: 1px solid var(--sidebar-active); border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+.pp-hidden { border-style: dashed; color: var(--text-muted); font: 700 20px var(--serif); }
+
+/* An earned badge gets a thick left edge as a second hint; "Earned" / "Locked" is the real signal. */
+.pp-earned { box-shadow: inset 4px 0 0 var(--ink); }
+.pp-badge-state { font-size: 14px; font-weight: 700; color: var(--ink); }
