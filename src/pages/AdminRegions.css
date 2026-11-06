@@ -1,0 +1,28 @@
+/* Admin Regions. All class names start with aw- so they cannot clash with other screens. */
+.ar-field { display: grid; gap: 4px; margin: 0 0 12px; }
+.ar-field > span { font-weight: 700; color: var(--ink); }
+.ar-field input, .ar-field select, .ar-field textarea {
+  min-height: 44px; padding: 8px 12px; border: 1px solid var(--ink); border-radius: 3px;
+  background: var(--surface); color: var(--text); font: 16px var(--sans);   /* 16px stops phones zooming in */
+}
+.ar-field textarea { resize: vertical; }
+.ar-field input[disabled] { background: var(--sidebar); }
+
+.ar-add { margin: 0 0 16px; }
+
+.ar-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.ar-card { margin: 0 0 12px; padding: 16px; background: var(--surface); border: 1px solid var(--sidebar-active); border-radius: 6px; }
+.ar-list .ar-card { margin: 0; }
+.ar-name { margin: 0 0 4px; font: 700 20px/1.3 var(--serif); color: var(--ink); }
+.ar-meaning { margin: 0 0 4px; }
+
+.ar-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ar-actions .btn { flex: 1 1 120px; min-height: 44px; }
+
+@media (min-width: 600px) {
+  .ar-actions .btn { flex: 0 0 auto; }
+}
+
+/* Latitude and longitude side by side when there is room */
+.ar-pair { display: grid; gap: 0 12px; }
+@media (min-width: 480px) { .ar-pair { grid-template-columns: 1fr 1fr; } }
