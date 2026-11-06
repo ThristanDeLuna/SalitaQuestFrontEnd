@@ -10,7 +10,9 @@ import './RegionMap.css';
 // OpenStreetMap supplies the tiles (DEC-55). The address sits in one place so it is easy to change.
 const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-const PHILIPPINES = [12.5, 122.5];               // where the map starts, before the regions arrive
+const PHILIPPINES = [12.5, 122.5];
+// The map may not be dragged outside the Philippines (a box with some margin).
+const PH_BOUNDS = [[3.5, 115.0], [22.0, 128.0]];               // where the map starts, before the regions arrive
 
 // What each pin state means. The glyph and the label are words/shapes, so color is never the only signal.
 // "browse" is only for visitors; signed-in users get the other five from GET /api/me/summary (DEC-119).
@@ -87,7 +89,11 @@ export default function RegionMap() {
 
   // ---------- 2. Create the map once, remove it when we leave ----------
   useEffect(() => {
-    const m = new L.Map(box.current, { center: PHILIPPINES, zoom: 5, minZoom: 4, maxZoom: 12 });
+        const m = new L.Map(box.current, {
+      center: PHILIPPINES, zoom: 5, minZoom: 5, maxZoom: 12,
+      maxBounds: PH_BOUNDS,        // the edges the view cannot leave
+      maxBoundsViscosity: 1.0,     // 1.0 = a hard wall; lower values bounce back softly
+    });
     new L.TileLayer(TILE_URL, { attribution: ATTRIBUTION, maxZoom: 19 }).addTo(m);
     m.attributionControl.setPosition('topright');  // the sheet slides up from the bottom, so keep it clear
     m.on('click', () => setSelected(null));        // tapping empty sea closes the sheet
