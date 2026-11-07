@@ -1,0 +1,119 @@
+/* Street scene above each Jeepney stop question. Every class starts with rs- so it cannot clash.
+   --art-* colours are fills only: no text sits on them, and every art shape has a 2px var(--ink) outline.
+   The scene's own colours: sky --info-tint, clouds and windows --surface, face --accent, cap --ink.
+   With reduced motion the art stays, but nothing moves. */
+
+.rs-scene {
+  position: relative;
+  min-height: 150px;
+  background: var(--info-tint);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+}
+
+/* ---------- Art layer: fills the scene, the only thing clipped (radius 12 minus the 2 px border) ---------- */
+.rs-art { position: absolute; inset: 0; overflow: hidden; border-radius: 10px; pointer-events: none; }
+.rs-art * { pointer-events: none; }
+.rs-art svg { display: block; }
+
+/* All art outlines: 2 px ink, round joins. */
+.rs-art rect, .rs-art path, .rs-art circle, .rs-art ellipse { stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+
+/* Road band along the bottom, with the dash strip centred in it. */
+.rs-road {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 34px;
+  background: var(--art-road); border-top: 2px solid var(--ink);
+}
+.rs-strip { position: absolute; left: 0; top: 12px; fill: var(--surface); }
+
+/* Each cloud rides a full-width track, so the track can carry it across with a % transform. */
+.rs-cloud-track { position: absolute; left: 0; right: 0; }
+.rs-cloud-a { top: 10px; }
+.rs-cloud-b { top: 40px; }
+.rs-cloud { fill: var(--surface); }
+/* Without motion the clouds rest at fixed spots. */
+.rs-cloud-a .rs-cloud { margin-left: 8%; }
+.rs-cloud-b .rs-cloud { margin-left: 62%; }
+
+/* The jeepney sits on the road: its wheels (bottom 10 px of the drawing) are inside the 34 px band. */
+.rs-jeepney { position: absolute; left: 12px; bottom: 6px; }
+.rs-rack { fill: var(--art-road); }
+.rs-body { fill: var(--art-yellow); }
+.rs-stripe { fill: var(--art-red); }
+.rs-window { fill: var(--surface); }
+.rs-bumper { fill: var(--art-road); }
+.rs-tyre, .rs-bolt { fill: var(--ink); stroke-width: 0; }
+.rs-rim { fill: var(--art-road); }
+.rs-face { fill: var(--accent); }
+.rs-cap { fill: var(--ink); }
+.rs-mouth { fill: var(--ink); stroke-width: 0; }
+/* Rotate and scale these parts around their own centre, not the drawing's corner. */
+.rs-wheel, .rs-mouth { transform-box: fill-box; transform-origin: center; }
+
+/* ---------- Content: the bubble row above the jeepney ---------- */
+/* The bottom padding (82 px) keeps the jeepney free: its 62 px drawing + its 6 px lift + the bubble's
+   10 px tail + 4 px of air. So the bubble can never cover it; a taller bubble makes the scene taller instead.
+   Width: on wide cards the row ends near the cab, so the waves sit just ahead of the driver;
+   on a 320 px phone it simply takes the full width. */
+.rs-content {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: flex-end; gap: 4px;
+  width: min(100%, 320px);
+  padding: 12px 12px 82px;
+}
+
+.rs-waves { flex: none; display: block; pointer-events: none; }
+.rs-waves path { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; opacity: 0.25; }
+.rs-playing .rs-waves path { opacity: 1; }
+
+.rs-bubble {
+  position: relative; min-width: 0;
+  padding: 8px; background: var(--surface); color: var(--text);
+  border: 2px solid var(--ink); border-radius: 12px;
+}
+/* Tail at the bottom left, pointing down at the cab: an ink triangle with a white one inside it. */
+.rs-bubble::before, .rs-bubble::after {
+  content: ''; position: absolute; left: 20px; width: 0; height: 0;
+  border-style: solid; border-color: transparent;
+}
+/* The white triangle is 4 px smaller and 2 px further in, so a 2 px ink edge shows around it. */
+.rs-bubble::before { bottom: -10px; border-width: 10px 10px 0 0; border-top-color: var(--ink); }
+.rs-bubble::after { bottom: -6px; left: 22px; border-width: 6px 6px 0 0; border-top-color: var(--surface); }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The road keeps rolling: the strip moves left by one dash period, then starts over. */
+  .rs-strip { animation: rs-road 2s linear infinite; }
+  @keyframes rs-road { to { transform: translateX(-40px); } }   /* -40px = DASH_PERIOD in RoadScene.jsx */
+
+  /* Clouds cross the whole sky slowly, from just off the left edge to off the right edge.
+     The negative delays start them part-way across. */
+  .rs-cloud-track .rs-cloud { margin-left: 0; }
+  .rs-cloud-track { animation: rs-cloud 28s linear infinite; }
+  .rs-cloud-a { animation-delay: -9s; }
+  .rs-cloud-b { animation-duration: 36s; animation-delay: -24s; }
+  @keyframes rs-cloud {
+    from { transform: translateX(-48px); }   /* the cloud is 44 px wide */
+    to { transform: translateX(100%); }
+  }
+
+  /* The jeepney drives in once (700 ms), its wheels turning twice on the way, then bobs gently.
+     The drive-in is on the wrapper and the bob on the drawing, so the two transforms never clash. */
+  .rs-jeepney { animation: rs-drive 700ms ease-out; }
+  @keyframes rs-drive { from { transform: translateX(-160px); } }   /* past the left edge: 12 px + 132 px wide */
+  .rs-wheel { animation: rs-spin 350ms linear 2; }
+  @keyframes rs-spin { to { transform: rotate(360deg); } }
+  .rs-jeep { animation: rs-bob 2.4s ease-in-out 700ms infinite alternate; }
+  @keyframes rs-bob { to { transform: translateY(-1px); } }
+
+  /* The bubble only fades in, once the jeepney has nearly stopped. It never slides. */
+  .rs-bubble { animation: rs-fade 300ms ease-out 400ms backwards; }
+  @keyframes rs-fade { from { opacity: 0; } }
+
+  /* While the word plays: the mouth opens and closes, and the waves light up one after another. */
+  .rs-playing .rs-mouth { animation: rs-talk 2s ease-in-out infinite; }
+  @keyframes rs-talk { 50% { transform: scaleY(0.3); } }
+  .rs-playing .rs-waves path { animation: rs-wave 2s ease-in-out infinite; }
+  .rs-playing .rs-waves path:nth-child(2) { animation-delay: 0.3s; }
+  .rs-playing .rs-waves path:nth-child(3) { animation-delay: 0.6s; }
+  @keyframes rs-wave { 50% { opacity: 0.25; } }
+}

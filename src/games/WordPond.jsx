@@ -7,6 +7,7 @@ import useAudio from './useAudio';
 import useCountUp from './useCountUp';
 import useRegionName from './useRegionName';
 import useRound from './useRound';
+import PondScene from './PondScene';
 import ResultsCard from './ResultsCard';
 import RoundGate from './RoundGate';
 import {
@@ -152,13 +153,15 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
       </ul>
 
       <h2 className="wp-label">Fish in the pond</h2>
-      <ul className="wp-pond">
-        {round.words.map((f) => (
-          <Fish key={f.word_id} fish={f} onMeaning={meaningOf(f.word_id)} disabled={sending}
-                playing={f.audio_url !== null && audio.playingUrl === f.audio_url}
-                onTap={() => tapFish(f)} />
-        ))}
-      </ul>
+      <PondScene>
+        <ul className="wp-pond">
+          {round.words.map((f) => (
+            <Fish key={f.word_id} fish={f} onMeaning={meaningOf(f.word_id)} disabled={sending}
+                  playing={f.audio_url !== null && audio.playingUrl === f.audio_url}
+                  onTap={() => tapFish(f)} />
+          ))}
+        </ul>
+      </PondScene>
 
       <div className="actions">
         <button type="button" className="btn primary" disabled={!canFinish(pond) || sending} onClick={finish}>

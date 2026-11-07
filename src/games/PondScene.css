@@ -1,0 +1,50 @@
+/* Pond band behind the Word Pond fish. Every class starts with ps- so it cannot clash.
+   --art-* colours are fills only: no text sits on them, and every art shape has a 2px var(--ink) outline.
+   With reduced motion the art stays, but nothing moves. */
+
+.ps-pond {
+  position: relative;
+  background: var(--art-water);
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+}
+
+/* The art layer fills the band and is the only thing clipped (its corners follow the band:
+   16 px radius minus the 2 px border). The fish wrapper is never clipped, so focus outlines show. */
+.ps-art { position: absolute; inset: 0; overflow: hidden; border-radius: 14px; pointer-events: none; }
+.ps-art-piece { position: absolute; display: block; pointer-events: none; }
+
+/* 12 px leaves room for the 3 px focus outline, its 2 px offset and the few px of fish drift. */
+.ps-content { position: relative; z-index: 1; padding: 12px; }
+
+.ps-ripple { fill: none; stroke: var(--ink); stroke-width: 2; opacity: 0.3; }
+.ps-pad {
+  fill: var(--art-pad); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round;
+  transform: rotate(var(--ps-rest));
+}
+
+/* Placed at the edges, partly under the fish and partly in the band's padding (the clip hides the rest).
+   --ps-rest is each pad's resting angle, so the two pads do not look copied. */
+.ps-ripple-a { top: 4px; right: 12%; }
+.ps-ripple-b { bottom: 4px; left: 18%; }
+.ps-pad-a { top: -10px; left: -12px; --ps-rest: -20deg; }
+.ps-pad-b { bottom: -12px; right: -8px; --ps-rest: 160deg; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* A ring grows from 60% to full size and fades out; the two rings are out of step. Scale never
+     goes above 1, so the 2 px outline never gets thicker. */
+  .ps-ripple { animation: ps-ripple 3.6s ease-out infinite; }
+  .ps-ripple-b { animation-delay: -1.8s; }
+  @keyframes ps-ripple {
+    from { transform: scale(0.6); opacity: 0.45; }
+    to { transform: scale(1); opacity: 0; }
+  }
+
+  /* The pads sway 4 degrees either way around their resting angle, at different speeds. */
+  .ps-pad { animation: ps-sway 4.5s ease-in-out infinite alternate; }
+  .ps-pad-b { animation-duration: 5.5s; }
+  @keyframes ps-sway {
+    from { transform: rotate(calc(var(--ps-rest) - 4deg)); }
+    to { transform: rotate(calc(var(--ps-rest) + 4deg)); }
+  }
+}

@@ -7,6 +7,7 @@ import useAudio from './useAudio';
 import useRegionName from './useRegionName';
 import useRound from './useRound';
 import ResultsCard from './ResultsCard';
+import RoadScene from './RoadScene';
 import RoundGate from './RoundGate';
 import {
   buildAnswers, canFinish, canNext, currentQuestion, initialQuiz, isLastQuestion, listeningRows,
@@ -127,13 +128,15 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
       )}
 
       <section className="card jp-question" aria-label={progressLabel(quiz)}>
-        {question.audio_url ? (
-          <button type="button" className="btn primary jp-hear" onClick={() => audio.play(question.audio_url)}>
-            Hear the driver
-          </button>
-        ) : (
-          <p className="muted">The sound for this question is not available.</p>
-        )}
+        <RoadScene stopKey={question.word_id} playing={playing}>
+          {question.audio_url ? (
+            <button type="button" className="btn primary jp-hear" onClick={() => audio.play(question.audio_url)}>
+              Hear the driver
+            </button>
+          ) : (
+            <p className="muted">The sound for this question is not available.</p>
+          )}
+        </RoadScene>
         {playing && <p className="muted" role="status">Playing...</p>}
         {audio.failed && <p className="muted" role="status">Could not play that sound.</p>}
 
