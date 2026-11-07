@@ -1,0 +1,109 @@
+/* Bay banner above the Word Pond game. Every class starts with pb- so it cannot clash.
+   --art-* colours are fills only: the banner holds no text, and every art shape has a 2px var(--ink) outline.
+   The banner's own colours: sky --info-tint, unlit lanterns --surface, trunk --accent-text.
+   The rules outside the motion block put everything at rest; the motion block only adds animation,
+   so with reduced motion the bay is drawn but nothing moves (the jumping fish stays under water). */
+
+/* 150 px tall; the 2 px border sits outside the clip, so only the art inside is cut at the corners. */
+.pb-banner {
+  position: relative; height: 150px; margin: 0 0 12px; overflow: hidden;
+  background: var(--info-tint); border: 2px solid var(--ink); border-radius: 14px; pointer-events: none;
+}
+.pb-banner * { pointer-events: none; }
+.pb-banner svg { display: block; }
+.pb-banner :is(path, rect, circle, ellipse) { stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+
+/* ---------- Sky ---------- */
+.pb-sun { position: absolute; top: 8px; right: 16px; fill: var(--art-yellow); }
+.pb-hills { position: absolute; left: 0; bottom: 58px; fill: var(--art-pad); }   /* the sea (62 px) hides its foot */
+.pb-palm { position: absolute; left: 8px; bottom: 26px; }
+.pb-island { fill: var(--art-yellow); }
+.pb-trunk { fill: var(--accent-text); }
+.pb-leaves { fill: var(--art-pad); transform-box: view-box; transform-origin: 38px 28px; }   /* the trunk top */
+.pb-birds path { fill: none; stroke-linecap: round; }
+
+/* Birds and swimming fish ride full-width tracks, so a 100% transform carries them edge to edge.
+   --pb-rest is where each one waits when nothing moves. */
+.pb-track { position: absolute; left: 0; right: 0; }
+.pb-track > svg { margin-left: var(--pb-rest); }
+.pb-birds { top: 30px; --pb-rest: 34%; }
+
+/* ---------- Sea: a plane tilted back a little; wider than the banner, so the tilt never shows a corner ---------- */
+.pb-sea { position: absolute; left: 0; right: 0; bottom: 0; height: 62px; perspective: 240px; }
+.pb-plane {
+  position: absolute; top: 0; bottom: 0; left: -15%; right: -15%;
+  background: var(--art-water); border-top: 2px solid var(--ink);
+  transform: rotateX(24deg); transform-origin: 50% 100%;
+}
+.pb-wave { position: absolute; left: 0; }
+.pb-wave-back { top: 6px; fill: var(--art-water); }
+.pb-wave-front { bottom: 0; fill: var(--art-water-deep); }
+
+/* Fish: smaller ones higher up, as if further away. */
+.pb-fish { fill: var(--art-yellow); }
+.pb-swim-mid .pb-fish, .pb-jumper { fill: var(--art-red); }
+.pb-eye { fill: var(--ink); stroke-width: 0; }
+.pb-swim-far { bottom: 40px; --pb-rest: 62%; }
+.pb-swim-mid { bottom: 24px; --pb-rest: 14%; }
+.pb-swim-near { bottom: 4px; --pb-rest: 80%; }
+.pb-jumper { position: absolute; left: 26%; bottom: 30px; opacity: 0; }   /* waits under the water */
+
+/* ---------- Banca, floating at the waterline ---------- */
+.pb-banca { position: absolute; left: 44%; bottom: 34px; }
+.pb-hull { fill: var(--art-yellow); }
+.pb-stripe { fill: var(--art-red); }
+.pb-pole { fill: var(--ink); }
+.pb-line { fill: none; stroke-linecap: round; }
+.pb-lantern { fill: var(--surface); }
+.pb-lit { fill: var(--art-yellow); }
+.pb-banca, .pb-rays, .pb-lantern { transform-box: fill-box; transform-origin: center; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The sun's rays breathe; the palm leaves sway 3 degrees either way. */
+  .pb-rays { animation: pb-pulse 3s ease-in-out infinite alternate; }
+  @keyframes pb-pulse { from { transform: scale(0.85); opacity: 0.6; } }
+  .pb-leaves { animation: pb-sway 4s ease-in-out infinite alternate; }
+  @keyframes pb-sway {
+    from { transform: rotate(-3deg); }
+    to { transform: rotate(3deg); }
+  }
+
+  /* Tracks start just off the left edge and leave past the right one. */
+  .pb-track > svg { margin-left: 0; }
+  /* The flock crosses in the first 45% of a slow cycle, then the sky is empty for a while. */
+  .pb-birds { animation: pb-fly 24s linear -4s infinite; }
+  @keyframes pb-fly {
+    0% { transform: translateX(-44px); }
+    45%, 100% { transform: translateX(100%); }
+  }
+  .pb-swim-far { animation: pb-swim 26s linear -8s infinite; }
+  .pb-swim-mid { animation: pb-swim 20s linear -15s infinite; }
+  .pb-swim-near { animation: pb-swim 15s linear -3s infinite; }
+  @keyframes pb-swim {
+    from { transform: translateX(-32px); }   /* the biggest fish is 28 px long */
+    to { transform: translateX(100%); }
+  }
+
+  /* Both wave strips slide one crest to the left (48 px = WAVE_P in PondBanner.jsx), the near one faster. */
+  .pb-wave-back { animation: pb-slide 7s linear infinite; }
+  .pb-wave-front { animation: pb-slide 4s linear infinite; }
+  @keyframes pb-slide { to { transform: translateX(-48px); } }
+
+  /* The banca rocks gently: 2 px up and a small tilt. */
+  .pb-banca { animation: pb-bob 3s ease-in-out infinite alternate; }
+  @keyframes pb-bob { to { transform: translateY(-2px) rotate(1.5deg); } }
+
+  /* Every 6 s one fish leaps out of the water in an arc and dives back in, head first. */
+  .pb-jumper { animation: pb-jump 6s ease-in-out 1s infinite; }
+  @keyframes pb-jump {
+    0%, 62% { opacity: 0; transform: translate(0, 18px) rotate(-50deg); }
+    66% { opacity: 1; transform: translate(6px, 4px) rotate(-40deg); }
+    76% { transform: translate(22px, -28px) rotate(0deg); }
+    86% { opacity: 1; transform: translate(38px, 4px) rotate(40deg); }
+    90%, 100% { opacity: 0; transform: translate(44px, 18px) rotate(50deg); }
+  }
+
+  /* A lantern that lights up pops once. */
+  .pb-lit { animation: pb-pop 300ms ease-out; }
+  @keyframes pb-pop { 50% { transform: scale(1.5); } }
+}

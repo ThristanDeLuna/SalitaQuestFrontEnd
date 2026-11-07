@@ -7,11 +7,12 @@ import useAudio from './useAudio';
 import useCountUp from './useCountUp';
 import useRegionName from './useRegionName';
 import useRound from './useRound';
+import PondBanner from './PondBanner';
 import PondScene from './PondScene';
 import ResultsCard from './ResultsCard';
 import RoundGate from './RoundGate';
 import {
-  buildPairs, canFinish, fishForMeaning, formatTime, initialPond, matchingRows, pondReducer,
+  buildPairs, canFinish, caughtWordIds, fishForMeaning, formatTime, initialPond, matchingRows, pondReducer,
 } from './pondLogic';
 import './WordPond.css';
 
@@ -134,6 +135,8 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
   return (
     <>
       {header}
+      {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong. */}
+      <PondBanner caught={caughtWordIds(pond).length} total={pond.meanings.length} />
       <p className="muted">Choose a meaning, then catch the fish (word) that matches it.</p>
 
       {submitErr && (
