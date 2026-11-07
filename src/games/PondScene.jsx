@@ -1,10 +1,13 @@
+import PondBanner from './PondBanner';
 import './PondScene.css';
 
-// PondScene: the pond band the Word Pond fish swim in. Decoration only.
-// It draws ripple rings and two lily pads on an art layer behind the fish; the fish list
+// PondScene: the whole Word Pond scene in ONE frame (2px ink border, rounded): the bay on top
+// (PondBanner: sky, sun, hills, palm, banca with its lanterns) and the pond water right below it,
+// where the fish swim. The bay's sea and the pond have the same colour and no line between them.
+// In the water, ripple rings and two lily pads sit on an art layer behind the fish; the fish list
 // is passed in as children and sits on top, so every button keeps working as before.
-// Props: children (the fish list).
-// The art layer is aria-hidden and ignores taps; only it is clipped, so focus outlines are never cut.
+// Props: caught, total (for the lanterns, see PondBanner), children (the fish list; none on the results).
+// The art layers are aria-hidden and ignore taps; only they are clipped, so focus outlines are never cut.
 
 // One ripple ring, drawn at its full size; CSS scales it down and fades it in a slow pulse.
 const RIPPLE_W = 56;
@@ -35,16 +38,19 @@ function LilyPad({ className }) {
   );
 }
 
-export default function PondScene({ children }) {
+export default function PondScene({ caught, total, children }) {
   return (
     <div className="ps-pond">
-      <div className="ps-art" aria-hidden="true">
-        <Ripple className="ps-ripple-a" />
-        <Ripple className="ps-ripple-b" />
-        <LilyPad className="ps-pad-a" />
-        <LilyPad className="ps-pad-b" />
+      <PondBanner caught={caught} total={total} />
+      <div className="ps-water">
+        <div className="ps-art" aria-hidden="true">
+          <Ripple className="ps-ripple-a" />
+          <Ripple className="ps-ripple-b" />
+          <LilyPad className="ps-pad-a" />
+          <LilyPad className="ps-pad-b" />
+        </div>
+        <div className="ps-content">{children}</div>
       </div>
-      <div className="ps-content">{children}</div>
     </div>
   );
 }

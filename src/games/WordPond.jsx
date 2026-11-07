@@ -7,7 +7,6 @@ import useAudio from './useAudio';
 import useCountUp from './useCountUp';
 import useRegionName from './useRegionName';
 import useRound from './useRound';
-import PondBanner from './PondBanner';
 import PondScene from './PondScene';
 import ResultsCard from './ResultsCard';
 import RoundGate from './RoundGate';
@@ -124,8 +123,8 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
     return (
       <>
         {header}
-        {/* The bay stays above the results, every lantern lit (all meanings were filled to finish). */}
-        <PondBanner caught={pond.meanings.length} total={pond.meanings.length} />
+        {/* The scene stays above the results, every lantern lit (all meanings were filled to finish). */}
+        <PondScene caught={pond.meanings.length} total={pond.meanings.length} />
         <ResultsCard result={result} rows={matchingRows(result.results, round.words)}
                      onAgain={onAgain} backTo="/"
                      next={{ to: `/play/listening/${region}`, label: 'Next: Jeepney stop' }} />
@@ -137,9 +136,7 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
   return (
     <>
       {header}
-      {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong. */}
-      <PondBanner caught={caughtWordIds(pond).length} total={pond.meanings.length} />
-      <p className="muted">Choose a meaning, then catch the fish (word) that matches it.</p>
+      <p className="muted wp-intro">Choose a meaning, then catch the fish (word) that matches it.</p>
 
       {submitErr && (
         <p className="banner error" role="alert">
@@ -157,8 +154,10 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
         ))}
       </ul>
 
-      <h2 className="wp-label">Fish in the pond</h2>
-      <PondScene>
+      {/* The heading stays for screen readers; on screen the scene itself says "pond". */}
+      <h2 className="wp-sr">Fish in the pond</h2>
+      {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong. */}
+      <PondScene caught={caughtWordIds(pond).length} total={pond.meanings.length}>
         <ul className="wp-pond">
           {round.words.map((f) => (
             <Fish key={f.word_id} fish={f} onMeaning={meaningOf(f.word_id)} disabled={sending}

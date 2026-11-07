@@ -1,4 +1,5 @@
-/* Pond band behind the Word Pond fish. Every class starts with ps- so it cannot clash.
+/* The Word Pond scene: one frame holding the bay (PondBanner, pb-) and the pond water with the fish.
+   Every class here starts with ps- so it cannot clash.
    --art-* colours are fills only: no text sits on them, and every art shape has a 2px var(--ink) outline.
    With reduced motion the art stays, but nothing moves. */
 
@@ -9,13 +10,15 @@
   border-radius: 16px;
 }
 
-/* The art layer fills the band and is the only thing clipped (its corners follow the band:
-   16 px radius minus the 2 px border). The fish wrapper is never clipped, so focus outlines show. */
-.ps-art { position: absolute; inset: 0; overflow: hidden; border-radius: 14px; pointer-events: none; }
+/* The water under the bay. Its art layer is the only thing clipped here (the bottom corners follow the
+   frame: 16 px radius minus the 2 px border). The fish wrapper is never clipped, so focus outlines show. */
+.ps-water { position: relative; }
+.ps-art { position: absolute; inset: 0; overflow: hidden; border-radius: 0 0 14px 14px; pointer-events: none; }
 .ps-art-piece { position: absolute; display: block; pointer-events: none; }
 
-/* 12 px leaves room for the 3 px focus outline, its 2 px offset and the few px of fish drift. */
-.ps-content { position: relative; z-index: 1; padding: 12px; }
+/* 12 px leaves room for the 3 px focus outline, its 2 px offset and the few px of fish drift.
+   On the results there are no fish; the min-height still shows a strip of pond with its pads. */
+.ps-content { position: relative; z-index: 1; padding: 12px; min-height: 48px; }
 
 .ps-ripple { fill: none; stroke: var(--ink); stroke-width: 2; opacity: 0.3; }
 .ps-pad {

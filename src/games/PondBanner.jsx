@@ -1,7 +1,8 @@
 import './PondBanner.css';
 
-// PondBanner: the bay above the Word Pond game. Decoration only: it holds no text and no buttons,
-// so the whole banner is the art layer (aria-hidden, ignores taps, clipped to its rounded border).
+// PondBanner: the bay at the top of the Word Pond scene (PondScene draws it above the pond water, in the
+// same frame, so the bay's sea and the pond read as one body of water). Decoration only: it holds no text
+// and no buttons, so the whole bay is the art layer (aria-hidden, ignores taps, clipped to the top corners).
 // Back to front: the sun with pulsing rays, far hills, birds now and then, the sea (two wave layers on
 // a slightly tilted plane, for a 2.5D look), a palm on a little island in the sea, three fish swimming across,
 // one fish that jumps, and a banca (outrigger boat) bobbing with one lantern per meaning.
@@ -61,10 +62,10 @@ function Birds() {
   );
 }
 
-// ---------- Sea: a tilted plane with two wave strips that slide at different speeds ----------
+// ---------- Sea: a tilted plane with two wave crests that slide at different speeds (same water colour) ----------
 const WAVE_P = 48;                  // one crest; each strip slides by exactly this, so the loop is seamless
 const WAVE_H = 20;
-const WAVE_W = 27 * WAVE_P;         // 1296 px: the widest banner (about 930 px) plus one crest, with room for the tilt
+const WAVE_W = 27 * WAVE_P;         // 1296 px: the widest scene (about 930 px) plus one crest, with room for the tilt
 // The top edge: a crest and a trough per period; the band below it is filled. The bottom edge runs 2 px
 // below the box, so only the wavy top is outlined.
 const WAVE_D = `M0 ${WAVE_H + 2} V8 ${Array.from({ length: WAVE_W / WAVE_P }, (_, i) =>
@@ -114,7 +115,7 @@ function Banca({ caught, total }) {
 
 export default function PondBanner({ caught = 0, total = 4 }) {
   return (
-    <div className="pb-banner" aria-hidden="true">
+    <div className="pb-sky" aria-hidden="true">
       <Sun />
       <Hills />
       <Birds />

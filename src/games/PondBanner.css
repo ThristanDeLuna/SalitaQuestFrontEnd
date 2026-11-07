@@ -1,17 +1,18 @@
-/* Bay banner above the Word Pond game. Every class starts with pb- so it cannot clash.
-   --art-* colours are fills only: the banner holds no text, and every art shape has a 2px var(--ink) outline.
-   The banner's own colours: sky --info-tint, unlit lanterns --surface, trunk --accent-text.
+/* The bay at the top of the Word Pond scene (inside PondScene's frame). Every class starts with pb-.
+   --art-* colours are fills only: the bay holds no text, and every art shape has a 2px var(--ink) outline.
+   Its own colours: sky --info-tint, unlit lanterns --surface, trunk --accent-text.
    The rules outside the motion block put everything at rest; the motion block only adds animation,
    so with reduced motion the bay is drawn but nothing moves (the jumping fish stays under water). */
 
-/* 150 px tall; the 2 px border sits outside the clip, so only the art inside is cut at the corners. */
-.pb-banner {
-  position: relative; height: 150px; margin: 0 0 12px; overflow: hidden;
-  background: var(--info-tint); border: 2px solid var(--ink); border-radius: 14px; pointer-events: none;
+/* 150 px tall. The frame's border belongs to PondScene; the bay only rounds (and clips) its top corners
+   to fit inside it (16 px frame radius minus the 2 px border). No bottom edge: the pond water follows. */
+.pb-sky {
+  position: relative; height: 150px; overflow: hidden;
+  background: var(--info-tint); border-radius: 14px 14px 0 0; pointer-events: none;
 }
-.pb-banner * { pointer-events: none; }
-.pb-banner svg { display: block; }
-.pb-banner :is(path, rect, circle, ellipse) { stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+.pb-sky * { pointer-events: none; }
+.pb-sky svg { display: block; }
+.pb-sky :is(path, rect, circle, ellipse) { stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
 
 /* ---------- Sky ---------- */
 .pb-sun { position: absolute; top: 8px; right: 16px; fill: var(--art-yellow); }
@@ -28,16 +29,17 @@
 .pb-track > svg { margin-left: var(--pb-rest); }
 .pb-birds { top: 30px; --pb-rest: 34%; }
 
-/* ---------- Sea: a plane tilted back a little; wider than the banner, so the tilt never shows a corner ---------- */
+/* ---------- Sea: a plane tilted back a little; wider than the bay, so the tilt never shows a corner.
+   It has the pond's colour and no bottom edge, so it runs straight on into the pond water below. ---------- */
 .pb-sea { position: absolute; left: 0; right: 0; bottom: 0; height: 62px; perspective: 240px; }
 .pb-plane {
   position: absolute; top: 0; bottom: 0; left: -15%; right: -15%;
   background: var(--art-water); border-top: 2px solid var(--ink);
   transform: rotateX(24deg); transform-origin: 50% 100%;
 }
-.pb-wave { position: absolute; left: 0; }
-.pb-wave-back { top: 6px; fill: var(--art-water); }
-.pb-wave-front { bottom: 0; fill: var(--art-water-deep); }
+.pb-wave { position: absolute; left: 0; fill: var(--art-water); }   /* only the crests show, as ripples */
+.pb-wave-back { top: 6px; }
+.pb-wave-front { bottom: 8px; }
 
 /* Fish: smaller ones higher up, as if further away. */
 .pb-fish { fill: var(--art-yellow); }
