@@ -1,9 +1,11 @@
+import './JeepneyArt.css';
+
 // JeepneyArt: one jeepney seen from the side, facing right, for RoadScene. Decoration only.
 // Drawn in a 132 x 62 box (shapes on a 4 px grid where they can be): roof rack, cabin and rounded hood,
 // a white trim band with red and yellow diamonds, three glass windows with a glare, the driver in the
 // front window, a door line, side mirror, headlight, chrome bumper and two wheels with 4-spoke hubcaps.
 // Light comes from the top left: a highlight band at the top of the body, a shade band at the bottom,
-// and a soft contact shadow under the wheels. Styles live in RoadScene.css (rs- classes).
+// and a soft contact shadow under the wheels. Styles: JeepneyArt.css (rs- classes, shared rules in RoadScene.css).
 // Two exhaust puffs sit just behind the jeepney, outside its drawing so they can drift back; they only
 // show (and drift) while it arrives or leaves.
 // Props: className (lane classes from RoadScene: paint, here/gone, arrive/leave).

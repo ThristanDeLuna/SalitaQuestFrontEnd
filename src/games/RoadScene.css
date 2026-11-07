@@ -2,6 +2,7 @@
    --art-* colours are fills only: no text sits on them, and every art shape has a 2px var(--ink) outline.
    The scene's own colours: sky --info-tint, clouds, walls and windows --surface, face --accent, cap --ink,
    tree trunk --accent-text.
+   The jeepneys' own look and their crossing animation live in JeepneyArt.css.
    Size: the whole art layer is drawn at its phone size and scaled by --scene-scale (1, or 1.6 on wide
    screens), so every px position and keyframe below is in phone-size art units. Content is never scaled.
    The rules outside the motion block put everything at rest: the "here" jeepney parked, the "gone" one
@@ -86,40 +87,6 @@
 }
 .rs-strip { position: absolute; left: 0; top: 12px; fill: var(--surface); }
 
-/* ---------- Jeepneys ---------- */
-/* Each lane is as wide as the scene, so translateX(100%) is exactly "past the right edge".
-   The wheels (bottom 10 px of the drawing) sit inside the 34 px road. */
-.rs-lane { position: absolute; left: 0; right: 0; bottom: 6px; }
-.rs-jeep { margin-left: var(--rs-jeep-x); }
-.rs-gone { transform: translateX(100%); }
-/* Exhaust puffs: just behind the jeepney's tail, at exhaust height. Invisible at rest. */
-.rs-puffs { position: absolute; left: calc(var(--rs-jeep-x) - 22px); bottom: 10px; overflow: visible; }
-.rs-puff { fill: var(--art-road); opacity: 0; transform-box: fill-box; transform-origin: center; }
-.rs-art .rs-puff { stroke-width: 1.5; }   /* waiting off the right edge; the art layer clips it */
-
-/* Two paint jobs, so the player can see that a different jeepney has come. */
-.rs-paint-a { --rs-paint: var(--art-yellow); }
-.rs-paint-b { --rs-paint: var(--art-red); }
-.rs-body { fill: var(--rs-paint); }
-/* The trim: a white band with alternating red and yellow diamonds (no outline: too small for one). */
-.rs-trim { fill: var(--surface); }
-.rs-art .rs-trim-a, .rs-art .rs-trim-b { stroke: none; }
-.rs-trim-a { fill: var(--art-red); }
-.rs-trim-b { fill: var(--art-yellow); }
-.rs-rack { fill: var(--art-road); }
-.rs-window { fill: var(--info-tint); }
-.rs-art .rs-glare { fill: var(--surface); opacity: 0.8; stroke: none; }
-.rs-chrome, .rs-hub { fill: var(--surface); }
-.rs-art .rs-mirror, .rs-art .rs-lamp, .rs-art .rs-hub { stroke-width: 1.5; }
-.rs-mirror { fill: var(--surface); }
-.rs-lamp { fill: var(--art-yellow); }
-.rs-tyre { fill: var(--ink); }
-.rs-face { fill: var(--accent); }
-.rs-cap { fill: var(--ink); }
-.rs-mouth { fill: var(--ink); stroke-width: 0; }
-/* Rotate and scale these parts around their own centre, not the drawing's corner. */
-.rs-wheel, .rs-mouth { transform-box: fill-box; transform-origin: center; }
-
 /* ---------- Content: the waves and the bubble, right above the parked jeepney's cab ---------- */
 /* The bottom padding keeps the jeepney free: its 62 px drawing + its 6 px lift (both scaled with the art),
    then the bubble's 10 px tail + 4 px of air. So the bubble never covers the driver or the windows; a taller
@@ -156,7 +123,7 @@
   .rs-strip { animation: rs-road 2s linear infinite; }
   @keyframes rs-road { to { transform: translateX(-40px); } }    /* DASH_PERIOD in RoadScene.jsx */
   .rs-street { animation: rs-street 60s linear infinite; }
-  @keyframes rs-street { to { transform: translateX(-260px); } } /* BLOCK_W in RoadScene.jsx */
+  @keyframes rs-street { to { transform: translateX(-260px); } } /* BLOCK_W in TownStrip.jsx */
 
   /* Clouds cross the whole sky slowly, from just off the left edge to off the right edge.
      The negative delays start them part-way across. */
@@ -169,37 +136,11 @@
     to { transform: translateX(100%); }
   }
 
-  /* The crossing (700 ms each, held at the end). Each keyframe gives one end only: the other end is the
-     resting place above (parked for "here", off the right edge for "gone"). A new stop swaps the two
-     classes, which starts both animations again, even half-way through a quick double Next. */
-  .rs-arrive { animation: rs-drive-in 700ms ease-out forwards; }
-  @keyframes rs-drive-in { from { transform: translateX(-160px); } }   /* past the left edge: 12 + 132 px */
-  .rs-leave { animation: rs-drive-out 700ms ease-in forwards; }
-  @keyframes rs-drive-out { from { transform: none; } }
-  /* The wheels turn twice while the jeepney moves, slowing or speeding up with it. */
-  .rs-arrive .rs-wheel { animation: rs-spin-in 700ms ease-out forwards; }
-  @keyframes rs-spin-in { from { transform: rotate(-720deg); } }
-  .rs-leave .rs-wheel { animation: rs-spin-out 700ms ease-in forwards; }
-  @keyframes rs-spin-out { to { transform: rotate(720deg); } }
-  /* While a jeepney moves, its two puffs drift back, grow and fade (one after the other). */
-  .rs-arrive .rs-puff, .rs-leave .rs-puff { animation: rs-puff 600ms ease-out; }
-  .rs-arrive .rs-puff + .rs-puff, .rs-leave .rs-puff + .rs-puff { animation-delay: 150ms; }
-  @keyframes rs-puff {
-    from { opacity: 0.9; transform: translateX(0) scale(0.6); }
-    to { opacity: 0; transform: translateX(-14px) scale(1.3); }
-  }
-
-  /* The parked jeepney bobs 1 px. The drive is on the lane and the bob on the drawing, so they never clash. */
-  .rs-here .rs-jeep { animation: rs-bob 2.4s ease-in-out 700ms infinite alternate; }
-  @keyframes rs-bob { to { transform: translateY(-1px); } }
-
   /* The bubble only fades in, once the jeepney has nearly stopped. It never slides. */
   .rs-bubble { animation: rs-fade 300ms ease-out 400ms backwards; }
   @keyframes rs-fade { from { opacity: 0; } }
 
-  /* While the word plays: the parked driver's mouth opens and closes, and the waves light up in turn. */
-  .rs-playing .rs-here .rs-mouth { animation: rs-talk 2s ease-in-out infinite; }
-  @keyframes rs-talk { 50% { transform: scaleY(0.3); } }
+  /* While the word plays the waves light up in turn (the driver's mouth moves too: JeepneyArt.css). */
   .rs-playing .rs-waves path { animation: rs-wave 2s ease-in-out infinite; }
   .rs-playing .rs-waves path:nth-child(2) { animation-delay: 0.3s; }
   .rs-playing .rs-waves path:nth-child(3) { animation-delay: 0.6s; }
