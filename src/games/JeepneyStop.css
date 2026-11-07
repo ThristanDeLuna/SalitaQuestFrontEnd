@@ -16,6 +16,10 @@
 .jp-question p { margin: 0; }
 .jp-question h2 { margin: 4px 0 0; }
 .jp-hear { justify-self: start; }
+/* The directions card is the first row of the question card; the card's 12 px gap spaces it. */
+.jp-question > .htp { margin: 0; }
+/* The hint under a disabled Next / Finish. Its 20 px line is kept even when empty, so nothing jumps. */
+.jp-hint { min-height: 20px; margin: 4px 0 0; line-height: 20px; text-align: center; }
 
 /* After Finish: the street sits above the results card, as wide as the card and centred like it. */
 .jp-end-scene { max-width: 480px; margin: 0 auto; }
@@ -40,9 +44,8 @@
    placement changes; the order of the page, and so the Tab order, stays the same. */
 @media (min-width: 900px) {
   .jp-question { max-width: none; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; align-content: start; }
-  .jp-question > .rs-scene { grid-column: 1; grid-row: 1 / span 4; align-self: start; }
+  .jp-question > .rs-scene { grid-column: 1; grid-row: 1 / span 5; align-self: start; }   /* beside all the rest */
   .jp-question > :not(.rs-scene) { grid-column: 2; }
-  .jp-options { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* The same pop for every option: it only says "that registered", never right or wrong (DEC-56). */

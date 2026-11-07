@@ -9,6 +9,7 @@ import useRegionName from './useRegionName';
 import useRound from './useRound';
 import PondScene from './PondScene';
 import CatchSparkle from './CatchSparkle';
+import HowToPlay from './HowToPlay';
 import ResultsCard from './ResultsCard';
 import RoundGate from './RoundGate';
 import {
@@ -138,10 +139,12 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
   }
 
   const errKind = submitErr ? errorKind(submitErr) : null;
+  const total = pond.meanings.length;
+  const placed = caughtWordIds(pond).length;      // fish placed, not fish right (DEC-56)
+  const finishBlocked = !canFinish(pond);
   return (
     <>
       {header}
-      <p className="muted wp-intro">Choose a meaning, then catch the fish (word) that matches it.</p>
 
       {submitErr && (
         <p className="banner error" role="alert">
@@ -154,6 +157,11 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
           side (WordPond.css); the order of the page, and so the Tab order, is the same at every width. */}
       <div className="wp-play">
         <div className="wp-col-meanings">
+          {/* Directions first, then the controls. The steps match pondLogic: the next empty meaning is
+              chosen for you after each catch, and catching a placed fish again moves it. */}
+          <HowToPlay steps={['Tap a meaning.', 'Tap the fish with the matching word.',
+                             `Place all ${total} fish, then press Finish.`]}
+                     note="You see your results at the end." status={`${placed} of ${total} fish placed`} />
           <h2 className="wp-label">Meanings</h2>
           <ul className="wp-meanings">
             {pond.meanings.map((m) => (
@@ -168,7 +176,7 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
           {/* The heading stays for screen readers; on screen the scene itself says "pond". */}
           <h2 className="wp-sr">Fish in the pond</h2>
           {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong. */}
-          <PondScene caught={caughtWordIds(pond).length} total={pond.meanings.length}>
+          <PondScene caught={placed} total={total}>
             <ul className="wp-pond">
               {round.words.map((f) => (
                 <Fish key={f.word_id} fish={f} onMeaning={meaningOf(f.word_id)} disabled={sending}
@@ -179,10 +187,13 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
           </PondScene>
 
           <div className="actions">
-            <button type="button" className="btn primary" disabled={!canFinish(pond) || sending} onClick={finish}>
+            <button type="button" className="btn primary" disabled={finishBlocked || sending} onClick={finish}
+                    aria-describedby={finishBlocked ? 'wp-finish-hint' : undefined}>
               {sending ? 'Checking...' : 'Finish'}
             </button>
           </div>
+          {/* The line is always there (empty when Finish works), so the button never moves. */}
+          <p id="wp-finish-hint" className="muted wp-hint">{finishBlocked && `Place all ${total} fish to finish.`}</p>
         </div>
       </div>
     </>

@@ -6,6 +6,7 @@ import { errorKind, errorMessage } from './errors';
 import useAudio from './useAudio';
 import useRegionName from './useRegionName';
 import useRound from './useRound';
+import HowToPlay from './HowToPlay';
 import ResultsCard from './ResultsCard';
 import RoadScene from './RoadScene';
 import RoundGate from './RoundGate';
@@ -124,6 +125,7 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
   const errKind = submitErr ? errorKind(submitErr) : null;
   const chosen = quiz.choices[question.word_id];
   const playing = Boolean(question.audio_url) && audio.playingUrl === question.audio_url;
+  const blocked = last ? !canFinish(quiz) : !canNext(quiz);   // no meaning picked for this question yet
 
   return (
     <>
@@ -137,6 +139,12 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
       )}
 
       <section className="card jp-question" aria-label={progressLabel(quiz)}>
+        {/* Directions first, then the controls. True to listenLogic and useAudio: every tap on "Hear the
+            driver" plays the word again, the pick can change until Next, and the last button is Finish. */}
+        <HowToPlay title={`How to play: ${quiz.questions.length} questions`}
+                   steps={['Press Hear the driver and listen.', 'Tap the meaning of the word you heard.',
+                           'Press Next. At the end, press Finish.']}
+                   note="You can hear each word again. Your results come after Finish." />
         {/* quiz.index (0 = first question) picks which of the two jeepneys is at the stop. */}
         <RoadScene stopIndex={quiz.index} playing={playing}>
           {question.audio_url ? (
@@ -161,13 +169,17 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
 
       <div className="actions">
         {last ? (
-          <button type="button" className="btn primary" disabled={!canFinish(quiz) || sending} onClick={finish}>
+          <button type="button" className="btn primary" disabled={blocked || sending} onClick={finish}
+                  aria-describedby={blocked ? 'jp-next-hint' : undefined}>
             {sending ? 'Checking...' : 'Finish'}
           </button>
         ) : (
-          <button type="button" className="btn primary" disabled={!canNext(quiz)} onClick={next}>Next</button>
+          <button type="button" className="btn primary" disabled={blocked} onClick={next}
+                  aria-describedby={blocked ? 'jp-next-hint' : undefined}>Next</button>
         )}
       </div>
+      {/* The line is always there (empty when the button works), so the button never moves. */}
+      <p id="jp-next-hint" className="muted jp-hint">{blocked && `Pick a meaning to ${last ? 'finish' : 'continue'}.`}</p>
     </>
   );
 }
