@@ -11,8 +11,46 @@
   display: grid; gap: 2px; padding: 8px 12px; border-radius: 6px;
   background: var(--surface); border: 1px solid var(--sidebar-active);
 }
-/* A thicker left edge as a second hint; the words "Correct" / "Incorrect" are the real signal. */
-.rc-right { box-shadow: inset 4px 0 0 var(--ink); }
-.rc-wrong { box-shadow: inset 4px 0 0 var(--accent); }
+/* Fill and a thicker left edge are a second hint; the words "Correct" / "Incorrect" are the real signal. */
+.rc-right { background: var(--info-tint); box-shadow: inset 4px 0 0 var(--ink); }
+.rc-wrong { background: var(--accent); color: var(--accent-text); box-shadow: inset 4px 0 0 var(--accent-text); }
 .rc-mark { font-size: 14px; font-weight: 700; color: var(--ink); }
 .rc-word { overflow-wrap: anywhere; }
+/* On the accent fill everything uses --accent-text, including .muted ("You chose: ..."). */
+.rc-wrong .rc-mark, .rc-wrong .muted { color: var(--accent-text); }
+
+/* The stamp sits beside the banner's words. */
+.rc-stamp-banner { display: flex; align-items: center; gap: 12px; text-align: left; }
+.rc-stamp { flex: none; display: block; color: var(--ink); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .rc-stamp { animation: rc-stamp-in 400ms ease-out; }
+  @keyframes rc-stamp-in {
+    0% { opacity: 0; transform: scale(0.4); }
+    70% { opacity: 1; transform: scale(1.15); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* Each row slides up, then pops (correct) or shakes (incorrect).
+     The last row starts at 120 ms and lasts 280 ms, so the whole list is done by 400 ms. */
+  .rc-right { animation: rc-in-pop 280ms ease-out backwards; }
+  .rc-wrong { animation: rc-in-shake 280ms ease-out backwards; }
+  .rc-row:nth-child(2) { animation-delay: 30ms; }
+  .rc-row:nth-child(3) { animation-delay: 60ms; }
+  .rc-row:nth-child(4) { animation-delay: 90ms; }
+  .rc-row:nth-child(n + 5) { animation-delay: 120ms; }
+
+  @keyframes rc-in-pop {
+    0% { opacity: 0; transform: translateY(8px); }
+    50% { opacity: 1; transform: translateY(0); }
+    75% { transform: scale(1.02); }
+    100% { opacity: 1; transform: none; }
+  }
+  @keyframes rc-in-shake {
+    0% { opacity: 0; transform: translateY(8px); }
+    50% { opacity: 1; transform: translateY(0); }
+    65% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+    100% { opacity: 1; transform: none; }
+  }
+}

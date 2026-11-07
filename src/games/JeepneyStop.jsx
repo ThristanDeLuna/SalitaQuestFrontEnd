@@ -22,6 +22,21 @@ import './JeepneyStop.css';
 // No timer in this game. Shared pieces: useRound, useAudio, RoundGate, ResultsCard, errors.js;
 // the quiz rules live in listenLogic.js. This file only wires them up.
 
+// A small jeepney beside the title, seen from the side. Decoration only.
+function JeepneyIcon() {
+  return (
+    <svg className="jp-icon" viewBox="0 0 40 32" width="40" height="32" aria-hidden="true" focusable="false">
+      <path className="jp-icon-body" d="M4 8h24v6h6l3 4v6H4z" />
+      <path className="jp-icon-line" d="M2 7h28" />
+      <rect className="jp-icon-window" x="7" y="11" width="5" height="5" />
+      <rect className="jp-icon-window" x="14" y="11" width="5" height="5" />
+      <rect className="jp-icon-window" x="21" y="11" width="5" height="5" />
+      <circle cx="11" cy="25" r="3.5" fill="currentColor" />
+      <circle cx="30" cy="25" r="3.5" fill="currentColor" />
+    </svg>
+  );
+}
+
 // ---------- One option: tap it to choose it (you can change your mind before Next) ----------
 function Option({ text, chosen, disabled, onChoose }) {
   return (
@@ -76,7 +91,10 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
 
   const header = (
     <header className="jp-head">
-      <h1>Jeepney stop</h1>
+      <div className="jp-title">
+        <JeepneyIcon />
+        <h1>Jeepney stop</h1>
+      </div>
       <p className="muted">{regionName}</p>
     </header>
   );
