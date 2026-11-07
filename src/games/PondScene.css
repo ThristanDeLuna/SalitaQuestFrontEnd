@@ -1,9 +1,12 @@
 /* The Word Pond scene: one frame holding the bay (PondBanner, pb-) and the pond water with the fish.
    Every class here starts with ps- so it cannot clash.
+   Size: --scene-scale (1, or 1.6 on wide screens) scales the art of the bay and of the water; the fish
+   (the content) are never scaled.
    --art-* colours are fills only: no text sits on them, and every art shape has a 2px var(--ink) outline.
    With reduced motion the art stays, but nothing moves. */
 
 .ps-pond {
+  --scene-scale: 1;
   position: relative;
   background: var(--art-water);
   border: 2px solid var(--ink);
@@ -12,14 +15,22 @@
 
 /* The water under the bay. Its art layer is the only thing clipped here (the bottom corners follow the
    frame: 16 px radius minus the 2 px border). The fish wrapper is never clipped, so focus outlines show. */
+/* The art box is the water divided by the scale, then scaled back up from the top-left corner. */
 .ps-water { position: relative; }
-.ps-art { position: absolute; inset: 0; overflow: hidden; border-radius: 0 0 14px 14px; pointer-events: none; }
+.ps-art {
+  position: absolute; left: 0; top: 0; overflow: hidden; pointer-events: none;
+  width: calc(100% / var(--scene-scale)); height: calc(100% / var(--scene-scale));
+  border-radius: 0 0 calc(14px / var(--scene-scale)) calc(14px / var(--scene-scale));
+  transform: scale(var(--scene-scale)); transform-origin: 0 0;
+}
 .ps-art-piece { position: absolute; display: block; pointer-events: none; }
 
 /* 12 px leaves room for the 3 px focus outline, its 2 px offset and the few px of fish drift.
    On the results there are no fish; the min-height still shows a strip of pond with its pads. */
 .ps-content { position: relative; z-index: 1; padding: 12px; min-height: 48px; }
 
+/* Non-scaling outlines stay 2 px when the art is scaled up. */
+.ps-art-piece :is(ellipse, path) { vector-effect: non-scaling-stroke; }
 .ps-ripple { fill: none; stroke: var(--ink); stroke-width: 2; opacity: 0.3; }
 .ps-pad {
   fill: var(--art-pad); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round;
@@ -32,6 +43,11 @@
 .ps-ripple-b { bottom: 4px; left: 18%; }
 .ps-pad-a { top: -10px; left: -12px; --ps-rest: -20deg; }
 .ps-pad-b { bottom: -12px; right: -8px; --ps-rest: 160deg; }
+
+/* Wide screens: a bigger scene (the bay is taller and all its art 1.6 times larger). */
+@media (min-width: 900px) {
+  .ps-pond { --scene-scale: 1.6; }
+}
 
 @media (prefers-reduced-motion: no-preference) {
   /* A ring grows from 60% to full size and fades out; the two rings are out of step. Scale never

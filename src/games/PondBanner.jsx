@@ -116,21 +116,23 @@ function Banca({ caught, total }) {
 export default function PondBanner({ caught = 0, total = 4 }) {
   return (
     <div className="pb-sky" aria-hidden="true">
-      <Sun />
-      <Hills />
-      <Birds />
-      <div className="pb-sea">
-        <div className="pb-plane">
-          <Wave className="pb-wave-back" />
-          <Wave className="pb-wave-front" />
+      <div className="pb-art">
+        <Sun />
+        <Hills />
+        <Birds />
+        <div className="pb-sea">
+          <div className="pb-plane">
+            <Wave className="pb-wave-back" />
+            <Wave className="pb-wave-front" />
+          </div>
         </div>
+        <Palm />
+        {SWIMMERS.map(([cls, w]) => (
+          <div key={cls} className={`pb-track ${cls}`}><Fish w={w} /></div>
+        ))}
+        <Fish w={24} className="pb-jumper" />
+        <Banca caught={caught} total={total} />
       </div>
-      <Palm />
-      {SWIMMERS.map(([cls, w]) => (
-        <div key={cls} className={`pb-track ${cls}`}><Fish w={w} /></div>
-      ))}
-      <Fish w={24} className="pb-jumper" />
-      <Banca caught={caught} total={total} />
     </div>
   );
 }
