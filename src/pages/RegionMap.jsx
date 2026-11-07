@@ -29,7 +29,13 @@ const PLAYABLE = ['not_started', 'in_progress', 'stamped'];
 function errorText(e) {
   return e.status === 0 ? 'Cannot reach the server.' : 'Something went wrong. Try again.';
 }
-
+// One line per game in the sheet: "40/40 Gold", "30/40 Bronze", or "Not played".
+// The summary sends null for a game never played, and a medal of null when the pass mark was not reached.
+const MEDALS = { gold: 'Gold', silver: 'Silver', bronze: 'Bronze' };
+function gameLine(g) {
+  if (!g) return 'Not played';
+  return g.medal ? `${g.best}/${g.max} ${MEDALS[g.medal]}` : `${g.best}/${g.max}, not passed yet`;
+}
 // The words under the region name in the bottom sheet.
 function sheetText(state, signedIn) {
   if (state === 'coming_soon') return 'Not open for games yet. You can still browse the words.';
@@ -146,6 +152,7 @@ export default function RegionMap() {
 
   const open = (regions || []).find((r) => r.code === selected);
   const openState = open ? states[open.code] : null;
+    const mine = open && user ? summary?.regions?.find((s) => s.code === open.code) : null;   // this player's scores here
 
   return (
     <div onKeyDown={(e) => { if (e.key === 'Escape') setSelected(null); }}>
@@ -171,6 +178,12 @@ export default function RegionMap() {
             </div>
             <p className="rm-state"><span className="chip">{STATES[openState].label}</span> {open.area}</p>
             <p>{sheetText(openState, Boolean(user))}</p>
+                        {user && PLAYABLE.includes(openState) && (
+              <ul className="rm-games">
+                <li><span>Word Pond</span> <strong>{gameLine(mine?.matching)}</strong></li>
+                <li><span>Jeepney stop</span> <strong>{gameLine(mine?.listening)}</strong></li>
+              </ul>
+            )}
             <div className="rm-actions">
               <Link className="btn" to={`/regions/${open.code}`}>Browse words</Link>
               {PLAYABLE.includes(openState) && (

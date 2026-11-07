@@ -45,3 +45,6 @@
 @media (min-width: 600px) {
   .rm-sheet { left: auto; width: 360px; right: 12px; bottom: 12px; border-radius: 6px; }
 }
+/* The two game results in the sheet (signed-in players on an open region) */
+.rm-games { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 4px; }
+.rm-games li { display: flex; justify-content: space-between; gap: 12px; }
