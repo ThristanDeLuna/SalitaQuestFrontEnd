@@ -208,6 +208,7 @@ export default function AdminAudio() {
   const [region, setRegion] = useState('all');  // filter chip
   const [dialog, setDialog] = useState(null);   // { kind: 'upload' | 'delete', row } opens a dialog
   const [playingId, setPlayingId] = useState(null);
+  const [playErr, setPlayErr] = useState('');
   const player = useRef(null);                  // the one <audio> that is playing, if any
 
   useEffect(() => {
@@ -231,6 +232,7 @@ export default function AdminAudio() {
   function togglePlay(row) {
     const wasPlaying = playingId === row.word_id;
     stop();
+    setPlayErr('');
     if (wasPlaying) return;
 
     const audio = new Audio(row.url);
@@ -240,7 +242,7 @@ export default function AdminAudio() {
     audio.addEventListener('ended', finished);
     audio.play().catch(() => {
       finished();
-      setErr(`Could not play the recording for “${row.word}”.`);
+      setPlayErr(`Could not play the recording for “${row.word}”.`);
     });
   }
 
@@ -260,6 +262,7 @@ export default function AdminAudio() {
 
       {note && <p className="banner info" role="status" aria-live="polite">{note}</p>}
       {err && <p className="banner error" role="alert">{err}</p>}
+      {playErr && <p className="banner error" role="alert">{playErr}</p>}
 
       <div className="audio-filters" role="group" aria-label="Show region">
         {[['all', 'All'], ...Object.entries(REGIONS)].map(([code, label]) => (
