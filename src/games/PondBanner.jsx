@@ -2,8 +2,8 @@ import './PondBanner.css';
 
 // PondBanner: the bay above the Word Pond game. Decoration only: it holds no text and no buttons,
 // so the whole banner is the art layer (aria-hidden, ignores taps, clipped to its rounded border).
-// Back to front: the sun with pulsing rays, far hills, a palm on a little island, birds now and then,
-// the sea (two wave layers on a slightly tilted plane, for a 2.5D look), three fish swimming across,
+// Back to front: the sun with pulsing rays, far hills, birds now and then, the sea (two wave layers on
+// a slightly tilted plane, for a 2.5D look), a palm on a little island in the sea, three fish swimming across,
 // one fish that jumps, and a banca (outrigger boat) bobbing with one lantern per meaning.
 // Props: caught (how many meanings hold a fish), total (how many meanings, 4).
 // A lantern lights up once that many fish are caught. It counts catches only, never right or wrong (DEC-56).
@@ -26,8 +26,8 @@ function Sun() {
 function Hills() {
   return (
     <svg className="pb-hills" viewBox="0 0 1000 44" width="1000" height="44" focusable="false">
-      {/* The foot runs 2 px below the box, so its outline is cut off and only the hilltops are outlined. */}
-      <path d="M1 46 V40 Q70 4 150 30 Q240 0 330 34 Q430 8 520 32 Q620 2 720 30 Q830 6 920 32 Q960 18 999 26 V46 Z" />
+      {/* The foot and the left side run outside the box, so they are cut off and only the hilltops are outlined. */}
+      <path d="M-2 46 V40 Q70 4 150 30 Q240 0 330 34 Q430 8 520 32 Q620 2 720 30 Q830 6 920 32 Q960 18 999 26 V46 Z" />
     </svg>
   );
 }
@@ -117,7 +117,6 @@ export default function PondBanner({ caught = 0, total = 4 }) {
     <div className="pb-banner" aria-hidden="true">
       <Sun />
       <Hills />
-      <Palm />
       <Birds />
       <div className="pb-sea">
         <div className="pb-plane">
@@ -125,6 +124,7 @@ export default function PondBanner({ caught = 0, total = 4 }) {
           <Wave className="pb-wave-front" />
         </div>
       </div>
+      <Palm />
       {SWIMMERS.map(([cls, w]) => (
         <div key={cls} className={`pb-track ${cls}`}><Fish w={w} /></div>
       ))}
