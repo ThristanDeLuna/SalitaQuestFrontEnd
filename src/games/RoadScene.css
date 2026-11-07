@@ -6,6 +6,13 @@
    off the right edge. The motion block only adds animation, so with reduced motion nothing moves. */
 
 .rs-scene {
+  /* Shared by the jeepney and the bubble, so the tail always points at the driver at every width:
+     --rs-jeep-x   where the parked jeepney's drawing starts, from the scene's left edge;
+     --rs-driver-x the driver's face in that drawing (cx of .rs-face in RoadScene.jsx);
+     --rs-tail-x   how far in from the bubble's left edge its tail sits. */
+  --rs-jeep-x: 12px;
+  --rs-driver-x: 76px;
+  --rs-tail-x: 40px;
   position: relative;
   min-height: 150px;
   background: var(--info-tint);
@@ -54,7 +61,7 @@
 /* Each lane is as wide as the scene, so translateX(100%) is exactly "past the right edge".
    The wheels (bottom 10 px of the drawing) sit inside the 34 px road. */
 .rs-lane { position: absolute; left: 0; right: 0; bottom: 6px; }
-.rs-jeep { margin-left: 12px; }
+.rs-jeep { margin-left: var(--rs-jeep-x); }
 .rs-gone { transform: translateX(100%); }   /* waiting off the right edge; the art layer clips it */
 
 /* Two paint jobs, so the player can see that a different jeepney has come. */
@@ -71,16 +78,15 @@
 /* Rotate and scale these parts around their own centre, not the drawing's corner. */
 .rs-wheel, .rs-mouth { transform-box: fill-box; transform-origin: center; }
 
-/* ---------- Content: the bubble row above the jeepney ---------- */
+/* ---------- Content: the waves and the bubble, right above the parked jeepney's cab ---------- */
 /* The bottom padding (82 px) keeps the jeepney free: its 62 px drawing + its 6 px lift + the bubble's
-   10 px tail + 4 px of air. So the bubble can never cover it; a taller bubble makes the scene taller instead.
-   Width: on wide cards the row ends near the cab, so the waves sit just ahead of the driver;
-   on a 320 px phone it simply takes the full width. */
+   10 px tail + 4 px of air. So the bubble never covers the driver or the windows; a taller bubble makes
+   the scene taller instead. The left padding puts the tail's tip right over the driver's face:
+   jeepney start + face - tail offset - the bubble's 2 px border - the waves (20 px) and the gap (4 px). */
 .rs-content {
   position: relative; z-index: 1;
-  display: flex; align-items: center; justify-content: flex-end; gap: 4px;
-  width: min(100%, 320px);
-  padding: 12px 12px 82px;
+  display: flex; align-items: center; gap: 4px;
+  padding: 12px 12px 82px calc(var(--rs-jeep-x) + var(--rs-driver-x) - var(--rs-tail-x) - 26px);
 }
 
 .rs-waves { flex: none; display: block; pointer-events: none; }
@@ -88,18 +94,18 @@
 .rs-playing .rs-waves path { opacity: 1; }
 
 .rs-bubble {
-  position: relative; min-width: 0;
+  position: relative; min-width: 0; max-width: 280px;
   padding: 8px; background: var(--surface); color: var(--text);
   border: 2px solid var(--ink); border-radius: 12px;
 }
-/* Tail at the bottom left, pointing down at the cab: an ink triangle with a white one inside it. */
+/* Tail near the bottom left, pointing down at the driver: an ink triangle with a white one inside it. */
 .rs-bubble::before, .rs-bubble::after {
-  content: ''; position: absolute; left: 20px; width: 0; height: 0;
+  content: ''; position: absolute; left: var(--rs-tail-x); width: 0; height: 0;
   border-style: solid; border-color: transparent;
 }
 /* The white triangle is 4 px smaller and 2 px further in, so a 2 px ink edge shows around it. */
 .rs-bubble::before { bottom: -10px; border-width: 10px 10px 0 0; border-top-color: var(--ink); }
-.rs-bubble::after { bottom: -6px; left: 22px; border-width: 6px 6px 0 0; border-top-color: var(--surface); }
+.rs-bubble::after { bottom: -6px; left: calc(var(--rs-tail-x) + 2px); border-width: 6px 6px 0 0; border-top-color: var(--surface); }
 
 @media (prefers-reduced-motion: no-preference) {
   /* Parallax: the road line moves fastest (40 px in 2 s), the street slowly (one block in 60 s),
