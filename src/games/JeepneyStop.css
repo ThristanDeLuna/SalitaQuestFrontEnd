@@ -18,8 +18,6 @@
 .jp-hear { justify-self: start; }
 /* The directions card is the first row of the question card; the card's 12 px gap spaces it. */
 .jp-question > .htp { margin: 0; }
-/* The hint under a disabled Next / Finish. Its 20 px line is kept even when empty, so nothing jumps. */
-.jp-hint { min-height: 20px; margin: 4px 0 0; line-height: 20px; text-align: center; }
 
 /* After Finish: the street sits above the results card, as wide as the card and centred like it. */
 .jp-end-scene { max-width: 480px; margin: 0 auto; }

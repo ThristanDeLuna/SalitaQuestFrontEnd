@@ -179,7 +179,7 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
         )}
       </div>
       {/* The line is always there (empty when the button works), so the button never moves. */}
-      <p id="jp-next-hint" className="muted jp-hint">{blocked && `Pick a meaning to ${last ? 'finish' : 'continue'}.`}</p>
+      <p id="jp-next-hint" className="muted htp-hint">{blocked && `Pick a meaning to ${last ? 'finish' : 'continue'}.`}</p>
     </>
   );
 }

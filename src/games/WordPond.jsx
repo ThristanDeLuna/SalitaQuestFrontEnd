@@ -193,7 +193,7 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
             </button>
           </div>
           {/* The line is always there (empty when Finish works), so the button never moves. */}
-          <p id="wp-finish-hint" className="muted wp-hint">{finishBlocked && `Place all ${total} fish to finish.`}</p>
+          <p id="wp-finish-hint" className="muted htp-hint">{finishBlocked && `Place all ${total} fish to finish.`}</p>
         </div>
       </div>
     </>

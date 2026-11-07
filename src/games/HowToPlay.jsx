@@ -8,6 +8,7 @@ import './HowToPlay.css';
 //   note    optional line under the steps
 //   status  optional live line beside the heading (for example "2 of 4 fish placed"); it is announced
 //           politely when it changes. It counts what the player did, never whether it was right (DEC-56).
+// HowToPlay.css also holds .htp-hint, the reserved hint line the games put under a disabled Finish / Next.
 
 export default function HowToPlay({ title = 'How to play', steps, note, status }) {
   return (

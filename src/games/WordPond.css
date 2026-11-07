@@ -9,8 +9,6 @@
 .wp-icon { flex: none; display: block; color: var(--ink); }
 .wp-icon-fill { fill: var(--info-tint); stroke: currentColor; stroke-width: 2; }
 .wp-label { margin: 8px 0; }
-/* The hint under a disabled Finish. Its 20 px line is kept even when empty, so nothing jumps. */
-.wp-hint { min-height: 20px; margin: 4px 0 0; line-height: 20px; text-align: center; }
 /* Visually hidden, still read by screen readers (index.css has no such utility). */
 .wp-sr {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;

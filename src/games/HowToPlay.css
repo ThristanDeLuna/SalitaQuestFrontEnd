@@ -1,4 +1,5 @@
-/* "How to play" card at the top of each game. Every class starts with htp- so it cannot clash.
+/* "How to play" card at the top of each game, and the hint line under a game's disabled main button.
+   Every class starts with htp- so it cannot clash.
    Text sits on --info-tint (the card) or --surface (the step numbers). Kept compact for phones:
    14 px text on 20 px lines, spacing in multiples of 4. No animation. */
 
@@ -25,6 +26,10 @@
   font-size: 14px; font-weight: 700; line-height: 1;
 }
 .htp-note { margin-top: 4px; color: var(--text-muted); }
+/* The hint under a disabled Finish / Next ("Place all 4 fish to finish."). The games always render it,
+   empty while the button works; its 20 px line is kept even then, so the button never moves. */
+.htp-hint { min-height: 20px; margin: 4px 0 0; line-height: 20px; text-align: center; }
+
 /* Phones: the note is left out to keep the card about 96 px tall; it only repeats what the last step and
    the results pop-up already say. From 600 px there is room for it. */
 @media (max-width: 599px) {
