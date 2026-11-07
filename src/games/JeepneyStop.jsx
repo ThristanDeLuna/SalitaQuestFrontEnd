@@ -104,6 +104,12 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
     return (
       <>
         {header}
+        {/* The street stays above the results: the last jeepney stays parked and says goodbye. */}
+        <div className="jp-end-scene">
+          <RoadScene stopIndex={quiz.index} parked>
+            <p className="jp-thanks">Thanks for riding!</p>
+          </RoadScene>
+        </div>
         <ResultsCard result={result} rows={listeningRows(result.results, round.questions)}
                      onAgain={onAgain} backTo="/" />
       </>

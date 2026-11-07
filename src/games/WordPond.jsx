@@ -124,6 +124,8 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
     return (
       <>
         {header}
+        {/* The bay stays above the results, every lantern lit (all meanings were filled to finish). */}
+        <PondBanner caught={pond.meanings.length} total={pond.meanings.length} />
         <ResultsCard result={result} rows={matchingRows(result.results, round.words)}
                      onAgain={onAgain} backTo="/"
                      next={{ to: `/play/listening/${region}`, label: 'Next: Jeepney stop' }} />

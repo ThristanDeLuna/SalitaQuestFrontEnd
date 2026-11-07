@@ -24,6 +24,10 @@
 .rc-stamp { flex: none; display: block; color: var(--ink); }
 
 @media (prefers-reduced-motion: no-preference) {
+  /* The card rises 24 px into place and fades in under the game's scene. Not a dialog: nothing is trapped. */
+  .rc { animation: rc-rise 350ms ease-out backwards; }
+  @keyframes rc-rise { from { opacity: 0; transform: translateY(24px); } }
+
   .rc-stamp { animation: rc-stamp-in 400ms ease-out; }
   @keyframes rc-stamp-in {
     0% { opacity: 0; transform: scale(0.4); }

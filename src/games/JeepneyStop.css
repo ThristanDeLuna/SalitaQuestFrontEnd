@@ -17,6 +17,10 @@
 .jp-question h2 { margin: 4px 0 0; }
 .jp-hear { justify-self: start; }
 
+/* After Finish: the street sits above the results card, as wide as the card and centred like it. */
+.jp-end-scene { max-width: 480px; margin: 0 auto; }
+.jp-thanks { margin: 0; font-weight: 700; }
+
 .jp-options { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .jp-option {
   width: 100%; min-height: 56px; padding: 8px 16px; text-align: left;
