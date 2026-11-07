@@ -34,6 +34,10 @@ function LilyPad({ className }) {
       {/* Oval centre (22, 18), radii 20 x 16. The two straight edges meet at the centre and
           reach the rim 20 degrees above and below the right-hand side: that is the notch. */}
       <path d="M22 18 L40.8 12.5 A20 16 0 1 0 40.8 23.5 Z" />
+      {/* Light from the top left: a highlight on the upper left, a shade low down (both inside the pad,
+          clear of the notch). */}
+      <ellipse className="ps-hi" cx="14" cy="11" rx="6" ry="3" />
+      <ellipse className="ps-shade" cx="22" cy="27" rx="10" ry="4" />
     </svg>
   );
 }

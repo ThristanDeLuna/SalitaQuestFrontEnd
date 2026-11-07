@@ -21,15 +21,28 @@
 .pb-sky svg { display: block; }
 /* Non-scaling, so the outlines stay 2 px when the bay is scaled up. */
 .pb-sky :is(path, rect, circle, ellipse) {
-  stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke;
+  stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
 }
+/* Light from the top left. Overlays sit inside their shape and have no outline of their own:
+   a highlight (--surface at 50%) on the upper left, a shade (--ink at 15%) on the lower right,
+   and a soft contact shadow (--ink at 18%) on the water or sand under things that stand there. */
+.pb-sky .pb-hi { fill: var(--surface); opacity: 0.5; stroke: none; }
+.pb-sky .pb-shade { fill: var(--ink); opacity: 0.15; stroke: none; }
+.pb-sky .pb-contact { fill: var(--ink); opacity: 0.18; stroke: none; }
+/* Fine detail lines (trunk rings, leaflets, bamboo nodes): thinner, no fill. */
+.pb-sky .pb-detail { fill: none; stroke-width: 1.5; }
 
 /* ---------- Sky ---------- */
-.pb-sun { position: absolute; top: 8px; right: 16px; fill: var(--art-yellow); }
-.pb-hills { position: absolute; left: 0; bottom: 58px; fill: var(--art-pad); }   /* the sea (62 px) hides its foot */
+/* Far layers (sun, hills) are a little see-through, so the near ones stand out. */
+.pb-sun { position: absolute; top: 4px; right: 12px; fill: var(--art-yellow); opacity: 0.9; }
+.pb-sky .pb-glow { fill: none; stroke: var(--art-yellow); opacity: 0.5; }   /* faint rings, not outlines */
+.pb-hills { position: absolute; left: 0; bottom: 58px; fill: var(--art-pad); opacity: 0.8; }   /* the sea (62 px) hides its foot */
 .pb-palm { position: absolute; left: 8px; bottom: 26px; }
 .pb-island { fill: var(--art-yellow); }
 .pb-trunk { fill: var(--accent-text); }
+.pb-coconut { fill: var(--accent-text); }
+.pb-sky .pb-coconut { stroke-width: 1.5; }
 .pb-leaves { fill: var(--art-pad); transform-box: view-box; transform-origin: 38px 28px; }   /* the trunk top */
 .pb-birds path { fill: none; stroke-linecap: round; }
 
@@ -64,7 +77,8 @@
 .pb-banca { position: absolute; left: 44%; bottom: 34px; }
 .pb-hull { fill: var(--art-yellow); }
 .pb-stripe { fill: var(--art-red); }
-.pb-pole { fill: var(--ink); }
+.pb-bamboo { fill: var(--art-pad); }
+.pb-sky .pb-foam { fill: var(--surface); stroke: none; }   /* foam dots under each wave crest */
 .pb-line { fill: none; stroke-linecap: round; }
 .pb-lantern { fill: var(--surface); }
 .pb-lit { fill: var(--art-yellow); }

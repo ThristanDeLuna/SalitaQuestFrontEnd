@@ -10,7 +10,7 @@
 .rs-scene {
   /* Shared by the jeepney and the bubble, so the tail always points at the driver at every width:
      --rs-jeep-x   where the parked jeepney's drawing starts, from the scene's left edge;
-     --rs-driver-x the driver's face in that drawing (cx of .rs-face in RoadScene.jsx);
+     --rs-driver-x the driver's face in that drawing (cx of .rs-face in JeepneyArt.jsx);
      --rs-tail-x   how far in from the bubble's left edge its tail sits. */
   --rs-jeep-x: 12px;
   --rs-driver-x: 76px;
@@ -41,14 +41,24 @@
 .rs-art * { pointer-events: none; }
 .rs-art svg { display: block; }
 
-/* All art outlines: 2 px ink, round joins; non-scaling, so they stay 2 px when the art is scaled up. */
+/* All art outlines: 2 px ink, round joins and caps; non-scaling, so they stay 2 px when the art is scaled up. */
 .rs-art rect, .rs-art path, .rs-art circle, .rs-art ellipse {
-  stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke;
+  stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
 }
+/* Light from the top left. Overlays sit inside their shape and have no outline of their own:
+   a highlight (--surface at 50%) on the upper left, a shade (--ink at 15%) on the lower right,
+   and a soft contact shadow (--ink at 18%) on the ground under things that stand on it. */
+.rs-art .rs-hi { fill: var(--surface); opacity: 0.5; stroke: none; }
+.rs-art .rs-shade { fill: var(--ink); opacity: 0.15; stroke: none; }
+.rs-art .rs-contact { fill: var(--ink); opacity: 0.18; stroke: none; }
+/* Fine detail lines (spokes, crossbars, door line, rack posts): thinner, no fill. */
+.rs-art .rs-detail { fill: none; stroke-width: 1.5; }
 
 /* ---------- Far view (still): the sun and the mountain, standing on the road's top edge ---------- */
-.rs-far { position: absolute; right: 4%; bottom: 34px; }
+.rs-far { position: absolute; right: 4%; bottom: 34px; opacity: 0.75; }   /* far away: softer */
 .rs-sun { fill: var(--art-yellow); }
+.rs-art .rs-glow { fill: none; stroke: var(--art-yellow); opacity: 0.45; }   /* two faint rings round the sun */
 .rs-mountain { fill: var(--art-water-deep); }
 
 /* Each cloud rides a full-width track, so the track can carry it across with a % transform. */
@@ -65,6 +75,7 @@
 .rs-wall { fill: var(--surface); }
 .rs-roof { fill: var(--art-red); }
 .rs-pane { fill: var(--info-tint); }
+.rs-door { fill: var(--accent); }
 .rs-trunk { fill: var(--accent-text); }
 .rs-crown { fill: var(--art-pad); }
 
@@ -83,13 +94,22 @@
 .rs-gone { transform: translateX(100%); }   /* waiting off the right edge; the art layer clips it */
 
 /* Two paint jobs, so the player can see that a different jeepney has come. */
-.rs-paint-a { --rs-paint: var(--art-yellow); --rs-trim: var(--art-red); }
-.rs-paint-b { --rs-paint: var(--art-red); --rs-trim: var(--art-yellow); }
+.rs-paint-a { --rs-paint: var(--art-yellow); }
+.rs-paint-b { --rs-paint: var(--art-red); }
 .rs-body { fill: var(--rs-paint); }
-.rs-stripe { fill: var(--rs-trim); }
-.rs-rack, .rs-bumper, .rs-rim { fill: var(--art-road); }
-.rs-window { fill: var(--surface); }
-.rs-tyre, .rs-bolt { fill: var(--ink); stroke-width: 0; }
+/* The trim: a white band with alternating red and yellow diamonds (no outline: too small for one). */
+.rs-trim { fill: var(--surface); }
+.rs-art .rs-trim-a, .rs-art .rs-trim-b { stroke: none; }
+.rs-trim-a { fill: var(--art-red); }
+.rs-trim-b { fill: var(--art-yellow); }
+.rs-rack { fill: var(--art-road); }
+.rs-window { fill: var(--info-tint); }
+.rs-art .rs-glare { fill: var(--surface); opacity: 0.8; stroke: none; }
+.rs-chrome, .rs-hub { fill: var(--surface); }
+.rs-art .rs-mirror, .rs-art .rs-lamp, .rs-art .rs-hub { stroke-width: 1.5; }
+.rs-mirror { fill: var(--surface); }
+.rs-lamp { fill: var(--art-yellow); }
+.rs-tyre { fill: var(--ink); }
 .rs-face { fill: var(--accent); }
 .rs-cap { fill: var(--ink); }
 .rs-mouth { fill: var(--ink); stroke-width: 0; }

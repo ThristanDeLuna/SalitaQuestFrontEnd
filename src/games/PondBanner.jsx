@@ -1,3 +1,5 @@
+import BancaArt from './BancaArt';
+import PalmArt from './PalmArt';
 import './PondBanner.css';
 
 // PondBanner: the bay at the top of the Word Pond scene (PondScene draws it above the pond water, in the
@@ -6,19 +8,23 @@ import './PondBanner.css';
 // Back to front: the sun with pulsing rays, far hills, birds now and then, the sea (two wave layers on
 // a slightly tilted plane, for a 2.5D look), a palm on a little island in the sea, three fish swimming across,
 // one fish that jumps, and a banca (outrigger boat) bobbing with one lantern per meaning.
+// The palm (PalmArt) and the banca (BancaArt) have their own files. Light comes from the top left.
 // Props: caught (how many meanings hold a fish), total (how many meanings, 4).
 // A lantern lights up once that many fish are caught. It counts catches only, never right or wrong (DEC-56).
 
-// ---------- Sun: a disc and eight rays; the rays pulse ----------
+// ---------- Sun: a disc with a highlight, two faint glow rings and eight rays; the rays pulse ----------
 const RAYS = [0, 45, 90, 135, 180, 225, 270, 315];   // degrees, one ray every 45
+const GLOW_RS = [14, 17];                              // the glow rings, between the disc and the rays
 
 function Sun() {
   return (
-    <svg className="pb-sun" viewBox="0 0 52 52" width="52" height="52" focusable="false">
+    <svg className="pb-sun" viewBox="0 0 60 60" width="60" height="60" focusable="false">
       <g className="pb-rays">
-        {RAYS.map((a) => <path key={a} transform={`rotate(${a} 26 26)`} d="M23 9 L26 2 L29 9 Z" />)}
+        {RAYS.map((a) => <path key={a} transform={`rotate(${a} 30 30)`} d="M27 9 L30 2 L33 9 Z" />)}
       </g>
-      <circle cx="26" cy="26" r="12" />
+      {GLOW_RS.map((r) => <circle key={r} className="pb-glow" cx="30" cy="30" r={r} />)}
+      <circle cx="30" cy="30" r="11" />
+      <circle className="pb-hi" cx="26.5" cy="26.5" r="3.5" />
     </svg>
   );
 }
@@ -29,22 +35,6 @@ function Hills() {
     <svg className="pb-hills" viewBox="0 0 1000 44" width="1000" height="44" focusable="false">
       {/* The foot and the left side run outside the box, so they are cut off and only the hilltops are outlined. */}
       <path d="M-2 46 V40 Q70 4 150 30 Q240 0 330 34 Q430 8 520 32 Q620 2 720 30 Q830 6 920 32 Q960 18 999 26 V46 Z" />
-    </svg>
-  );
-}
-
-// ---------- Palm: a leaning trunk on a sand island; the crown of leaves sways ----------
-function Palm() {
-  return (
-    <svg className="pb-palm" viewBox="0 0 64 100" width="64" height="100" focusable="false">
-      <ellipse className="pb-island" cx="32" cy="92" rx="30" ry="7" />
-      <path className="pb-trunk" d="M26 90 Q28 56 36 28 L41 29 Q35 58 33 90 Z" />
-      <g className="pb-leaves">
-        <path d="M38 28 Q22 14 4 26 Q22 20 38 28 Z" />
-        <path d="M38 28 Q30 6 14 6 Q30 14 38 28 Z" />
-        <path d="M38 28 Q48 4 62 10 Q48 12 38 28 Z" />
-        <path d="M38 28 Q56 20 62 36 Q52 26 38 28 Z" />
-      </g>
     </svg>
   );
 }
@@ -68,14 +58,19 @@ const WAVE_H = 20;
 const WAVE_W = 27 * WAVE_P;         // 1296 px: the widest bay plus one crest, with room for the tilt
 // The top edge: a crest and a trough per period; the band below it is filled. The bottom edge runs 2 px
 // below the box, so only the wavy top is outlined.
-const WAVE_D = `M0 ${WAVE_H + 2} V8 ${Array.from({ length: WAVE_W / WAVE_P }, (_, i) =>
-  `Q${i * WAVE_P + WAVE_P / 4} 1 ${i * WAVE_P + WAVE_P / 2} 8 T${(i + 1) * WAVE_P} 8`).join(' ')} V${WAVE_H + 2} Z`;
+const CRESTS = Array.from({ length: WAVE_W / WAVE_P }, (_, i) => i * WAVE_P);
+const WAVE_D = `M0 ${WAVE_H + 2} V8 ${CRESTS.map((x) =>
+  `Q${x + WAVE_P / 4} 1 ${x + WAVE_P / 2} 8 T${x + WAVE_P} 8`).join(' ')} V${WAVE_H + 2} Z`;
+// Foam: a dot and a smaller one just under each crest top (x + WAVE_P / 4), one path for the whole strip.
+const dot = (x, y, r) => `M${x - r} ${y} a${r} ${r} 0 1 0 ${2 * r} 0 a${r} ${r} 0 1 0 ${-2 * r} 0`;
+const FOAM_D = CRESTS.map((x) => `${dot(x + WAVE_P / 4, 7, 1.5)} ${dot(x + WAVE_P / 4 + 5, 8.5, 1)}`).join(' ');
 
 function Wave({ className }) {
   return (
     <svg className={`pb-wave ${className}`} viewBox={`0 0 ${WAVE_W} ${WAVE_H}`} width={WAVE_W} height={WAVE_H}
          focusable="false">
       <path d={WAVE_D} />
+      <path className="pb-foam" d={FOAM_D} />
     </svg>
   );
 }
@@ -95,24 +90,6 @@ function Fish({ w, className = '' }) {
 // Three swimmers: [class, width]. Smaller ones swim higher and slower, so they look further away.
 const SWIMMERS = [['pb-swim-far', 16], ['pb-swim-mid', 22], ['pb-swim-near', 28]];
 
-// ---------- Banca: hull, red stripe, ink outrigger, two posts holding a string of lanterns ----------
-// Lantern centres [x, y]: each hangs 5 px under the string, which sags from y 8 at the posts to y 15 mid-way.
-const LANTERNS = [[36, 17], [49, 20], [62, 20], [75, 17]];
-
-function Banca({ caught, total }) {
-  return (
-    <svg className="pb-banca" viewBox="0 0 112 52" width="112" height="52" focusable="false">
-      <path className="pb-line" d="M24 34 V6 M88 34 V6 M24 8 Q56 22 88 8" />
-      {LANTERNS.slice(0, total).map(([x, y], i) => (
-        <circle key={x} className={`pb-lantern${i < caught ? ' pb-lit' : ''}`} cx={x} cy={y} r="4" />
-      ))}
-      <rect className="pb-pole" x="2" y="38" width="108" height="3" />
-      <path className="pb-hull" d="M4 26 Q14 34 24 34 H88 Q98 34 108 26 Q100 48 80 50 H32 Q12 48 4 26 Z" />
-      <rect className="pb-stripe" x="20" y="38" width="72" height="4" />
-    </svg>
-  );
-}
-
 export default function PondBanner({ caught = 0, total = 4 }) {
   return (
     <div className="pb-sky" aria-hidden="true">
@@ -126,12 +103,12 @@ export default function PondBanner({ caught = 0, total = 4 }) {
             <Wave className="pb-wave-front" />
           </div>
         </div>
-        <Palm />
+        <PalmArt />
         {SWIMMERS.map(([cls, w]) => (
           <div key={cls} className={`pb-track ${cls}`}><Fish w={w} /></div>
         ))}
         <Fish w={24} className="pb-jumper" />
-        <Banca caught={caught} total={total} />
+        <BancaArt caught={caught} total={total} />
       </div>
     </div>
   );

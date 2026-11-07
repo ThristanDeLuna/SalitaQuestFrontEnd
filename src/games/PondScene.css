@@ -32,6 +32,9 @@
 /* Non-scaling outlines stay 2 px when the art is scaled up. */
 .ps-art-piece :is(ellipse, path) { vector-effect: non-scaling-stroke; }
 .ps-ripple { fill: none; stroke: var(--ink); stroke-width: 2; opacity: 0.3; }
+/* Overlays inside a pad: no outline of their own. */
+.ps-hi { fill: var(--surface); opacity: 0.5; stroke: none; }
+.ps-shade { fill: var(--ink); opacity: 0.15; stroke: none; }
 .ps-pad {
   fill: var(--art-pad); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round;
   transform: rotate(var(--ps-rest));
