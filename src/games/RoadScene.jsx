@@ -1,28 +1,22 @@
 import './RoadScene.css';
 
-// RoadScene: the street scene above each Jeepney stop question. Decoration around one bubble.
-// Back to front: a far mountain and sun (still), clouds, a town street that scrolls slowly, the road
-// with its moving centre line, and two jeepneys that take turns. The stop number's parity says which
-// jeepney is "here" (parked) and which is "gone" (off the right edge). On a new stop they cross: the new
-// one drives in from the left while the old one drives off to the right. Pure CSS classes, no timers.
-// The speech bubble holds the real content (the "Hear the driver" button, or plain text). It only fades
-// in, so a button in it never moves under a finger.
-// Props: stopIndex (0-based stop number), parked (true: no drive-in or drive-off, e.g. on the results),
+// RoadScene: the street scene above each Jeepney stop question. Decoration around one speech bubble.
+// Back to front: a still mountain and sun, clouds, a slowly scrolling street, the road, and two jeepneys
+// that take turns: the stop number's parity says which is "here" (parked) and which is "gone" (off the
+// right edge). On a new stop they cross, by CSS classes alone (no timers). The bubble holds the real
+// content (the "Hear the driver" button, or plain text) and only fades in, so it never moves under a finger.
+// Props: stopIndex (0-based stop number), parked (true: nobody drives, e.g. on the results),
 // playing (true while the sound plays: the driver talks, the waves pulse), children (the bubble content).
 // The art is aria-hidden and ignores taps; only the art layer is clipped, never the bubble.
 
-// ---------- Far view: a sun and a mountain that never move (the slowest parallax layer) ----------
+// ---------- Far view: a sun over a two-peaked mountain; it never moves (the slowest parallax layer) ----------
 function FarView() {
   return (
-    <>
-      <svg className="rs-sun" viewBox="0 0 28 28" width="28" height="28" focusable="false">
-        <circle cx="14" cy="14" r="12" />
-      </svg>
-      <svg className="rs-mountain" viewBox="0 0 200 64" width="200" height="64" focusable="false">
-        {/* Two peaks; the bottom edge runs under the street, so it is never seen. */}
-        <path d="M1 64 L58 16 L90 40 L126 6 L199 64 Z" />
-      </svg>
-    </>
+    <svg className="rs-far" viewBox="0 0 200 110" width="200" height="110" focusable="false">
+      <circle className="rs-sun" cx="180" cy="16" r="12" />
+      {/* The foot stands on the road's top edge. */}
+      <path className="rs-mountain" d="M1 110 L58 62 L90 86 L126 52 L199 110 Z" />
+    </svg>
   );
 }
 
@@ -40,31 +34,33 @@ function Cloud({ className }) {
 
 // ---------- Street: one block of houses and a tree, repeated so the strip loops seamlessly ----------
 const BLOCK_W = 260;               // one block; the strip moves left by exactly this, then starts over
-const STREET_H = 44;               // the tallest house (40) plus its roof peak fits in this
 const BLOCKS = [0, 1, 2].map((i) => i * BLOCK_W);   // 780 px: the widest scene (about 490) + one block
-// Houses as [x, width, wall height]; each gets a red roof and one window.
-const HOUSES = [[8, 44, 26], [70, 56, 20], [188, 48, 30]];
+const STREET_W = BLOCKS.length * BLOCK_W;
+const STREET_H = 44;               // the tallest wall (30) + its roof (10) + room for the outline
+const ROOF_RISE = 10;              // roof peak above the wall top
+const HOUSES = [[8, 44, 26], [70, 56, 20], [188, 48, 30]];   // [x, width, wall height]
+const TREE_X = 156;                // the tree stands in the gap between the 2nd and 3rd house
 
 function House({ x, w, h }) {
   const top = STREET_H - h;
   return (
     <>
       <rect className="rs-wall" x={x} y={top} width={w} height={h} />
-      <path className="rs-roof" d={`M${x - 3} ${top} L${x + w / 2} ${top - 10} L${x + w + 3} ${top} Z`} />
+      <path className="rs-roof" d={`M${x - 3} ${top} L${x + w / 2} ${top - ROOF_RISE} L${x + w + 3} ${top} Z`} />
       <rect className="rs-pane" x={x + w / 2 - 6} y={top + 6} width="12" height="10" />
     </>
   );
 }
 
 function Street() {
-  const width = BLOCKS.length * BLOCK_W;
   return (
-    <svg className="rs-street" viewBox={`0 0 ${width} ${STREET_H}`} width={width} height={STREET_H} focusable="false">
+    <svg className="rs-street" viewBox={`0 0 ${STREET_W} ${STREET_H}`} width={STREET_W} height={STREET_H}
+         focusable="false">
       {BLOCKS.map((bx) => (
         <g key={bx} transform={`translate(${bx} 0)`}>
           {HOUSES.map(([x, w, h]) => <House key={x} x={x} w={w} h={h} />)}
-          <rect className="rs-trunk" x="153" y={STREET_H - 16} width="6" height="16" />
-          <circle className="rs-crown" cx="156" cy={STREET_H - 26} r="12" />
+          <rect className="rs-trunk" x={TREE_X - 3} y={STREET_H - 16} width="6" height="16" />
+          <circle className="rs-crown" cx={TREE_X} cy={STREET_H - 26} r="12" />
         </g>
       ))}
     </svg>

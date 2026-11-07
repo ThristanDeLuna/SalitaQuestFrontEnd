@@ -21,9 +21,10 @@
 /* All art outlines: 2 px ink, round joins. */
 .rs-art rect, .rs-art path, .rs-art circle, .rs-art ellipse { stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
 
-/* ---------- Far view (still): the sun high on the right, the mountain standing on the street line ---------- */
-.rs-sun { position: absolute; top: 12px; right: 16px; fill: var(--art-yellow); }
-.rs-mountain { position: absolute; right: 8%; bottom: 34px; fill: var(--art-water-deep); }
+/* ---------- Far view (still): the sun and the mountain, standing on the road's top edge ---------- */
+.rs-far { position: absolute; right: 4%; bottom: 34px; }
+.rs-sun { fill: var(--art-yellow); }
+.rs-mountain { fill: var(--art-water-deep); }
 
 /* Each cloud rides a full-width track, so the track can carry it across with a % transform. */
 .rs-cloud-track { position: absolute; left: 0; right: 0; }
