@@ -15,11 +15,12 @@ import Passport from './passport/Passport';        // C: Passport
 import JeepneyStop from './games/JeepneyStop';     // C: Jeepney stop listening game
 import NotFound from './pages/NotFound';
 import { canSuggest, isAdmin, isSignedIn } from './auth/roles';
+import AdminWords from './pages/AdminWords';         // B: Admin words
 
 // Routes follow the site map (DEC-38). Owners replace the element of their own route, not the route itself.
 // 'approvals' (D) and 'audio' (C) now have their own routes below, so they are no longer in this list.
 const ADMIN_PAGES = [
-  ['words', 'Admin: words', 'B'],
+ 
   ['regions', 'Admin: regions', 'B'],
 ];
 
@@ -50,6 +51,7 @@ export default function App() {
           <Route index element={<Navigate to="approvals" replace />} />
           <Route path="approvals" element={<AdminPending />} />
           <Route path="audio" element={<AdminAudio />} />
+                    <Route path="words" element={<AdminWords />} />
           {ADMIN_PAGES.map(([path, title, owner]) => (
             <Route key={path} path={path} element={<Placeholder title={title} owner={owner} />} />
           ))}
