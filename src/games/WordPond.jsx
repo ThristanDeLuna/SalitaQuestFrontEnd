@@ -148,32 +148,40 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
       )}
       {audio.failed && <p className="muted" role="status">Could not play that sound.</p>}
 
-      <h2 className="wp-label">Meanings</h2>
-      <ul className="wp-meanings">
-        {pond.meanings.map((m) => (
-          <MeaningRow key={m} meaning={m} selected={pond.selected === m}
-                      word={wordOf(fishForMeaning(pond, m))}
-                      onSelect={() => dispatch({ type: 'select', meaning: m })} />
-        ))}
-      </ul>
+      {/* Two blocks in reading order: meanings, then the pond and Finish. On wide screens they sit side by
+          side (WordPond.css); the order of the page, and so the Tab order, is the same at every width. */}
+      <div className="wp-play">
+        <div className="wp-col-meanings">
+          <h2 className="wp-label">Meanings</h2>
+          <ul className="wp-meanings">
+            {pond.meanings.map((m) => (
+              <MeaningRow key={m} meaning={m} selected={pond.selected === m}
+                          word={wordOf(fishForMeaning(pond, m))}
+                          onSelect={() => dispatch({ type: 'select', meaning: m })} />
+            ))}
+          </ul>
+        </div>
 
-      {/* The heading stays for screen readers; on screen the scene itself says "pond". */}
-      <h2 className="wp-sr">Fish in the pond</h2>
-      {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong. */}
-      <PondScene caught={caughtWordIds(pond).length} total={pond.meanings.length}>
-        <ul className="wp-pond">
-          {round.words.map((f) => (
-            <Fish key={f.word_id} fish={f} onMeaning={meaningOf(f.word_id)} disabled={sending}
-                  playing={f.audio_url !== null && audio.playingUrl === f.audio_url}
-                  onTap={() => tapFish(f)} />
-          ))}
-        </ul>
-      </PondScene>
+        <div className="wp-col-pond">
+          {/* The heading stays for screen readers; on screen the scene itself says "pond". */}
+          <h2 className="wp-sr">Fish in the pond</h2>
+          {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong. */}
+          <PondScene caught={caughtWordIds(pond).length} total={pond.meanings.length}>
+            <ul className="wp-pond">
+              {round.words.map((f) => (
+                <Fish key={f.word_id} fish={f} onMeaning={meaningOf(f.word_id)} disabled={sending}
+                      playing={f.audio_url !== null && audio.playingUrl === f.audio_url}
+                      onTap={() => tapFish(f)} />
+              ))}
+            </ul>
+          </PondScene>
 
-      <div className="actions">
-        <button type="button" className="btn primary" disabled={!canFinish(pond) || sending} onClick={finish}>
-          {sending ? 'Checking...' : 'Finish'}
-        </button>
+          <div className="actions">
+            <button type="button" className="btn primary" disabled={!canFinish(pond) || sending} onClick={finish}>
+              {sending ? 'Checking...' : 'Finish'}
+            </button>
+          </div>
+        </div>
       </div>
     </>
   );

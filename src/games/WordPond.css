@@ -51,6 +51,16 @@
   .wp-pond { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
+/* Wide screens: meanings on the left (40%), the pond with its fish and Finish on the right (60%), so the
+   whole round fits one screen. The page column (main, max 960 px) comes from index.css and is not changed.
+   The meanings stack in one column there (the left column is narrow); the fish go back to two per row. */
+@media (min-width: 900px) {
+  .wp-play { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 24px; align-items: start; }
+  .wp-meanings { grid-template-columns: minmax(0, 1fr); margin-bottom: 0; }
+  .wp-pond { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wp-col-pond { padding-top: 8px; }   /* lines the scene up with the "Meanings" heading's top margin */
+}
+
 /* The same pop for every fish and meaning: it only says "that registered", never right or wrong (DEC-56). */
 @media (prefers-reduced-motion: no-preference) {
   .wp-selected, .wp-fish-caught, .wp-caught, .wp-on { animation: wp-pop 200ms ease-out; }

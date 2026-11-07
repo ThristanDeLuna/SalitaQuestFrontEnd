@@ -35,10 +35,14 @@
 @media (min-width: 600px) {
   .jp-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-/* Wide screens: a wider card, so the bigger street (RoadScene's --scene-scale) has room. The page column
-   itself (main, max 960 px) comes from index.css and is not changed here. */
+/* Wide screens: the card takes the whole page column (main, max 960 px, from index.css, not changed here)
+   and becomes two columns: the street on the left, the question and options on the right. Only the
+   placement changes; the order of the page, and so the Tab order, stays the same. */
 @media (min-width: 900px) {
-  .jp-question { max-width: 720px; }
+  .jp-question { max-width: none; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; align-content: start; }
+  .jp-question > .rs-scene { grid-column: 1; grid-row: 1 / span 4; align-self: start; }
+  .jp-question > :not(.rs-scene) { grid-column: 2; }
+  .jp-options { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* The same pop for every option: it only says "that registered", never right or wrong (DEC-56). */
