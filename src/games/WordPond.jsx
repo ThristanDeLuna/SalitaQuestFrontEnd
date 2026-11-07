@@ -158,7 +158,7 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
           {/* Directions first, then the controls. The steps match pondLogic: the next empty meaning is
               chosen for you after each catch, and catching a placed fish again moves it. */}
           <HowToPlay steps={['Tap a meaning.', 'Tap the fish with the matching word.',
-                             `Place all ${total} fish, then press Finish.`]}
+                             `Fill all ${total} meanings, then press Finish.`]}
                      note="You see your results at the end." status={`${placed} of ${total} fish placed`}
                      message={audio.failed ? 'Could not play that sound.' : (audio.playingUrl ? 'Playing...' : '')} />
           <h2 className="wp-label">Meanings</h2>
@@ -192,7 +192,7 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
             </button>
           </div>
           {/* The line is always there (empty when Finish works), so the button never moves. */}
-          <p id="wp-finish-hint" className="muted htp-hint">{finishBlocked && `Place all ${total} fish to finish.`}</p>
+          <p id="wp-finish-hint" className="muted htp-hint">{finishBlocked && `Fill all ${total} meanings to finish.`}</p>
         </div>
       </div>
     </>

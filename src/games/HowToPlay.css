@@ -25,9 +25,9 @@
   background: var(--surface); color: var(--ink); border: 1px solid var(--ink);
   font-size: 14px; font-weight: 700; line-height: 1;
 }
-.htp-note { margin-top: 4px; color: var(--text-muted); }
-/* The reserved line for a game's status message: one 20 px line even when empty (costs 24 px with its gap). */
-.htp-message { min-height: 20px; margin-top: 4px; font-weight: 700; color: var(--ink); }
+.htp-note { color: var(--text-muted); }
+/* The reserved line for a game's status message: one 20 px line even when empty (it costs those 20 px). */
+.htp-message { min-height: 20px; font-weight: 700; color: var(--ink); }
 /* The hint under a disabled Finish / Next ("Place all 4 fish to finish."). The games always render it,
    empty while the button works; its 20 px line is kept even then, so the button never moves. */
 .htp-hint { min-height: 20px; margin: 4px 0 0; line-height: 20px; text-align: center; }

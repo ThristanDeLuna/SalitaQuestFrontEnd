@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import './HowToPlay.css';
 
 // HowToPlay: a small "How to play" card at the top of a game, so a first-time player sees at once what to
@@ -14,10 +15,11 @@ import './HowToPlay.css';
 // HowToPlay.css also holds .htp-hint, the reserved hint line the games put under a disabled Finish / Next.
 
 export default function HowToPlay({ title = 'How to play', steps, note, status, message }) {
+  const titleId = useId();   // unique per card, so two cards on one page would never share an id
   return (
-    <section className="htp" aria-labelledby="htp-title">
+    <section className="htp" aria-labelledby={titleId}>
       <div className="htp-head">
-        <h2 id="htp-title" className="htp-title">{title}</h2>
+        <h2 id={titleId} className="htp-title">{title}</h2>
         {status && <p className="htp-status" aria-live="polite">{status}</p>}
       </div>
       <ol className="htp-steps">
