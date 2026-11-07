@@ -8,9 +8,12 @@ import './HowToPlay.css';
 //   note    optional line under the steps
 //   status  optional live line beside the heading (for example "2 of 4 fish placed"); it is announced
 //           politely when it changes. It counts what the player did, never whether it was right (DEC-56).
+//   message optional short game message ("Playing...", "Could not play that sound.") in a reserved line
+//           (role="status"). The line is always there, empty when there is nothing to say, so a message
+//           appearing or going away never moves the game below the card.
 // HowToPlay.css also holds .htp-hint, the reserved hint line the games put under a disabled Finish / Next.
 
-export default function HowToPlay({ title = 'How to play', steps, note, status }) {
+export default function HowToPlay({ title = 'How to play', steps, note, status, message }) {
   return (
     <section className="htp" aria-labelledby="htp-title">
       <div className="htp-head">
@@ -21,6 +24,7 @@ export default function HowToPlay({ title = 'How to play', steps, note, status }
         {steps.map((step) => <li key={step}>{step}</li>)}
       </ol>
       {note && <p className="htp-note">{note}</p>}
+      {message !== undefined && <p className="htp-message" role="status">{message}</p>}
     </section>
   );
 }

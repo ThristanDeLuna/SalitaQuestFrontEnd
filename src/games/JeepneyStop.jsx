@@ -144,7 +144,8 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
         <HowToPlay title={`How to play: ${quiz.questions.length} questions`}
                    steps={['Press Hear the driver and listen.', 'Tap the meaning of the word you heard.',
                            'Press Next. At the end, press Finish.']}
-                   note="You can hear each word again. Your results come after Finish." />
+                   note="You can hear each word again. Your results come after Finish."
+                   message={audio.failed ? 'Could not play that sound.' : (playing ? 'Playing...' : '')} />
         {/* quiz.index (0 = first question) picks which of the two jeepneys is at the stop. */}
         <RoadScene stopIndex={quiz.index} playing={playing}>
           {question.audio_url ? (
@@ -155,8 +156,6 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
             <p className="muted">The sound for this question is not available.</p>
           )}
         </RoadScene>
-        {playing && <p className="muted" role="status">Playing...</p>}
-        {audio.failed && <p className="muted" role="status">Could not play that sound.</p>}
 
         <h2>What does the driver's word mean?</h2>
         <ul className="jp-options">

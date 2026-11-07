@@ -42,7 +42,7 @@
    placement changes; the order of the page, and so the Tab order, stays the same. */
 @media (min-width: 900px) {
   .jp-question { max-width: none; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; align-content: start; }
-  .jp-question > .rs-scene { grid-column: 1; grid-row: 1 / span 5; align-self: start; }   /* beside all the rest */
+  .jp-question > .rs-scene { grid-column: 1; grid-row: 1 / span 3; align-self: start; }   /* beside all the rest */
   .jp-question > :not(.rs-scene) { grid-column: 2; }
 }
 

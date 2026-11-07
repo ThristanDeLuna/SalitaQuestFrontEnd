@@ -44,6 +44,9 @@
 }
 .wp-fish strong { overflow-wrap: anywhere; }
 .wp-fish-caught { background: var(--surface); border-style: dashed; }
+/* The fish whose word is playing: an inset ink ring, which takes no room (the words "Playing..." are in
+   the How to play card's reserved status line, so no fish grows while it plays). */
+.wp-fish-playing { box-shadow: inset 0 0 0 2px var(--ink); }
 .wp-fish[disabled] { opacity: 0.6; cursor: not-allowed; }
 
 /* The catch twinkle: art beside the fish's top right corner, above the button, never in the way of a tap.

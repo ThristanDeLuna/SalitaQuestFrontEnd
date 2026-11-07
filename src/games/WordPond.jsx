@@ -58,11 +58,10 @@ function Fish({ fish, onMeaning, playing, disabled, onTap }) {
     <li className="wp-fish-spot">
       {/* The key replays the twinkle each time this fish lands on a (different) meaning. */}
       {onMeaning && <CatchSparkle key={onMeaning} />}
-      <button type="button" className={`wp-fish${onMeaning ? ' wp-fish-caught' : ''}`}
+      <button type="button" className={`wp-fish${onMeaning ? ' wp-fish-caught' : ''}${playing ? ' wp-fish-playing' : ''}`}
               disabled={disabled} onClick={onTap}>
         <strong>{fish.word}</strong>
         {onMeaning && <span className="muted">on: {onMeaning}</span>}
-        {playing && <span className="muted">playing</span>}
       </button>
     </li>
   );
@@ -151,7 +150,6 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
           {errorMessage(errKind)}{errKind === 'invalid' && ` (${submitErr.message})`}
         </p>
       )}
-      {audio.failed && <p className="muted" role="status">Could not play that sound.</p>}
 
       {/* Two blocks in reading order: meanings, then the pond and Finish. On wide screens they sit side by
           side (WordPond.css); the order of the page, and so the Tab order, is the same at every width. */}
@@ -161,7 +159,8 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
               chosen for you after each catch, and catching a placed fish again moves it. */}
           <HowToPlay steps={['Tap a meaning.', 'Tap the fish with the matching word.',
                              `Place all ${total} fish, then press Finish.`]}
-                     note="You see your results at the end." status={`${placed} of ${total} fish placed`} />
+                     note="You see your results at the end." status={`${placed} of ${total} fish placed`}
+                     message={audio.failed ? 'Could not play that sound.' : (audio.playingUrl ? 'Playing...' : '')} />
           <h2 className="wp-label">Meanings</h2>
           <ul className="wp-meanings">
             {pond.meanings.map((m) => (
