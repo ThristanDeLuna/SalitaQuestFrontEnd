@@ -18,10 +18,14 @@ const WIN_W = 20;
 const WIN_H = 14;
 const TRIM_XS = Array.from({ length: 14 }, (_, i) => 12 + i * 8);   // diamond centres, every 8 px
 const DIAMOND = 2.5;                  // half the width of one trim diamond
+const TRIM_Y = 33;                    // the white trim band: top edge and height
+const TRIM_H = 8;
+const TRIM_MID = TRIM_Y + TRIM_H / 2; // the diamonds sit on the band's centre line
 
 // One path of diamonds: every other one, starting at `from`, so the two colours alternate.
 const diamonds = (from) => TRIM_XS.filter((_, i) => i % 2 === from)
-  .map((x) => `M${x} ${37 - DIAMOND} L${x + DIAMOND} 37 L${x} ${37 + DIAMOND} L${x - DIAMOND} 37 Z`).join(' ');
+  .map((x) => `M${x} ${TRIM_MID - DIAMOND} L${x + DIAMOND} ${TRIM_MID} L${x} ${TRIM_MID + DIAMOND} L${x - DIAMOND} ${TRIM_MID} Z`)
+  .join(' ');
 
 // A diagonal glare across each window, kept inside the glass.
 const GLARE = WINDOWS.map((x) => `M${x + 3} ${WIN_Y + 12} L${x + 10} ${WIN_Y + 2} H${x + 14} L${x + 7} ${WIN_Y + 12} Z`).join(' ');
@@ -54,7 +58,7 @@ export default function JeepneyArt({ className }) {
         <path className="rs-body" d="M4 12 H96 V28 H112 Q124 28 124 40 V48 H4 Z" />
         <path className="rs-hi" d="M8 15 H92 V18 H8 Z" />
         <path className="rs-shade" d="M6 42 H122 V46 H6 Z" />
-        <rect className="rs-trim" x="4" y="33" width="120" height="8" />
+        <rect className="rs-trim" x="4" y={TRIM_Y} width="120" height={TRIM_H} />
         <path className="rs-trim-a" d={diamonds(0)} />
         <path className="rs-trim-b" d={diamonds(1)} />
         {WINDOWS.map((x) => <rect key={x} className="rs-window" x={x} y={WIN_Y} width={WIN_W} height={WIN_H} />)}

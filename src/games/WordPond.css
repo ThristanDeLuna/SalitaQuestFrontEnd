@@ -51,7 +51,7 @@
    At rest (and with reduced motion) it is invisible; the motion block flashes it once. */
 .wp-fish-spot { position: relative; }
 .wp-sparkle {
-  position: absolute; top: -8px; right: 8px; z-index: 1; display: block; pointer-events: none; opacity: 0;
+  position: absolute; top: -14px; right: 8px; z-index: 1; display: block; pointer-events: none; opacity: 0;
   stroke: var(--ink); stroke-width: 2; stroke-linecap: round; fill: var(--art-yellow);
 }
 
@@ -71,7 +71,7 @@
 
 /* The same pop for every fish and meaning: it only says "that registered", never right or wrong (DEC-56). */
 @media (prefers-reduced-motion: no-preference) {
-  .wp-selected, .wp-fish-caught, .wp-caught, .wp-on { animation: wp-pop 200ms ease-out; }
+  .wp-selected, .wp-fish-caught, .wp-caught { animation: wp-pop 200ms ease-out; }
   .wp-caught { transform-origin: left center; }
   @keyframes wp-pop { 50% { transform: scale(1.04); } }
 
@@ -87,9 +87,9 @@
      Only a slide (1.5 px sideways, 0.5 px up and down), no tilt: a tilt moves the corners further the
      bigger the pill is, and a fish caught on a long meaning can be several lines tall. With a slide every
      point moves the same: at most about 1.6 px from the middle and about 3.2 px end to end, inside the
-     4 px limit at any size. Only the first 4 fish drift (the bay in the same scene has its own motion, and the
+     4 px limit at any size. Only the first 3 fish drift (the bay in the same scene has its own motion, and the
      whole screen stays within the animation budget); three speeds and delays so they never move together. */
-  .wp-pond > li:nth-child(-n + 4) { animation: wp-drift 4s ease-in-out infinite alternate; }
+  .wp-pond > li:nth-child(-n + 3) { animation: wp-drift 4s ease-in-out infinite alternate; }
   .wp-pond > li:nth-child(3n + 2) { animation-duration: 3s; animation-delay: -1s; }
   .wp-pond > li:nth-child(3n) { animation-duration: 5s; animation-delay: -2.5s; }
   @keyframes wp-drift {

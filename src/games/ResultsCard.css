@@ -2,8 +2,9 @@
    Colours come from the :root tokens in src/index.css; words always carry the meaning.
    The backdrop is index.css's .overlay (fixed, z-index 20 above the top bar and tabs, --ink at 50%). */
 
-/* The overlay keeps scrolling inside itself: a swipe on it never scrolls the page behind. */
-.rc-overlay { overscroll-behavior: contain; padding: 16px; }
+/* The overlay is its own scroll box (with nothing to scroll), so with overscroll-behavior: contain a swipe or
+   wheel on the dimmed backdrop does not scroll the page behind. */
+.rc-overlay { overflow: auto; overscroll-behavior: contain; padding: 16px; }
 
 /* The card: as wide as a phone allows (max 480 px), never taller than the screen. When the answers are
    open it scrolls inside itself, so the buttons below them stay reachable. */
@@ -19,7 +20,8 @@
   background: var(--info-tint); border-bottom: 2px solid var(--ink);
   clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%, 12px 50%);
 }
-.rc-ribbon:focus { outline: none; }   /* focused only by the script on open, never by Tab */
+/* Focused by the script on open: no ring after a tap, but keyboard users still see where they are. */
+.rc-ribbon:focus:not(:focus-visible) { outline: none; }
 
 .rc-score { font: 700 40px/1.2 var(--serif); color: var(--ink); }
 .rc-medal { font-weight: 700; color: var(--ink); }
