@@ -1,0 +1,50 @@
+import './PondScene.css';
+
+// PondScene: the pond band the Word Pond fish swim in. Decoration only.
+// It draws ripple rings and two lily pads on an art layer behind the fish; the fish list
+// is passed in as children and sits on top, so every button keeps working as before.
+// Props: children (the fish list).
+// The art layer is aria-hidden and ignores taps; only it is clipped, so focus outlines are never cut.
+
+// One ripple ring, drawn at its full size; CSS scales it down and fades it in a slow pulse.
+const RIPPLE_W = 56;
+const RIPPLE_H = 24;
+
+function Ripple({ className }) {
+  return (
+    <svg className={`ps-art-piece ps-ripple ${className}`} viewBox={`0 0 ${RIPPLE_W} ${RIPPLE_H}`}
+         width={RIPPLE_W} height={RIPPLE_H} focusable="false">
+      {/* Inset by 1 so the 2px outline stays inside the box. */}
+      <ellipse cx={RIPPLE_W / 2} cy={RIPPLE_H / 2} rx={RIPPLE_W / 2 - 1} ry={RIPPLE_H / 2 - 1} />
+    </svg>
+  );
+}
+
+// One lily pad: an oval with a wedge cut out towards the right, like a real pad.
+const PAD_W = 44;
+const PAD_H = 36;
+
+function LilyPad({ className }) {
+  return (
+    <svg className={`ps-art-piece ps-pad ${className}`} viewBox={`0 0 ${PAD_W} ${PAD_H}`}
+         width={PAD_W} height={PAD_H} focusable="false">
+      {/* Oval centre (22, 18), radii 20 x 16. The two straight edges meet at the centre and
+          reach the rim 20 degrees above and below the right-hand side: that is the notch. */}
+      <path d="M22 18 L40.8 12.5 A20 16 0 1 0 40.8 23.5 Z" />
+    </svg>
+  );
+}
+
+export default function PondScene({ children }) {
+  return (
+    <div className="ps-pond">
+      <div className="ps-art" aria-hidden="true">
+        <Ripple className="ps-ripple-a" />
+        <Ripple className="ps-ripple-b" />
+        <LilyPad className="ps-pad-a" />
+        <LilyPad className="ps-pad-b" />
+      </div>
+      <div className="ps-content">{children}</div>
+    </div>
+  );
+}

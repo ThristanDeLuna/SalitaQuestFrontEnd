@@ -45,4 +45,17 @@
   .wp-selected, .wp-fish-caught, .wp-caught, .wp-on { animation: wp-pop 200ms ease-out; }
   .wp-caught { transform-origin: left center; }
   @keyframes wp-pop { 50% { transform: scale(1.04); } }
+
+  /* The fish drift on the water. The drift is on the <li>, so it never fights the button's pop.
+     1.5 px sideways plus 1 degree of tilt: on the widest pill (about 295 px, desktop) an end moves
+     about 2.6 px, so no fish is ever more than about 3 px from where it was tapped. 2 degrees would
+     move it about 5 px, past the 4 px limit. Only the first 8 fish drift (8 + the 4 pond pieces = 12 at most);
+     three speeds and delays so they never move together. */
+  .wp-pond > li:nth-child(-n + 8) { animation: wp-drift 4s ease-in-out infinite alternate; }
+  .wp-pond > li:nth-child(3n + 2) { animation-duration: 3s; animation-delay: -1s; }
+  .wp-pond > li:nth-child(3n) { animation-duration: 5s; animation-delay: -2.5s; }
+  @keyframes wp-drift {
+    from { transform: translateX(-1.5px) rotate(-1deg); }
+    to { transform: translateX(1.5px) rotate(1deg); }
+  }
 }
