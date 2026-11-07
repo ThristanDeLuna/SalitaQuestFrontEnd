@@ -1,0 +1,15 @@
+/* Polish for Suggest a word and Admin Pending (D's screens).
+   Rules from A: colors only from index.css variables, spacing in steps of 4 px,
+   no changes to the shared .card, .list or .btn classes. */
+
+/* 1. Show the region code as a name: "cebuano" looks like "Cebuano" (text only, no logic). */
+.sg-region { text-transform: capitalize; }
+
+/* 2. Tighter text inside the cards (only cards that also have .sg-card). */
+.sg-card p { margin: 4px 0; }
+
+/* 3. Status chip and Withdraw button in one row with a gap between them. */
+.sg-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+/* 4. Approve and Reject share the card width equally (each is still 44 px high). */
+.sg-actions .btn { flex: 1; }
