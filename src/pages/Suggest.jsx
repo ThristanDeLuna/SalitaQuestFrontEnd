@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import './Suggest.css';
 import { api } from '../api/client';
 
 // Region codes are what the API stores; labels are what people read (DEC-61: "Cebuano").
@@ -114,14 +115,17 @@ function MyWords({ reload, onChange }) {
   return (
     <ul className="list">
       {rows.map((r) => (
-        <li key={r.id} className="card">
-          <strong>{r.word}</strong> <span className="muted">({r.region_code})</span>
+        <li key={r.id} className="card sg-card">
+          <strong>{r.word}</strong> <span className="muted sg-region">({r.region_code})</span>
           <p>{r.suggested_translation}</p>
-          <span className="chip">{r.status}</span>
+          {/* chip and Withdraw sit in one row with a gap (Suggest.css) */}
+          <div className="sg-row">
+            <span className="chip">{r.status}</span>
+            {r.status === 'pending' && (
+              <button type="button" className="btn" onClick={() => withdraw(r.id)}>Withdraw</button>
+            )}
+          </div>
           {r.status === 'rejected' && r.reject_reason && <p className="muted">Reason: {r.reject_reason}</p>}
-          {r.status === 'pending' && (
-            <button type="button" className="btn" onClick={() => withdraw(r.id)}>Withdraw</button>
-          )}
         </li>
       ))}
     </ul>

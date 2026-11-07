@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import './Suggest.css';
 import { api } from '../api/client';
 
 // Friendly text for the errors the API can answer (the server is the real check).
@@ -107,12 +108,12 @@ export default function AdminPending() {
 
       <ul className="list">
         {(rows || []).map((r) => (
-          <li key={r.id} className="card">
-            <strong>{r.word}</strong> <span className="muted">({r.region_code})</span>
+          <li key={r.id} className="card sg-card">
+            <strong>{r.word}</strong> <span className="muted sg-region">({r.region_code})</span>
             <p>{r.suggested_translation}</p>
             {r.mymemory_text && <p className="muted">Machine suggestion: {r.mymemory_text}</p>}
             <p className="muted">From {r.user_name || r.user_email}</p>
-            <div className="actions">
+            <div className="actions sg-actions">
               <button type="button" className="btn primary" onClick={() => approve(r)}
                       disabled={approvingId !== null}>
                 {approvingId === r.id ? 'Approving…' : 'Approve'}
