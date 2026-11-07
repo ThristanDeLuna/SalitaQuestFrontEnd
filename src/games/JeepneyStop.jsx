@@ -103,12 +103,15 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
   if (result) {
     return (
       <>
-        {header}
-        {/* The street stays above the results: the last jeepney stays parked and says goodbye. */}
-        <div className="jp-end-scene">
-          <RoadScene stopIndex={quiz.index} parked>
-            <p className="jp-thanks">Thanks for riding!</p>
-          </RoadScene>
+        {/* The street stays visible, dimmed behind the results pop-up: the last jeepney stays parked and
+            says goodbye. It is inert while the pop-up is open, so Tab and screen readers skip it. */}
+        <div inert>
+          {header}
+          <div className="jp-end-scene">
+            <RoadScene stopIndex={quiz.index} parked>
+              <p className="jp-thanks">Thanks for riding!</p>
+            </RoadScene>
+          </div>
         </div>
         <ResultsCard result={result} rows={listeningRows(result.results, round.questions)}
                      onAgain={onAgain} backTo="/" />

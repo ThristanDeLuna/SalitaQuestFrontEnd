@@ -1,12 +1,40 @@
-/* Results card shared by both games. Every class starts with rc- so it cannot clash.
-   Colours come from the :root tokens in src/index.css; words always carry the meaning. */
+/* Results card shared by both games, shown as a pop-up. Every class starts with rc- so it cannot clash.
+   Colours come from the :root tokens in src/index.css; words always carry the meaning.
+   The backdrop is index.css's .overlay (fixed, z-index 20 above the top bar and tabs, --ink at 50%). */
 
-.rc { max-width: 480px; margin: 16px auto 0; text-align: center; }
-.rc-score { margin: 0; font: 700 40px/1.2 var(--serif); color: var(--ink); }
-.rc-medal { margin: 4px 0; font-weight: 700; color: var(--ink); }
+/* The overlay keeps scrolling inside itself: a swipe on it never scrolls the page behind. */
+.rc-overlay { overscroll-behavior: contain; padding: 16px; }
+
+/* The card: as wide as a phone allows (max 480 px), never taller than the screen. When the answers are
+   open it scrolls inside itself, so the buttons below them stay reachable. */
+.rc {
+  width: min(480px, 100%); max-height: calc(100dvh - 32px); overflow: auto; overscroll-behavior: contain;
+  text-align: center; padding: 0 16px 16px;
+}
+.rc p { margin: 4px 0; }
+
+/* Ribbon heading: an --info-tint band with an ink edge across the top of the card, notched at both ends. */
+.rc-ribbon {
+  margin: 0 -16px 8px; padding: 12px 32px;
+  background: var(--info-tint); border-bottom: 2px solid var(--ink);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%, 12px 50%);
+}
+.rc-ribbon:focus { outline: none; }   /* focused only by the script on open, never by Tab */
+
+.rc-score { font: 700 40px/1.2 var(--serif); color: var(--ink); }
+.rc-medal { font-weight: 700; color: var(--ink); }
 .rc-medal-symbol { font-size: 28px; vertical-align: middle; }
 
-.rc-rows { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; text-align: left; }
+/* "See my answers": closed at first. The summary is a full-width 44 px tap target. */
+.rc-answers { margin-top: 12px; text-align: left; }
+.rc-answers summary {
+  display: list-item; list-style-position: inside;   /* keeps the browser's open/closed triangle */
+  min-height: 44px; padding: 10px 12px; line-height: 24px; cursor: pointer;
+  font-weight: 700; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--sidebar-active); border-radius: 6px;
+}
+.rc-answers[open] summary { margin-bottom: 8px; }
+.rc-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .rc-row {
   display: grid; gap: 2px; padding: 8px 12px; border-radius: 6px;
   background: var(--surface); border: 1px solid var(--sidebar-active);
@@ -24,9 +52,9 @@
 .rc-stamp { flex: none; display: block; color: var(--ink); }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* The card rises 24 px into place and fades in under the game's scene. Not a dialog: nothing is trapped. */
-  .rc { animation: rc-rise 350ms ease-out backwards; }
-  @keyframes rc-rise { from { opacity: 0; transform: translateY(24px); } }
+  /* The pop-up's one entrance: it fades in and grows from 92% to full size. */
+  .rc { animation: rc-pop 250ms ease-out backwards; }
+  @keyframes rc-pop { from { opacity: 0; transform: scale(0.92); } }
 
   .rc-stamp { animation: rc-stamp-in 400ms ease-out; }
   @keyframes rc-stamp-in {

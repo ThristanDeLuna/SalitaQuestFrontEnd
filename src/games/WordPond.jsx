@@ -122,9 +122,12 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
   if (result) {
     return (
       <>
-        {header}
-        {/* The scene stays above the results, every lantern lit (all meanings were filled to finish). */}
-        <PondScene caught={pond.meanings.length} total={pond.meanings.length} />
+        {/* The game stays visible, dimmed behind the results pop-up, every lantern lit (all meanings were
+            filled to finish). It is inert while the pop-up is open, so Tab and screen readers skip it. */}
+        <div inert>
+          {header}
+          <PondScene caught={pond.meanings.length} total={pond.meanings.length} />
+        </div>
         <ResultsCard result={result} rows={matchingRows(result.results, round.words)}
                      onAgain={onAgain} backTo="/"
                      next={{ to: `/play/listening/${region}`, label: 'Next: Jeepney stop' }} />
