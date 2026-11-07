@@ -21,6 +21,17 @@ import './WordPond.css';
 // Pieces: useRound loads the round, pondLogic holds the catching rules, useAudio plays the
 // word, useCountUp is the timer, ResultsCard shows the answer. This file only wires them up.
 
+// A small fish beside the title. Decoration only.
+function FishIcon() {
+  return (
+    <svg className="wp-icon" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true" focusable="false">
+      <path className="wp-icon-fill" d="M22 16l8-6v12z" />
+      <ellipse className="wp-icon-fill" cx="13" cy="16" rx="11" ry="7" />
+      <circle cx="8" cy="14" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
+
 // ---------- One meaning: tap it to choose where the next fish goes ----------
 function MeaningRow({ meaning, word, selected, onSelect }) {
   return (
@@ -31,7 +42,8 @@ function MeaningRow({ meaning, word, selected, onSelect }) {
           {selected && <span className="wp-now">Selected: </span>}
           {meaning}
         </span>
-        <span className={word ? 'wp-caught' : 'muted'}>{word ?? 'tap a fish'}</span>
+        {/* The key restarts the pop when a different fish lands here. */}
+        <span key={word ?? 'empty'} className={word ? 'wp-caught' : 'muted'}>{word ?? 'tap a fish'}</span>
       </button>
     </li>
   );
@@ -44,7 +56,8 @@ function Fish({ fish, onMeaning, playing, disabled, onTap }) {
       <button type="button" className={`wp-fish${onMeaning ? ' wp-fish-caught' : ''}`}
               disabled={disabled} onClick={onTap}>
         <strong>{fish.word}</strong>
-        {onMeaning && <span className="muted">on: {onMeaning}</span>}
+        {/* The key restarts the pop when this fish moves to another meaning. */}
+        {onMeaning && <span key={onMeaning} className="muted wp-on">on: {onMeaning}</span>}
         {playing && <span className="muted">playing</span>}
       </button>
     </li>
@@ -95,7 +108,10 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
   const header = (
     <header className="wp-head">
       <div>
-        <h1>Word Pond</h1>
+        <div className="wp-title">
+          <FishIcon />
+          <h1>Word Pond</h1>
+        </div>
         <p className="muted">{regionName}</p>
       </div>
       <span className="chip" role="timer" aria-label="Time played">{formatTime(seconds)}</span>

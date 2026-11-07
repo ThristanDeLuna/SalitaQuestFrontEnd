@@ -4,6 +4,10 @@
 
 .wp-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
 .wp-head p { margin: 0; }
+.wp-title { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.wp-title h1 { margin: 0; }
+.wp-icon { flex: none; display: block; color: var(--ink); }
+.wp-icon-fill { fill: var(--info-tint); stroke: currentColor; stroke-width: 2; }
 .wp-label { margin-top: 16px; }
 
 .wp-meanings, .wp-pond { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
@@ -34,4 +38,11 @@
 @media (min-width: 600px) {
   .wp-pond { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .wp-meanings { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* The same pop for every fish and meaning: it only says "that registered", never right or wrong (DEC-56). */
+@media (prefers-reduced-motion: no-preference) {
+  .wp-selected, .wp-fish-caught, .wp-caught, .wp-on { animation: wp-pop 200ms ease-out; }
+  .wp-caught { transform-origin: left center; }
+  @keyframes wp-pop { 50% { transform: scale(1.04); } }
 }
