@@ -10,6 +10,13 @@
   --accent: #ffb59e;
   --accent-text: #400400;
   --info-tint: #cee5f5;
+  /* Decorative fills for game art only. No text on them; every shape gets a 2px var(--ink) outline. */
+  --art-water: #bfe0f0;
+  --art-water-deep: #7fb8d6;
+  --art-pad: #9ccc84;
+  --art-road: #b4b0b8;
+  --art-yellow: #ffcf4d;
+  --art-red: #e0614f;
   --serif: Georgia, 'Times New Roman', serif;
   --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
@@ -76,6 +83,9 @@ main { padding: 16px 16px 88px; min-width: 0; width: 100%; max-width: 960px; mar
 }
 .btn:hover { background: var(--info-tint); }
 .btn.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent-text); }
+/* Delete buttons: dark red-brown text and a thicker border, so it reads as different from a normal .btn. */
+.btn.danger { color: var(--accent-text); border: 2px solid var(--accent-text); }
+.btn.danger:hover { background: var(--accent); }
 .btn[disabled] { opacity: 0.6; cursor: not-allowed; }
 
 /* Messages always use words, never color alone. */
