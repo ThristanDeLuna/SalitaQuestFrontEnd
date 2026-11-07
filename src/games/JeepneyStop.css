@@ -4,6 +4,12 @@
 
 .jp-head { margin-bottom: 8px; }
 .jp-head p { margin: 0; }
+.jp-title { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.jp-title h1 { margin: 0; }
+.jp-icon { flex: none; display: block; color: var(--ink); }
+.jp-icon-body { fill: var(--sidebar); stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.jp-icon-line { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.jp-icon-window { fill: var(--surface); stroke: currentColor; stroke-width: 1; }
 .jp-progress { margin: 0 0 12px; font-weight: 700; color: var(--ink); }
 
 .jp-question { display: grid; gap: 12px; max-width: 520px; }
@@ -24,4 +30,10 @@
 
 @media (min-width: 600px) {
   .jp-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* The same pop for every option: it only says "that registered", never right or wrong (DEC-56). */
+@media (prefers-reduced-motion: no-preference) {
+  .jp-chosen { animation: jp-pop 200ms ease-out; }
+  @keyframes jp-pop { 50% { transform: scale(1.04); } }
 }
