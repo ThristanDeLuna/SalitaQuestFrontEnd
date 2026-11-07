@@ -5,8 +5,8 @@ import './RoadScene.css';
 // from the left; the driver's mouth moves and sound waves pulse while the word is playing.
 // The speech bubble holds the real content (the "Hear the driver" button, or the
 // "not available" text). The bubble only fades in, so the button never moves under a finger.
-// Props: playing (true while the question's sound plays), children (the bubble content).
-// Give it a new key per question so the drive-in starts again.
+// Props: stopKey (changes per question: the jeepney drives in and the bubble fades in again,
+// while the road and clouds keep going), playing (true while the sound plays), children (the bubble content).
 // The art is aria-hidden and ignores taps; only the art layer is clipped, never the bubble.
 
 // ---------- Road: grey band with a dashed centre line that scrolls left ----------
@@ -99,18 +99,18 @@ function SoundWaves() {
   );
 }
 
-export default function RoadScene({ playing, children }) {
+export default function RoadScene({ stopKey, playing, children }) {
   return (
     <div className={`rs-scene${playing ? ' rs-playing' : ''}`}>
       <div className="rs-art" aria-hidden="true">
         <Cloud className="rs-cloud-a" />
         <Cloud className="rs-cloud-b" />
         <Road />
-        <Jeepney />
+        <Jeepney key={stopKey} />
       </div>
       <div className="rs-content">
         <SoundWaves />
-        <div className="rs-bubble">{children}</div>
+        <div key={stopKey} className="rs-bubble">{children}</div>
       </div>
     </div>
   );
