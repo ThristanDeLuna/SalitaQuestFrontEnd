@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import './ResultsCard.css';
 
@@ -11,6 +13,11 @@ import './ResultsCard.css';
 //   backTo  where "Back to the Map" goes
 //   next    optional { to, label }: after a pass, the next step becomes the main button
 // Everything is said in words; symbols and colour are only an extra hint.
+// It shows as a pop-up over the dimmed game: the same .overlay + role="dialog" pattern as the app's other
+// dialogs (Profile sign-out, AdminAudio, AdminPending), rendered into document.body through a portal so no
+// ancestor can break position: fixed. It has no close button and no Escape: the actions are the way out.
+// On open, focus moves to the "Your results" heading. The game behind it is made inert by the game screen.
+// The answers sit in a collapsed <details>, so score, medal and buttons fit without scrolling.
 
 // The medal values come from Game_rules::medal() on the server: 'gold', 'silver', 'bronze' or null.
 const MEDALS = {
@@ -19,12 +26,28 @@ const MEDALS = {
   bronze: { symbol: '🥉', label: 'Bronze medal' },
 };
 
-function Medal({ medal }) {
+// A ring of 8 small stars round the medal after a pass (art only). With motion they burst out once;
+// without motion they simply stand in the ring.
+const BURST_ANGLES = Array.from({ length: 8 }, (_, i) => i * 45);   // one star every 45 degrees
+const BURST_R = 18;                                                  // ring radius round the medal's centre
+const STAR_D = 'M0 -3.5 L1 -1 L3.5 0 L1 1 L0 3.5 L-1 1 L-3.5 0 L-1 -1 Z';   // a small 4-point star
+
+function Burst() {
+  return (
+    <svg className="rc-burst" viewBox="-24 -24 48 48" width="48" height="48" aria-hidden="true" focusable="false">
+      {BURST_ANGLES.map((a, i) => (
+        <path key={a} className={`rc-star rc-star-${i % 3}`} transform={`rotate(${a}) translate(0 -${BURST_R})`} d={STAR_D} />
+      ))}
+    </svg>
+  );
+}
+
+function Medal({ medal, passed }) {
   const m = MEDALS[medal];
   if (!m) return <p className="rc-medal">No medal this time</p>;
   return (
     <p className="rc-medal">
-      <span className="rc-medal-symbol" aria-hidden="true">{m.symbol}</span> {m.label}
+      <span className="rc-medal-symbol" aria-hidden="true">{m.symbol}{passed && <Burst />}</span> {m.label}
     </p>
   );
 }
@@ -57,32 +80,41 @@ function StampIcon() {
 
 export default function ResultsCard({ result, rows, onAgain, backTo, next }) {
   const showNext = Boolean(next) && result.passed;   // only one primary button on the card
-  return (
-    <section className="rc card" aria-labelledby="rc-title">
-      <h2 id="rc-title">Your results</h2>
-      <p className="rc-score">{result.score} / {result.max_score}</p>
-      <Medal medal={result.medal} />
-      <p>
-        {result.passed ? 'Passed' : 'Not passed yet'} <span className="muted">· Pass mark {result.pass_mark}</span>
-      </p>
-      {typeof result.stars_gained === 'number' && <p>+{result.stars_gained} stars</p>}
+  const titleRef = useRef(null);
+  useEffect(() => { titleRef.current?.focus(); }, []);   // a screen reader starts at the title
 
-      {result.stamp_earned && (
-        <p className="banner info rc-stamp-banner" role="status">
-          <StampIcon />
-          <span>You earned this region's stamp! See it in your Passport.</span>
+  return createPortal(
+    <div className="overlay rc-overlay">
+      <section className="rc card" role="dialog" aria-modal="true" aria-labelledby="rc-title">
+        <h2 id="rc-title" className="rc-ribbon" ref={titleRef} tabIndex={-1}>Your results</h2>
+        <p className="rc-score">{result.score} / {result.max_score}</p>
+        <Medal medal={result.medal} passed={result.passed} />
+        <p>
+          {result.passed ? 'Passed' : 'Not passed yet'} <span className="muted">· Pass mark {result.pass_mark}</span>
         </p>
-      )}
+        {typeof result.stars_gained === 'number' && <p>+{result.stars_gained} stars</p>}
 
-      <ul className="rc-rows">
-        {rows.map((row) => <AnswerRow key={row.key} row={row} />)}
-      </ul>
+        {result.stamp_earned && (
+          <p className="banner info rc-stamp-banner" role="status">
+            <StampIcon />
+            <span>You earned this region's stamp! See it in your Passport.</span>
+          </p>
+        )}
 
-      <div className="actions">
-        {showNext && <Link className="btn primary" to={next.to}>{next.label}</Link>}
-        <button type="button" className={showNext ? 'btn' : 'btn primary'} onClick={onAgain}>Try again</button>
-        <Link className="btn" to={backTo}>Back to the Map</Link>
-      </div>
-    </section>
+        <details className="rc-answers">
+          <summary>See my answers</summary>
+          <ul className="rc-rows">
+            {rows.map((row) => <AnswerRow key={row.key} row={row} />)}
+          </ul>
+        </details>
+
+        <div className="actions">
+          {showNext && <Link className="btn primary" to={next.to}>{next.label}</Link>}
+          <button type="button" className={showNext ? 'btn' : 'btn primary'} onClick={onAgain}>Try again</button>
+          <Link className="btn" to={backTo}>Back to the Map</Link>
+        </div>
+      </section>
+    </div>,
+    document.body,
   );
 }

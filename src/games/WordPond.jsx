@@ -8,10 +8,12 @@ import useCountUp from './useCountUp';
 import useRegionName from './useRegionName';
 import useRound from './useRound';
 import PondScene from './PondScene';
+import CatchSparkle from './CatchSparkle';
+import HowToPlay from './HowToPlay';
 import ResultsCard from './ResultsCard';
 import RoundGate from './RoundGate';
 import {
-  buildPairs, canFinish, fishForMeaning, formatTime, initialPond, matchingRows, pondReducer,
+  buildPairs, canFinish, caughtWordIds, fishForMeaning, formatTime, initialPond, matchingRows, pondReducer,
 } from './pondLogic';
 import './WordPond.css';
 
@@ -53,13 +55,13 @@ function MeaningRow({ meaning, word, selected, onSelect }) {
 // ---------- One fish: tap it to catch it (and hear it, if it has a recording) ----------
 function Fish({ fish, onMeaning, playing, disabled, onTap }) {
   return (
-    <li>
-      <button type="button" className={`wp-fish${onMeaning ? ' wp-fish-caught' : ''}`}
+    <li className="wp-fish-spot">
+      {/* The key replays the twinkle each time this fish lands on a (different) meaning. */}
+      {onMeaning && <CatchSparkle key={onMeaning} />}
+      <button type="button" className={`wp-fish${onMeaning ? ' wp-fish-caught' : ''}${playing ? ' wp-fish-playing' : ''}`}
               disabled={disabled} onClick={onTap}>
         <strong>{fish.word}</strong>
-        {/* The key restarts the pop when this fish moves to another meaning. */}
-        {onMeaning && <span key={onMeaning} className="muted wp-on">on: {onMeaning}</span>}
-        {playing && <span className="muted">playing</span>}
+        {onMeaning && <span className="muted">on: {onMeaning}</span>}
       </button>
     </li>
   );
@@ -122,7 +124,12 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
   if (result) {
     return (
       <>
-        {header}
+        {/* The game stays visible, dimmed behind the results pop-up, every lantern lit (all meanings were
+            filled to finish). It is inert while the pop-up is open, so Tab and screen readers skip it. */}
+        <div inert>
+          {header}
+          <PondScene caught={pond.meanings.length} total={pond.meanings.length} settled />
+        </div>
         <ResultsCard result={result} rows={matchingRows(result.results, round.words)}
                      onAgain={onAgain} backTo="/"
                      next={{ to: `/play/listening/${region}`, label: 'Next: Jeepney stop' }} />
@@ -131,42 +138,62 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
   }
 
   const errKind = submitErr ? errorKind(submitErr) : null;
+  const total = pond.meanings.length;
+  const placed = caughtWordIds(pond).length;      // fish placed, not fish right (DEC-56)
+  const finishBlocked = !canFinish(pond);
   return (
     <>
       {header}
-      <p className="muted">Choose a meaning, then catch the fish (word) that matches it.</p>
 
       {submitErr && (
         <p className="banner error" role="alert">
           {errorMessage(errKind)}{errKind === 'invalid' && ` (${submitErr.message})`}
         </p>
       )}
-      {audio.failed && <p className="muted" role="status">Could not play that sound.</p>}
 
-      <h2 className="wp-label">Meanings</h2>
-      <ul className="wp-meanings">
-        {pond.meanings.map((m) => (
-          <MeaningRow key={m} meaning={m} selected={pond.selected === m}
-                      word={wordOf(fishForMeaning(pond, m))}
-                      onSelect={() => dispatch({ type: 'select', meaning: m })} />
-        ))}
-      </ul>
+      {/* Two blocks in reading order: meanings, then the pond and Finish. On wide screens they sit side by
+          side (WordPond.css); the order of the page, and so the Tab order, is the same at every width. */}
+      <div className="wp-play">
+        <div className="wp-col-meanings">
+          {/* Directions first, then the controls. The steps match pondLogic: the next empty meaning is
+              chosen for you after each catch, and catching a placed fish again moves it. */}
+          <HowToPlay steps={['Tap a meaning.', 'Tap the fish with the matching word.',
+                             `Fill all ${total} meanings, then press Finish.`]}
+                     note="You see your results at the end." status={`${placed} of ${total} fish placed`}
+                     message={audio.failed ? 'Could not play that sound.' : (audio.playingUrl ? 'Playing...' : '')} />
+          <h2 className="wp-label">Meanings</h2>
+          <ul className="wp-meanings">
+            {pond.meanings.map((m) => (
+              <MeaningRow key={m} meaning={m} selected={pond.selected === m}
+                          word={wordOf(fishForMeaning(pond, m))}
+                          onSelect={() => dispatch({ type: 'select', meaning: m })} />
+            ))}
+          </ul>
+        </div>
 
-      <h2 className="wp-label">Fish in the pond</h2>
-      <PondScene>
-        <ul className="wp-pond">
-          {round.words.map((f) => (
-            <Fish key={f.word_id} fish={f} onMeaning={meaningOf(f.word_id)} disabled={sending}
-                  playing={f.audio_url !== null && audio.playingUrl === f.audio_url}
-                  onTap={() => tapFish(f)} />
-          ))}
-        </ul>
-      </PondScene>
+        <div className="wp-col-pond">
+          {/* The heading stays for screen readers; on screen the scene itself says "pond". */}
+          <h2 className="wp-sr">Fish in the pond</h2>
+          {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong. */}
+          <PondScene caught={placed} total={total}>
+            <ul className="wp-pond">
+              {round.words.map((f) => (
+                <Fish key={f.word_id} fish={f} onMeaning={meaningOf(f.word_id)} disabled={sending}
+                      playing={f.audio_url !== null && audio.playingUrl === f.audio_url}
+                      onTap={() => tapFish(f)} />
+              ))}
+            </ul>
+          </PondScene>
 
-      <div className="actions">
-        <button type="button" className="btn primary" disabled={!canFinish(pond) || sending} onClick={finish}>
-          {sending ? 'Checking...' : 'Finish'}
-        </button>
+          <div className="actions">
+            <button type="button" className="btn primary" disabled={finishBlocked || sending} onClick={finish}
+                    aria-describedby={finishBlocked ? 'wp-finish-hint' : undefined}>
+              {sending ? 'Checking...' : 'Finish'}
+            </button>
+          </div>
+          {/* The line is always there (empty when Finish works), so the button never moves. */}
+          <p id="wp-finish-hint" className="muted htp-hint">{finishBlocked && `Fill all ${total} meanings to finish.`}</p>
+        </div>
       </div>
     </>
   );

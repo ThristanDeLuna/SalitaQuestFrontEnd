@@ -8,14 +8,25 @@
 .wp-title h1 { margin: 0; }
 .wp-icon { flex: none; display: block; color: var(--ink); }
 .wp-icon-fill { fill: var(--info-tint); stroke: currentColor; stroke-width: 2; }
-.wp-label { margin-top: 16px; }
+.wp-label { margin: 8px 0; }
+/* Visually hidden, still read by screen readers (index.css has no such utility). */
+.wp-sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
 
 .wp-meanings, .wp-pond { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+/* Meanings: a 2 x 2 grid, so the pond and its first fish fit on a phone screen without scrolling.
+   Only very narrow phones (340 px and below) go back to one column. */
+.wp-meanings { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 12px; }
+@media (max-width: 340px) {
+  .wp-meanings { grid-template-columns: minmax(0, 1fr); }
+}
 
-/* Each meaning row is one big button (at least 44 px high). */
+/* Each meaning card is one big button (at least 48 px high); long meanings wrap inside it. */
 .wp-meaning {
-  width: 100%; min-height: 56px; display: grid; gap: 2px; align-content: center; text-align: left;
-  padding: 8px 16px; background: var(--surface); color: var(--ink);
+  width: 100%; height: 100%; min-height: 48px; display: grid; gap: 2px; align-content: center; text-align: left;
+  padding: 6px 12px; background: var(--surface); color: var(--ink);
   border: 1px solid var(--sidebar-active); border-radius: 6px; font: 16px var(--sans); cursor: pointer;
 }
 .wp-meaning:hover { background: var(--info-tint); }
@@ -33,26 +44,54 @@
 }
 .wp-fish strong { overflow-wrap: anywhere; }
 .wp-fish-caught { background: var(--surface); border-style: dashed; }
+/* The fish whose word is playing: an inset ink ring, which takes no room (the words "Playing..." are in
+   the How to play card's reserved status line, so no fish grows while it plays). */
+.wp-fish-playing { box-shadow: inset 0 0 0 2px var(--ink); }
 .wp-fish[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+/* The catch twinkle: art beside the fish's top right corner, above the button, never in the way of a tap.
+   At rest (and with reduced motion) it is invisible; the motion block flashes it once. */
+.wp-fish-spot { position: relative; }
+.wp-sparkle {
+  position: absolute; top: -14px; right: 8px; z-index: 1; display: block; pointer-events: none; opacity: 0;
+  stroke: var(--ink); stroke-width: 2; stroke-linecap: round; fill: var(--art-yellow);
+}
 
 @media (min-width: 600px) {
   .wp-pond { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .wp-meanings { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Wide screens: meanings on the left (40%), the pond with its fish and Finish on the right (60%), so the
+   whole round fits one screen. The page column (main, max 960 px) comes from index.css and is not changed.
+   The meanings stack in one column there (the left column is narrow); the fish go back to two per row. */
+@media (min-width: 900px) {
+  .wp-play { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 24px; align-items: start; }
+  .wp-meanings { grid-template-columns: minmax(0, 1fr); margin-bottom: 0; }
+  .wp-pond { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wp-col-pond { padding-top: 8px; }   /* lines the scene up with the "Meanings" heading's top margin */
 }
 
 /* The same pop for every fish and meaning: it only says "that registered", never right or wrong (DEC-56). */
 @media (prefers-reduced-motion: no-preference) {
-  .wp-selected, .wp-fish-caught, .wp-caught, .wp-on { animation: wp-pop 200ms ease-out; }
+  .wp-selected, .wp-fish-caught, .wp-caught { animation: wp-pop 200ms ease-out; }
   .wp-caught { transform-origin: left center; }
   @keyframes wp-pop { 50% { transform: scale(1.04); } }
+
+  /* The twinkle grows, turns a little and fades out (400 ms, once). */
+  .wp-sparkle { animation: wp-twinkle 400ms ease-out; }
+  @keyframes wp-twinkle {
+    0% { opacity: 0; transform: scale(0.3) rotate(-45deg); }
+    40% { opacity: 1; transform: scale(1.1) rotate(0deg); }
+    100% { opacity: 0; transform: scale(0.8) rotate(15deg); }
+  }
 
   /* The fish drift on the water. The drift is on the <li>, so it never fights the button's pop.
      Only a slide (1.5 px sideways, 0.5 px up and down), no tilt: a tilt moves the corners further the
      bigger the pill is, and a fish caught on a long meaning can be several lines tall. With a slide every
      point moves the same: at most about 1.6 px from the middle and about 3.2 px end to end, inside the
-     4 px limit at any size. Only the first 8 fish drift (8 + the 4 pond pieces = 12 at most);
-     three speeds and delays so they never move together. */
-  .wp-pond > li:nth-child(-n + 8) { animation: wp-drift 4s ease-in-out infinite alternate; }
+     4 px limit at any size. Only the first 3 fish drift (the bay in the same scene has its own motion, and the
+     whole screen stays within the animation budget); three speeds and delays so they never move together. */
+  .wp-pond > li:nth-child(-n + 3) { animation: wp-drift 4s ease-in-out infinite alternate; }
   .wp-pond > li:nth-child(3n + 2) { animation-duration: 3s; animation-delay: -1s; }
   .wp-pond > li:nth-child(3n) { animation-duration: 5s; animation-delay: -2.5s; }
   @keyframes wp-drift {
