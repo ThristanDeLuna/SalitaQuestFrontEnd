@@ -6,7 +6,7 @@ import './PondScene.css';
 // where the fish swim. The bay's sea and the pond have the same colour and no line between them.
 // In the water, ripple rings and two lily pads sit on an art layer behind the fish; the fish list
 // is passed in as children and sits on top, so every button keeps working as before.
-// Props: caught, total (for the lanterns, see PondBanner), children (the fish list; none on the results).
+// Props: caught, total, settled (for the lanterns, see PondBanner), children (the fish list; none on the results).
 // The art layers are aria-hidden and ignore taps; only they are clipped, so focus outlines are never cut.
 
 // One ripple ring, drawn at its full size; CSS scales it down and fades it in a slow pulse.
@@ -42,10 +42,10 @@ function LilyPad({ className }) {
   );
 }
 
-export default function PondScene({ caught, total, children }) {
+export default function PondScene({ caught, total, settled, children }) {
   return (
     <div className="ps-pond">
-      <PondBanner caught={caught} total={total} />
+      <PondBanner caught={caught} total={total} settled={settled} />
       <div className="ps-water">
         <div className="ps-art" aria-hidden="true">
           <Ripple className="ps-ripple-a" />

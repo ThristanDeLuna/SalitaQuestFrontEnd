@@ -47,6 +47,14 @@
 .wp-fish-caught { background: var(--surface); border-style: dashed; }
 .wp-fish[disabled] { opacity: 0.6; cursor: not-allowed; }
 
+/* The catch twinkle: art beside the fish's top right corner, above the button, never in the way of a tap.
+   At rest (and with reduced motion) it is invisible; the motion block flashes it once. */
+.wp-fish-spot { position: relative; }
+.wp-sparkle {
+  position: absolute; top: -8px; right: 8px; z-index: 1; display: block; pointer-events: none; opacity: 0;
+  stroke: var(--ink); stroke-width: 2; stroke-linecap: round; fill: var(--art-yellow);
+}
+
 @media (min-width: 600px) {
   .wp-pond { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
@@ -66,6 +74,14 @@
   .wp-selected, .wp-fish-caught, .wp-caught, .wp-on { animation: wp-pop 200ms ease-out; }
   .wp-caught { transform-origin: left center; }
   @keyframes wp-pop { 50% { transform: scale(1.04); } }
+
+  /* The twinkle grows, turns a little and fades out (400 ms, once). */
+  .wp-sparkle { animation: wp-twinkle 400ms ease-out; }
+  @keyframes wp-twinkle {
+    0% { opacity: 0; transform: scale(0.3) rotate(-45deg); }
+    40% { opacity: 1; transform: scale(1.1) rotate(0deg); }
+    100% { opacity: 0; transform: scale(0.8) rotate(15deg); }
+  }
 
   /* The fish drift on the water. The drift is on the <li>, so it never fights the button's pop.
      Only a slide (1.5 px sideways, 0.5 px up and down), no tilt: a tilt moves the corners further the

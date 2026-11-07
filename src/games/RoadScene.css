@@ -91,7 +91,11 @@
    The wheels (bottom 10 px of the drawing) sit inside the 34 px road. */
 .rs-lane { position: absolute; left: 0; right: 0; bottom: 6px; }
 .rs-jeep { margin-left: var(--rs-jeep-x); }
-.rs-gone { transform: translateX(100%); }   /* waiting off the right edge; the art layer clips it */
+.rs-gone { transform: translateX(100%); }
+/* Exhaust puffs: just behind the jeepney's tail, at exhaust height. Invisible at rest. */
+.rs-puffs { position: absolute; left: calc(var(--rs-jeep-x) - 22px); bottom: 10px; overflow: visible; }
+.rs-puff { fill: var(--art-road); opacity: 0; transform-box: fill-box; transform-origin: center; }
+.rs-art .rs-puff { stroke-width: 1.5; }   /* waiting off the right edge; the art layer clips it */
 
 /* Two paint jobs, so the player can see that a different jeepney has come. */
 .rs-paint-a { --rs-paint: var(--art-yellow); }
@@ -177,6 +181,14 @@
   @keyframes rs-spin-in { from { transform: rotate(-720deg); } }
   .rs-leave .rs-wheel { animation: rs-spin-out 700ms ease-in forwards; }
   @keyframes rs-spin-out { to { transform: rotate(720deg); } }
+  /* While a jeepney moves, its two puffs drift back, grow and fade (one after the other). */
+  .rs-arrive .rs-puff, .rs-leave .rs-puff { animation: rs-puff 600ms ease-out; }
+  .rs-arrive .rs-puff + .rs-puff, .rs-leave .rs-puff + .rs-puff { animation-delay: 150ms; }
+  @keyframes rs-puff {
+    from { opacity: 0.9; transform: translateX(0) scale(0.6); }
+    to { opacity: 0; transform: translateX(-14px) scale(1.3); }
+  }
+
   /* The parked jeepney bobs 1 px. The drive is on the lane and the bob on the drawing, so they never clash. */
   .rs-here .rs-jeep { animation: rs-bob 2.4s ease-in-out 700ms infinite alternate; }
   @keyframes rs-bob { to { transform: translateY(-1px); } }

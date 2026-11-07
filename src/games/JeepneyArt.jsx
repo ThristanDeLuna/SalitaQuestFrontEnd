@@ -4,6 +4,8 @@
 // front window, a door line, side mirror, headlight, chrome bumper and two wheels with 4-spoke hubcaps.
 // Light comes from the top left: a highlight band at the top of the body, a shade band at the bottom,
 // and a soft contact shadow under the wheels. Styles live in RoadScene.css (rs- classes).
+// Two exhaust puffs sit just behind the jeepney, outside its drawing so they can drift back; they only
+// show (and drift) while it arrives or leaves.
 // Props: className (lane classes from RoadScene: paint, here/gone, arrive/leave).
 
 const JEEP_W = 132;
@@ -39,6 +41,10 @@ function Wheel({ cx, cy }) {
 export default function JeepneyArt({ className }) {
   return (
     <div className={`rs-lane ${className}`}>
+      <svg className="rs-puffs" viewBox="0 0 24 16" width="24" height="16" focusable="false">
+        <circle className="rs-puff" cx="16" cy="10" r="4" />
+        <circle className="rs-puff" cx="8" cy="7" r="3" />
+      </svg>
       <svg className="rs-jeep" viewBox={`0 0 ${JEEP_W} ${JEEP_H}`} width={JEEP_W} height={JEEP_H} focusable="false">
         <ellipse className="rs-contact" cx="66" cy="59" rx="58" ry="2.5" />
         <rect className="rs-rack" x="12" y="4" width="76" height="4" />

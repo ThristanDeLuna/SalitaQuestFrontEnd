@@ -9,7 +9,8 @@ import './PondBanner.css';
 // a slightly tilted plane, for a 2.5D look), a palm on a little island in the sea, three fish swimming across,
 // one fish that jumps, and a banca (outrigger boat) bobbing with one lantern per meaning.
 // The palm (PalmArt) and the banca (BancaArt) have their own files. Light comes from the top left.
-// Props: caught (how many meanings hold a fish), total (how many meanings, 4).
+// Props: caught (how many meanings hold a fish), total (how many meanings, 4), settled (true on the results:
+// the lanterns are simply lit, without the pop each one gets when it lights up during play).
 // A lantern lights up once that many fish are caught. It counts catches only, never right or wrong (DEC-56).
 
 // ---------- Sun: a disc with a highlight, two faint glow rings and eight rays; the rays pulse ----------
@@ -90,9 +91,9 @@ function Fish({ w, className = '' }) {
 // Three swimmers: [class, width]. Smaller ones swim higher and slower, so they look further away.
 const SWIMMERS = [['pb-swim-far', 16], ['pb-swim-mid', 22], ['pb-swim-near', 28]];
 
-export default function PondBanner({ caught = 0, total = 4 }) {
+export default function PondBanner({ caught = 0, total = 4, settled = false }) {
   return (
-    <div className="pb-sky" aria-hidden="true">
+    <div className={`pb-sky${settled ? ' pb-settled' : ''}`} aria-hidden="true">
       <div className="pb-art">
         <Sun />
         <Hills />

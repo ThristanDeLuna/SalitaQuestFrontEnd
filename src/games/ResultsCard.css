@@ -23,7 +23,13 @@
 
 .rc-score { font: 700 40px/1.2 var(--serif); color: var(--ink); }
 .rc-medal { font-weight: 700; color: var(--ink); }
-.rc-medal-symbol { font-size: 28px; vertical-align: middle; }
+.rc-medal-symbol { position: relative; display: inline-block; margin-right: 8px; font-size: 28px; vertical-align: middle; }
+/* The star ring, centred on the medal; small enough to stay clear of the score and the medal's name. */
+.rc-burst { position: absolute; left: 50%; top: 50%; margin: -24px 0 0 -24px; pointer-events: none; }
+.rc-star { stroke: var(--ink); stroke-width: 1; stroke-linejoin: round; }
+.rc-star-0 { fill: var(--art-yellow); }
+.rc-star-1 { fill: var(--art-red); }
+.rc-star-2 { fill: var(--art-pad); }
 
 /* "See my answers": closed at first. The summary is a full-width 44 px tap target. */
 .rc-answers { margin-top: 12px; text-align: left; }
@@ -55,6 +61,13 @@
   /* The pop-up's one entrance: it fades in and grows from 92% to full size. */
   .rc { animation: rc-pop 250ms ease-out backwards; }
   @keyframes rc-pop { from { opacity: 0; transform: scale(0.92); } }
+
+  /* After a pass the star ring bursts out from the medal once and settles. */
+  .rc-burst { animation: rc-burst 800ms ease-out backwards 150ms; }
+  @keyframes rc-burst {
+    from { opacity: 0; transform: scale(0.2) rotate(-90deg); }
+    60% { opacity: 1; transform: scale(1.15) rotate(10deg); }
+  }
 
   .rc-stamp { animation: rc-stamp-in 400ms ease-out; }
   @keyframes rc-stamp-in {

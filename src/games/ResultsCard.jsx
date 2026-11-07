@@ -26,12 +26,28 @@ const MEDALS = {
   bronze: { symbol: '🥉', label: 'Bronze medal' },
 };
 
-function Medal({ medal }) {
+// A ring of 8 small stars round the medal after a pass (art only). With motion they burst out once;
+// without motion they simply stand in the ring.
+const BURST_ANGLES = Array.from({ length: 8 }, (_, i) => i * 45);   // one star every 45 degrees
+const BURST_R = 18;                                                  // ring radius round the medal's centre
+const STAR_D = 'M0 -3.5 L1 -1 L3.5 0 L1 1 L0 3.5 L-1 1 L-3.5 0 L-1 -1 Z';   // a small 4-point star
+
+function Burst() {
+  return (
+    <svg className="rc-burst" viewBox="-24 -24 48 48" width="48" height="48" aria-hidden="true" focusable="false">
+      {BURST_ANGLES.map((a, i) => (
+        <path key={a} className={`rc-star rc-star-${i % 3}`} transform={`rotate(${a}) translate(0 -${BURST_R})`} d={STAR_D} />
+      ))}
+    </svg>
+  );
+}
+
+function Medal({ medal, passed }) {
   const m = MEDALS[medal];
   if (!m) return <p className="rc-medal">No medal this time</p>;
   return (
     <p className="rc-medal">
-      <span className="rc-medal-symbol" aria-hidden="true">{m.symbol}</span> {m.label}
+      <span className="rc-medal-symbol" aria-hidden="true">{m.symbol}{passed && <Burst />}</span> {m.label}
     </p>
   );
 }
@@ -72,7 +88,7 @@ export default function ResultsCard({ result, rows, onAgain, backTo, next }) {
       <section className="rc card" role="dialog" aria-modal="true" aria-labelledby="rc-title">
         <h2 id="rc-title" className="rc-ribbon" ref={titleRef} tabIndex={-1}>Your results</h2>
         <p className="rc-score">{result.score} / {result.max_score}</p>
-        <Medal medal={result.medal} />
+        <Medal medal={result.medal} passed={result.passed} />
         <p>
           {result.passed ? 'Passed' : 'Not passed yet'} <span className="muted">· Pass mark {result.pass_mark}</span>
         </p>

@@ -50,10 +50,23 @@ function MeaningRow({ meaning, word, selected, onSelect }) {
   );
 }
 
+// A small twinkle (a cross of light and a dot) that flashes beside a fish when it lands on a meaning.
+// Decoration only, and the same for every catch: it says "caught", never right or wrong (DEC-56).
+function Sparkle() {
+  return (
+    <svg className="wp-sparkle" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false">
+      <path d="M10 2 V18 M2 10 H18" />
+      <circle cx="15" cy="4" r="2" />
+    </svg>
+  );
+}
+
 // ---------- One fish: tap it to catch it (and hear it, if it has a recording) ----------
 function Fish({ fish, onMeaning, playing, disabled, onTap }) {
   return (
-    <li>
+    <li className="wp-fish-spot">
+      {/* The key replays the twinkle each time this fish lands on a (different) meaning. */}
+      {onMeaning && <Sparkle key={onMeaning} />}
       <button type="button" className={`wp-fish${onMeaning ? ' wp-fish-caught' : ''}`}
               disabled={disabled} onClick={onTap}>
         <strong>{fish.word}</strong>
@@ -126,7 +139,7 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
             filled to finish). It is inert while the pop-up is open, so Tab and screen readers skip it. */}
         <div inert>
           {header}
-          <PondScene caught={pond.meanings.length} total={pond.meanings.length} />
+          <PondScene caught={pond.meanings.length} total={pond.meanings.length} settled />
         </div>
         <ResultsCard result={result} rows={matchingRows(result.results, round.words)}
                      onAgain={onAgain} backTo="/"
