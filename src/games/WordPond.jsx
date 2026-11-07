@@ -107,7 +107,8 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
       <>
         {header}
         <ResultsCard result={result} rows={matchingRows(result.results, round.words)}
-                     onAgain={onAgain} backTo="/" />
+                     onAgain={onAgain} backTo="/"
+                     next={{ to: `/play/listening/${region}`, label: 'Next: Jeepney stop' }} />
       </>
     );
   }

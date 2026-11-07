@@ -9,6 +9,7 @@ import './ResultsCard.css';
 //           (summary, if given, replaces the "<word> means <meaning>" sentence)
 //   onAgain called by "Try again"
 //   backTo  where "Back to the Map" goes
+//   next    optional { to, label }: after a pass, the next step becomes the main button
 // Everything is said in words; symbols and colour are only an extra hint.
 
 // The medal values come from Game_rules::medal() on the server: 'gold', 'silver', 'bronze' or null.
@@ -43,7 +44,19 @@ function AnswerRow({ row }) {
   );
 }
 
-export default function ResultsCard({ result, rows, onAgain, backTo }) {
+// A round passport stamp with a star. Decoration only: the banner's words carry the message.
+function StampIcon() {
+  return (
+    <svg className="rc-stamp" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true" focusable="false">
+      <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" strokeWidth="2" />
+      <circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" />
+      <path d="M16 8.5l2.3 4.8 5.2.7-3.8 3.6.9 5.2-4.6-2.5-4.6 2.5.9-5.2-3.8-3.6 5.2-.7z" fill="currentColor" />
+    </svg>
+  );
+}
+
+export default function ResultsCard({ result, rows, onAgain, backTo, next }) {
+  const showNext = Boolean(next) && result.passed;   // only one primary button on the card
   return (
     <section className="rc card" aria-labelledby="rc-title">
       <h2 id="rc-title">Your results</h2>
@@ -55,7 +68,10 @@ export default function ResultsCard({ result, rows, onAgain, backTo }) {
       {typeof result.stars_gained === 'number' && <p>+{result.stars_gained} stars</p>}
 
       {result.stamp_earned && (
-        <p className="banner info" role="status">You earned this region's stamp! See it in your Passport.</p>
+        <p className="banner info rc-stamp-banner" role="status">
+          <StampIcon />
+          <span>You earned this region's stamp! See it in your Passport.</span>
+        </p>
       )}
 
       <ul className="rc-rows">
@@ -63,7 +79,8 @@ export default function ResultsCard({ result, rows, onAgain, backTo }) {
       </ul>
 
       <div className="actions">
-        <button type="button" className="btn primary" onClick={onAgain}>Try again</button>
+        {showNext && <Link className="btn primary" to={next.to}>{next.label}</Link>}
+        <button type="button" className={showNext ? 'btn' : 'btn primary'} onClick={onAgain}>Try again</button>
         <Link className="btn" to={backTo}>Back to the Map</Link>
       </div>
     </section>
