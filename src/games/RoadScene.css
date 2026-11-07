@@ -17,6 +17,7 @@
   --rs-tail-x: 40px;
   --scene-scale: 1;
   position: relative;
+  display: flex; flex-direction: column;   /* so the bubble row can sit at the bottom, right over the cab */
   min-height: calc(150px * var(--scene-scale));
   background: var(--info-tint);
   border: 2px solid var(--ink);
@@ -101,7 +102,7 @@
    bubble makes the scene taller instead. The left padding puts the tail's tip right over the driver's face:
    (jeepney start + face) scaled, - tail offset - the bubble's 2 px border - the waves (20 px) and gap (4 px). */
 .rs-content {
-  position: relative; z-index: 1;
+  position: relative; z-index: 1; margin-top: auto;   /* when the scene is taller, the gap goes on top */
   display: flex; align-items: center; gap: 4px;
   padding: 12px 12px calc(68px * var(--scene-scale) + 14px)
     calc((var(--rs-jeep-x) + var(--rs-driver-x)) * var(--scene-scale) - var(--rs-tail-x) - 26px);

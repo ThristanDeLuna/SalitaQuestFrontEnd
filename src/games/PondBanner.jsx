@@ -65,7 +65,7 @@ function Birds() {
 // ---------- Sea: a tilted plane with two wave crests that slide at different speeds (same water colour) ----------
 const WAVE_P = 48;                  // one crest; each strip slides by exactly this, so the loop is seamless
 const WAVE_H = 20;
-const WAVE_W = 27 * WAVE_P;         // 1296 px: the widest scene (about 930 px) plus one crest, with room for the tilt
+const WAVE_W = 27 * WAVE_P;         // 1296 px: the widest bay plus one crest, with room for the tilt
 // The top edge: a crest and a trough per period; the band below it is filled. The bottom edge runs 2 px
 // below the box, so only the wavy top is outlined.
 const WAVE_D = `M0 ${WAVE_H + 2} V8 ${Array.from({ length: WAVE_W / WAVE_P }, (_, i) =>

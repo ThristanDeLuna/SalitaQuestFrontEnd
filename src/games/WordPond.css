@@ -61,7 +61,7 @@
      Only a slide (1.5 px sideways, 0.5 px up and down), no tilt: a tilt moves the corners further the
      bigger the pill is, and a fish caught on a long meaning can be several lines tall. With a slide every
      point moves the same: at most about 1.6 px from the middle and about 3.2 px end to end, inside the
-     4 px limit at any size. Only the first 4 fish drift (the bay banner above has its own motion, and the
+     4 px limit at any size. Only the first 4 fish drift (the bay in the same scene has its own motion, and the
      whole screen stays within the animation budget); three speeds and delays so they never move together. */
   .wp-pond > li:nth-child(-n + 4) { animation: wp-drift 4s ease-in-out infinite alternate; }
   .wp-pond > li:nth-child(3n + 2) { animation-duration: 3s; animation-delay: -1s; }
