@@ -9,7 +9,7 @@
 // The reducer never changes the old state object: it always returns a new one
 // (or the very same object when nothing changes), as React's useReducer expects.
 
-export const PAIRS = 4;   // the server wants exactly 4 pairs (Game_rules::MATCHING_PAIRS)
+const PAIRS = 4;   // the server wants exactly 4 pairs (Game_rules::MATCHING_PAIRS)
 
 // The start of a round: nothing caught, the first meaning selected.
 export function initialPond(meanings) {
