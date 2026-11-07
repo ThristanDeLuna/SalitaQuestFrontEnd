@@ -128,7 +128,8 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
       )}
 
       <section className="card jp-question" aria-label={progressLabel(quiz)}>
-        <RoadScene stopKey={question.word_id} playing={playing}>
+        {/* quiz.index (0 = first question) picks which of the two jeepneys is at the stop. */}
+        <RoadScene stopIndex={quiz.index} playing={playing}>
           {question.audio_url ? (
             <button type="button" className="btn primary jp-hear" onClick={() => audio.play(question.audio_url)}>
               Hear the driver
