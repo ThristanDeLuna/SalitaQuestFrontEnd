@@ -21,7 +21,14 @@
 .wl-example { padding: 8px 16px 12px; border-top: 1px solid var(--sidebar-active); }
 .wl-example p { margin: 4px 0 0; }
 .wl-label { font-size: 14px; font-weight: 700; color: var(--ink); }
+/* Search box (mockup page 7): full width, 44 px high, 16 px text so phones do not zoom in */
+.wl-search {
+  width: 100%; box-sizing: border-box; min-height: 44px; margin: 0 0 12px; padding: 8px 12px;
+  border: 1px solid var(--ink); border-radius: 3px; background: var(--surface); color: var(--text); font: 16px var(--sans);
+}
 
+/* The Play button keeps one width, so the row does not jump when it says Stop */
+.wl-play { min-width: 72px; }
 .wl-games { margin-bottom: 16px; }
 
 /* ---------- Wider screens: two columns of words where there is room ---------- */
