@@ -6,8 +6,8 @@ import SystemScreen from '../components/SystemScreen';
 import NotFound from './NotFound';
 import './WordList.css';
 
-// Set to true after a native speaker has checked the example sentences (then the small note disappears).
-const SENTENCES_CHECKED = false;
+// Regions whose example sentences a native speaker has checked (the small note is shown for the others).
+const CHECKED_REGIONS = ['tagalog', 'cebuano'];
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
@@ -18,7 +18,7 @@ function errorText(e) {
 }
 
 // ---------- One word: tap the row to see its example sentence, tap Play to hear it ----------
-function WordRow({ word, open, playing, onToggle, onPlay }) {
+function WordRow({ word, checked, open, playing, onToggle, onPlay }) {
   return (
     <li className="wl-row">
       <div className="wl-row-main">
@@ -39,7 +39,7 @@ function WordRow({ word, open, playing, onToggle, onPlay }) {
         <div className="wl-example">
           <span className="wl-label">Example</span>
           <p>{word.example_sentence || 'No example sentence yet.'}</p>
-          {word.example_sentence && !SENTENCES_CHECKED && (
+                    {word.example_sentence && !checked && (
             <p className="muted">Sample sentence, not yet checked by a speaker.</p>
           )}
         </div>
@@ -142,7 +142,7 @@ function RegionWords({ code }) {
 
       <ul className="wl-list">
         {shown.map((w) => (
-          <WordRow key={w.id} word={w} open={openId === w.id} playing={playingId === w.id}
+                    <WordRow key={w.id} word={w} checked={CHECKED_REGIONS.includes(code)} open={openId === w.id} playing={playingId === w.id}
                    onToggle={() => setOpenId(openId === w.id ? null : w.id)}
                    onPlay={() => togglePlay(w)} />
         ))}
