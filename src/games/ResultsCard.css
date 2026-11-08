@@ -1,12 +1,48 @@
-/* Results card shared by both games. Every class starts with rc- so it cannot clash.
-   Colours come from the :root tokens in src/index.css; words always carry the meaning. */
+/* Results card shared by both games, shown as a pop-up. Every class starts with rc- so it cannot clash.
+   Colours come from the :root tokens in src/index.css; words always carry the meaning.
+   The backdrop is index.css's .overlay (fixed, z-index 20 above the top bar and tabs, --ink at 50%). */
 
-.rc { max-width: 480px; margin: 16px auto 0; text-align: center; }
-.rc-score { margin: 0; font: 700 40px/1.2 var(--serif); color: var(--ink); }
-.rc-medal { margin: 4px 0; font-weight: 700; color: var(--ink); }
-.rc-medal-symbol { font-size: 28px; vertical-align: middle; }
+/* The overlay is its own scroll box (with nothing to scroll), so with overscroll-behavior: contain a swipe or
+   wheel on the dimmed backdrop does not scroll the page behind. */
+.rc-overlay { overflow: auto; overscroll-behavior: contain; padding: 16px; }
 
-.rc-rows { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; text-align: left; }
+/* The card: as wide as a phone allows (max 480 px), never taller than the screen. When the answers are
+   open it scrolls inside itself, so the buttons below them stay reachable. */
+.rc {
+  width: min(480px, 100%); max-height: calc(100dvh - 32px); overflow: auto; overscroll-behavior: contain;
+  text-align: center; padding: 0 16px 16px;
+}
+.rc p { margin: 4px 0; }
+
+/* Ribbon heading: an --info-tint band with an ink edge across the top of the card, notched at both ends. */
+.rc-ribbon {
+  margin: 0 -16px 8px; padding: 12px 32px;
+  background: var(--info-tint); border-bottom: 2px solid var(--ink);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%, 12px 50%);
+}
+/* Focused by the script on open: no ring after a tap, but keyboard users still see where they are. */
+.rc-ribbon:focus:not(:focus-visible) { outline: none; }
+
+.rc-score { font: 700 40px/1.2 var(--serif); color: var(--ink); }
+.rc-medal { font-weight: 700; color: var(--ink); }
+.rc-medal-symbol { position: relative; display: inline-block; margin-right: 8px; font-size: 28px; vertical-align: middle; }
+/* The star ring, centred on the medal; small enough to stay clear of the score and the medal's name. */
+.rc-burst { position: absolute; left: 50%; top: 50%; margin: -24px 0 0 -24px; pointer-events: none; }
+.rc-star { stroke: var(--ink); stroke-width: 1; stroke-linejoin: round; }
+.rc-star-0 { fill: var(--art-yellow); }
+.rc-star-1 { fill: var(--art-red); }
+.rc-star-2 { fill: var(--art-pad); }
+
+/* "See my answers": closed at first. The summary is a full-width 44 px tap target. */
+.rc-answers { margin-top: 12px; text-align: left; }
+.rc-answers summary {
+  display: list-item; list-style-position: inside;   /* keeps the browser's open/closed triangle */
+  min-height: 44px; padding: 10px 12px; line-height: 24px; cursor: pointer;
+  font-weight: 700; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--sidebar-active); border-radius: 6px;
+}
+.rc-answers[open] summary { margin-bottom: 8px; }
+.rc-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .rc-row {
   display: grid; gap: 2px; padding: 8px 12px; border-radius: 6px;
   background: var(--surface); border: 1px solid var(--sidebar-active);
@@ -24,6 +60,17 @@
 .rc-stamp { flex: none; display: block; color: var(--ink); }
 
 @media (prefers-reduced-motion: no-preference) {
+  /* The pop-up's one entrance: it fades in and grows from 92% to full size. */
+  .rc { animation: rc-pop 250ms ease-out backwards; }
+  @keyframes rc-pop { from { opacity: 0; transform: scale(0.92); } }
+
+  /* After a pass the star ring bursts out from the medal once and settles. */
+  .rc-burst { animation: rc-burst 800ms ease-out backwards 150ms; }
+  @keyframes rc-burst {
+    from { opacity: 0; transform: scale(0.2) rotate(-90deg); }
+    60% { opacity: 1; transform: scale(1.15) rotate(10deg); }
+  }
+
   .rc-stamp { animation: rc-stamp-in 400ms ease-out; }
   @keyframes rc-stamp-in {
     0% { opacity: 0; transform: scale(0.4); }

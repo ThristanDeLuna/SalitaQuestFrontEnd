@@ -1,0 +1,136 @@
+/* The bay at the top of the Word Pond scene (inside PondScene's frame). Every class starts with pb-.
+   --art-* colours are fills only: the bay holds no text, and every art shape has a 2px var(--ink) outline.
+   Its own colours: sky --info-tint, unlit lanterns --surface, trunk --accent-text.
+   Size: the bay is drawn at its phone size inside .pb-art and scaled by --scene-scale (set by PondScene:
+   1, or 1.6 on wide screens), so every px position and keyframe below is in phone-size art units.
+   The rules outside the motion block put everything at rest; the motion block only adds animation,
+   so with reduced motion the bay is drawn but nothing moves (the jumping fish stays under water). */
+
+/* 150 px tall at phone size. The frame's border belongs to PondScene; the bay only rounds (and clips) its
+   top corners to fit inside it (16 px frame radius minus the 2 px border). No bottom edge: the pond follows. */
+.pb-sky {
+  height: calc(150px * var(--scene-scale, 1)); overflow: hidden;
+  background: var(--info-tint); border-radius: 14px 14px 0 0; pointer-events: none;
+}
+/* The drawing: the bay's width divided by the scale, then scaled back up from the top-left corner. */
+.pb-art {
+  position: relative; height: 150px; width: calc(100% / var(--scene-scale, 1));
+  transform: scale(var(--scene-scale, 1)); transform-origin: 0 0;
+}
+.pb-sky * { pointer-events: none; }
+.pb-sky svg { display: block; }
+/* Non-scaling, so the outlines stay 2 px when the bay is scaled up. */
+.pb-sky :is(path, rect, circle, ellipse) {
+  stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+/* Light from the top left. Overlays sit inside their shape and have no outline of their own:
+   a highlight (--surface at 50%) on the upper left, a shade (--ink at 15%) on the lower right,
+   and a soft contact shadow (--ink at 18%) on the water or sand under things that stand there. */
+.pb-sky .pb-hi { fill: var(--surface); opacity: 0.5; stroke: none; }
+.pb-sky .pb-shade { fill: var(--ink); opacity: 0.15; stroke: none; }
+.pb-sky .pb-contact { fill: var(--ink); opacity: 0.18; stroke: none; }
+/* Fine detail lines (trunk rings, leaflets, bamboo nodes): thinner, no fill. */
+.pb-sky .pb-detail { fill: none; stroke-width: 1.5; }
+
+/* ---------- Sky ---------- */
+/* Far layers (sun, hills) are a little see-through, so the near ones stand out. */
+.pb-sun { position: absolute; top: 4px; right: 12px; fill: var(--art-yellow); opacity: 0.9; }
+.pb-sky .pb-glow { fill: none; stroke: var(--art-yellow); opacity: 0.5; }   /* faint rings, not outlines */
+.pb-hills { position: absolute; left: 0; bottom: 58px; fill: var(--art-pad); opacity: 0.8; }   /* the sea (62 px) hides its foot */
+.pb-palm { position: absolute; left: 8px; bottom: 26px; }
+.pb-island { fill: var(--art-yellow); }
+.pb-trunk { fill: var(--accent-text); }
+.pb-coconut { fill: var(--accent-text); }
+.pb-sky .pb-coconut { stroke-width: 1.5; }
+.pb-leaves { fill: var(--art-pad); transform-box: view-box; transform-origin: 38px 28px; }   /* the trunk top */
+.pb-birds path { fill: none; stroke-linecap: round; }
+
+/* Birds and swimming fish ride full-width tracks, so a 100% transform carries them edge to edge.
+   --pb-rest is where each one waits when nothing moves. */
+.pb-track { position: absolute; left: 0; right: 0; }
+.pb-track > svg { margin-left: var(--pb-rest); }
+.pb-birds { top: 30px; --pb-rest: 34%; }
+
+/* ---------- Sea: a plane tilted back a little; wider than the bay, so the tilt never shows a corner.
+   It has the pond's colour and no bottom edge, so it runs straight on into the pond water below. ---------- */
+.pb-sea { position: absolute; left: 0; right: 0; bottom: 0; height: 62px; perspective: 240px; }
+.pb-plane {
+  position: absolute; top: 0; bottom: 0; left: -15%; right: -15%;
+  background: var(--art-water); border-top: calc(2px / var(--scene-scale, 1)) solid var(--ink);   /* 2 px on screen */
+  transform: rotateX(24deg); transform-origin: 50% 100%;
+}
+.pb-wave { position: absolute; left: 0; fill: var(--art-water); }   /* only the crests show, as ripples */
+.pb-wave-back { top: 6px; }
+.pb-wave-front { bottom: 8px; }
+
+/* Fish: smaller ones higher up, as if further away. */
+.pb-fish { fill: var(--art-yellow); }
+.pb-swim-mid .pb-fish, .pb-jumper { fill: var(--art-red); }
+.pb-eye { fill: var(--ink); stroke-width: 0; }
+.pb-swim-far { bottom: 40px; --pb-rest: 62%; }
+.pb-swim-mid { bottom: 24px; --pb-rest: 14%; }
+.pb-swim-near { bottom: 4px; --pb-rest: 80%; }
+.pb-jumper { position: absolute; left: 26%; bottom: 30px; opacity: 0; }   /* waits under the water */
+
+/* ---------- Banca, floating at the waterline ---------- */
+.pb-banca { position: absolute; left: 44%; bottom: 34px; }
+.pb-hull { fill: var(--art-yellow); }
+.pb-stripe { fill: var(--art-red); }
+.pb-bamboo { fill: var(--art-pad); }
+.pb-sky .pb-foam { fill: var(--surface); stroke: none; }   /* foam dots under each wave crest */
+.pb-line { fill: none; stroke-linecap: round; }
+.pb-lantern { fill: var(--surface); }
+.pb-lit { fill: var(--art-yellow); }
+.pb-banca, .pb-rays, .pb-lantern { transform-box: fill-box; transform-origin: center; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The sun's rays breathe; the palm leaves sway 3 degrees either way. */
+  .pb-rays { animation: pb-pulse 3s ease-in-out infinite alternate; }
+  @keyframes pb-pulse { from { transform: scale(0.85); opacity: 0.6; } }
+  .pb-leaves { animation: pb-sway 4s ease-in-out infinite alternate; }
+  @keyframes pb-sway {
+    from { transform: rotate(-3deg); }
+    to { transform: rotate(3deg); }
+  }
+
+  /* Tracks start just off the left edge and leave past the right one. */
+  .pb-track > svg { margin-left: 0; }
+  /* The flock crosses in the first 45% of a slow cycle, then the sky is empty for a while. */
+  .pb-birds { animation: pb-fly 24s linear -4s infinite; }
+  @keyframes pb-fly {
+    0% { transform: translateX(-44px); }
+    45%, 100% { transform: translateX(100%); }
+  }
+  .pb-swim-far { animation: pb-swim 26s linear -8s infinite; }
+  .pb-swim-mid { animation: pb-swim 20s linear -15s infinite; }
+  .pb-swim-near { animation: pb-swim 15s linear -3s infinite; }
+  @keyframes pb-swim {
+    from { transform: translateX(-32px); }   /* the biggest fish is 28 px long */
+    to { transform: translateX(100%); }
+  }
+
+  /* Both wave strips slide one crest to the left (48 px = WAVE_P in PondBanner.jsx), the near one faster. */
+  .pb-wave-back { animation: pb-slide 7s linear infinite; }
+  .pb-wave-front { animation: pb-slide 4s linear infinite; }
+  @keyframes pb-slide { to { transform: translateX(-48px); } }
+
+  /* The banca rocks gently: 2 px up and a small tilt. */
+  .pb-banca { animation: pb-bob 3s ease-in-out infinite alternate; }
+  @keyframes pb-bob { to { transform: translateY(-2px) rotate(1.5deg); } }
+
+  /* Every 6 s one fish leaps out of the water in an arc and dives back in, head first. */
+  .pb-jumper { animation: pb-jump 6s ease-in-out 1s infinite; }
+  @keyframes pb-jump {
+    0%, 62% { opacity: 0; transform: translate(0, 18px) rotate(-50deg); }
+    66% { opacity: 1; transform: translate(6px, 4px) rotate(-40deg); }
+    76% { transform: translate(22px, -28px) rotate(0deg); }
+    86% { opacity: 1; transform: translate(38px, 4px) rotate(40deg); }
+    90%, 100% { opacity: 0; transform: translate(44px, 18px) rotate(50deg); }
+  }
+
+  /* A lantern that lights up pops once. */
+  .pb-lit { animation: pb-pop 300ms ease-out; }
+  .pb-settled .pb-lit { animation: none; }   /* results: all lit at once, no pops (animation budget) */
+  @keyframes pb-pop { 50% { transform: scale(1.5); } }
+}

@@ -1,15 +1,46 @@
+import JeepneyArt from './JeepneyArt';
+import TownStrip from './TownStrip';
 import './RoadScene.css';
 
-// RoadScene: the street scene above each Jeepney stop question. Decoration around one bubble.
-// It draws a road with a moving centre line, two drifting clouds and a jeepney that drives in
-// from the left; the driver's mouth moves and sound waves pulse while the word is playing.
-// The speech bubble holds the real content (the "Hear the driver" button, or the
-// "not available" text). The bubble only fades in, so the button never moves under a finger.
-// Props: stopKey (changes per question: the jeepney drives in and the bubble fades in again,
-// while the road and clouds keep going), playing (true while the sound plays), children (the bubble content).
+// RoadScene: the street scene above each Jeepney stop question. Decoration around one speech bubble.
+// Back to front: a still mountain and sun, clouds, a slowly scrolling street, the road, and two jeepneys
+// that take turns: the stop number's parity says which is "here" (parked) and which is "gone" (off the
+// right edge). On a new stop they cross, by CSS classes alone (no timers). The bubble holds the real
+// content (the "Hear the driver" button, or plain text) and only fades in, so it never moves under a finger.
+// Props: stopIndex (0-based stop number), parked (true: nobody drives, e.g. on the results),
+// playing (true while the sound plays: the driver talks, the waves pulse), children (the bubble content).
 // The art is aria-hidden and ignores taps; only the art layer is clipped, never the bubble.
 
-// ---------- Road: grey band with a dashed centre line that scrolls left ----------
+// ---------- Far view: a sun over a two-peaked mountain; it never moves (the slowest parallax layer) ----------
+function FarView() {
+  return (
+    <svg className="rs-far" viewBox="0 0 200 110" width="200" height="110" focusable="false">
+      <circle className="rs-glow" cx="176" cy="24" r="20" />
+      <circle className="rs-glow" cx="176" cy="24" r="16" />
+      <circle className="rs-sun" cx="176" cy="24" r="12" />
+      <circle className="rs-hi" cx="172" cy="20" r="4" />
+      {/* Two peaks; the foot stands on the road's top edge. The right slopes are in shade, a highlight runs
+          down the left of the tall peak. */}
+      <path className="rs-mountain" d="M1 110 L56 60 L88 84 L124 52 L199 110 Z" />
+      <path className="rs-shade" d="M56 62 L86 86 L82 110 L64 110 Z M124 54 L196 110 L140 110 Z" />
+      <path className="rs-hi" d="M122 56 L116 64 L120 66 Z" />
+    </svg>
+  );
+}
+
+// ---------- Cloud: one puffy outline; its track carries it across the sky ----------
+function Cloud({ className }) {
+  return (
+    <div className={`rs-cloud-track ${className}`}>
+      <svg className="rs-cloud" viewBox="0 0 44 22" width="44" height="22" focusable="false">
+        {/* Three bumps on a flat bottom, kept 1 px inside the box for the 2 px outline. */}
+        <path d="M8 21 A7 7 0 0 1 9 8 A10 10 0 0 1 28 6 A8 8 0 0 1 37 21 Z" />
+      </svg>
+    </div>
+  );
+}
+
+// ---------- Road: grey band with a dashed centre line that scrolls left (faster than the street) ----------
 const DASH_W = 22;
 const DASH_H = 6;
 const DASH_PERIOD = 40;            // one dash + one gap; the strip moves by exactly this, so the loop is seamless
@@ -27,67 +58,6 @@ function Road() {
   );
 }
 
-// ---------- Cloud: one puffy outline; its track carries it across the sky ----------
-function Cloud({ className }) {
-  return (
-    <div className={`rs-cloud-track ${className}`}>
-      <svg className="rs-cloud" viewBox="0 0 44 22" width="44" height="22" focusable="false">
-        {/* Three bumps on a flat bottom, kept 1 px inside the box for the 2 px outline. */}
-        <path d="M8 21 A7 7 0 0 1 9 8 A10 10 0 0 1 28 6 A8 8 0 0 1 37 21 Z" />
-      </svg>
-    </div>
-  );
-}
-
-// ---------- Wheel: tyre, rim and one bolt off-centre, so the spin can be seen ----------
-const WHEEL_R = 9;
-
-function Wheel({ cx, cy }) {
-  return (
-    <g className="rs-wheel">
-      <circle className="rs-tyre" cx={cx} cy={cy} r={WHEEL_R} />
-      <circle className="rs-rim" cx={cx} cy={cy} r={WHEEL_R / 2} />
-      <circle className="rs-bolt" cx={cx} cy={cy - 2} r="1.5" />
-    </g>
-  );
-}
-
-// ---------- Driver: face in the front window, cap with the peak forward, small mouth ----------
-function Driver() {
-  return (
-    <g>
-      <circle className="rs-face" cx="76" cy="25" r="5" />
-      {/* Cap: a dome over the head plus a peak pointing forward (right). */}
-      <path className="rs-cap" d="M71 22 A5 4 0 0 1 81 22 L85 22 L85 23 L71 23 Z" />
-      <ellipse className="rs-mouth" cx="78.5" cy="27" rx="1.5" ry="1" />
-    </g>
-  );
-}
-
-// ---------- Jeepney: side view facing right ----------
-// Drawn in a 132 x 62 box: cabin from x 4 to 96, hood and bumper in front, wheels at the bottom.
-const JEEP_W = 132;
-const JEEP_H = 62;
-const WINDOW_XS = [12, 38, 64];    // three windows; the driver sits in the front one (x 64)
-
-function Jeepney() {
-  return (
-    <div className="rs-jeepney">
-      <svg className="rs-jeep" viewBox={`0 0 ${JEEP_W} ${JEEP_H}`} width={JEEP_W} height={JEEP_H} focusable="false">
-        <rect className="rs-rack" x="10" y="3" width="80" height="5" />
-        {/* Cabin, then the lower hood stepping down to the front. */}
-        <path className="rs-body" d="M4 10 H96 V26 L118 28 L126 34 V48 H4 Z" />
-        <rect className="rs-stripe" x="4" y="36" width="122" height="5" />
-        {WINDOW_XS.map((x) => <rect key={x} className="rs-window" x={x} y="14" width="22" height="16" />)}
-        <Driver />
-        <rect className="rs-bumper" x="120" y="44" width="10" height="5" />
-        <Wheel cx={26} cy={50} />
-        <Wheel cx={104} cy={50} />
-      </svg>
-    </div>
-  );
-}
-
 // ---------- Sound waves: three arcs that are always there; only their opacity changes ----------
 function SoundWaves() {
   return (
@@ -99,18 +69,33 @@ function SoundWaves() {
   );
 }
 
-export default function RoadScene({ stopKey, playing, children }) {
+const PAINTS = ['rs-paint-a', 'rs-paint-b'];   // the two jeepneys, two paint jobs; they take turns
+
+// Which classes a jeepney gets. The one that is "gone" only drives off when it was on screen before:
+// never on the first stop and never when parked, so it simply waits off the right edge.
+function jeepClasses(isHere, stopIndex, parked) {
+  if (isHere) return parked ? 'rs-here' : 'rs-here rs-arrive';
+  return stopIndex > 0 && !parked ? 'rs-gone rs-leave' : 'rs-gone';
+}
+
+export default function RoadScene({ stopIndex = 0, parked = false, playing = false, children }) {
+  const here = stopIndex % 2;
   return (
     <div className={`rs-scene${playing ? ' rs-playing' : ''}`}>
       <div className="rs-art" aria-hidden="true">
+        <FarView />
         <Cloud className="rs-cloud-a" />
         <Cloud className="rs-cloud-b" />
+        <TownStrip />
         <Road />
-        <Jeepney key={stopKey} />
+        {/* Fixed keys: the same two jeepneys stay mounted, so a class change is what starts each drive. */}
+        {PAINTS.map((paint, i) => (
+          <JeepneyArt key={paint} className={`${paint} ${jeepClasses(i === here, stopIndex, parked)}`} />
+        ))}
       </div>
       <div className="rs-content">
         <SoundWaves />
-        <div key={stopKey} className="rs-bubble">{children}</div>
+        <div key={stopIndex} className="rs-bubble">{children}</div>
       </div>
     </div>
   );
