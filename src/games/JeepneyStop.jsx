@@ -114,7 +114,7 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
             </RoadScene>
           </div>
         </div>
-        <ResultsCard result={result} rows={listeningRows(result.results, round.questions)}
+        <ResultsCard result={result} rows={listeningRows(result.results, round.questions)} regionName={regionName}
                      onAgain={onAgain} backTo="/" />
       </>
     );
