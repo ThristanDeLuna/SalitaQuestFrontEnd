@@ -6,6 +6,7 @@ import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { useSummary } from '../auth/useSummary';
 import './RegionMap.css';
+import { ISLANDS } from './mapIslands';
 
 // OpenStreetMap supplies the tiles (DEC-55). The address sits in one place so it is easy to change.
 const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -74,6 +75,10 @@ export default function RegionMap() {
   const map = useRef(null);                        // the Leaflet map
   const markers = useRef({});                      // code -> Leaflet marker
 
+  const tiles = useRef(null);                      // the real OSM street layer
+  const land = useRef(null);                       // the cartoon islands layer
+  const [real, setReal] = useState(false);         // false = game map (default)
+
   // ---------- 1. Load the regions ----------
   useEffect(() => {
     let alive = true;                              // ignore an answer that arrives after we left
@@ -100,12 +105,29 @@ export default function RegionMap() {
       maxBounds: PH_BOUNDS,        // the edges the view cannot leave
       maxBoundsViscosity: 1.0,     // 1.0 = a hard wall; lower values bounce back softly
     });
-    new L.TileLayer(TILE_URL, { attribution: ATTRIBUTION, maxZoom: 19 }).addTo(m);
+    tiles.current = new L.TileLayer(TILE_URL, { attribution: ATTRIBUTION, maxZoom: 19 });  // kept, not added yet
+    // One polygon per island. interactive:false lets taps pass through to the map.
+    land.current = new L.LayerGroup(
+            [
+        // sand first (drawn underneath), then the grass on top
+        ...ISLANDS.map((c) => new L.Polygon(c, { className: 'rm-beach', interactive: false })),
+        ...ISLANDS.map((c) => new L.Polygon(c, { className: 'rm-land', interactive: false })),
+      ],
+    ).addTo(m);
     m.attributionControl.setPosition('topright');  // the sheet slides up from the bottom, so keep it clear
     m.on('click', () => setSelected(null));        // tapping empty sea closes the sheet
     map.current = m;
     return () => { m.remove(); map.current = null; };
   }, []);
+
+  // ---------- 2b. Switch between the game map and the real map ----------
+  useEffect(() => {
+    const m = map.current;
+    if (!m) return;
+    m.removeLayer(real ? land.current : tiles.current);   // removing a layer that is not on the map is harmless
+    (real ? tiles.current : land.current).addTo(m);
+    m.getContainer().classList.toggle('rm-game', !real);   // classList, so Leaflet's own classes are kept
+  }, [real]);
 
   // ---------- 3. Draw one pin per region; redraw when a state changes ----------
   useEffect(() => {
@@ -156,8 +178,8 @@ export default function RegionMap() {
 
   return (
     <div onKeyDown={(e) => { if (e.key === 'Escape') setSelected(null); }}>
-      <h1>Choose a region</h1>
-      <p className="muted">Tap a pin to see the region.</p>
+            <h1 className="rm-hide">Choose a region</h1>
+            <p className="muted rm-hide">Tap a pin to see the region.</p>
 
       {err && (
         <p className="banner error" role="alert">
@@ -168,6 +190,9 @@ export default function RegionMap() {
       <div className="rm-box">
         {/* Leaflet owns this <div>; React must not put children in it. */}
         <div ref={box} className="rm-map" />
+        <button type="button" className="btn rm-switch" onClick={() => setReal((v) => !v)}>
+          {real ? 'Game map' : 'Real map'}
+        </button>
         {!regions && !err && <p className="rm-loading" role="status">Loading regions...</p>}
 
         {open && (
