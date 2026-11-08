@@ -1,0 +1,41 @@
+/* The "Stamp earned" step of the results pop-up. Every class starts with sm-; it also reuses ResultsCard's
+   .rc-ribbon heading, StampIcon (.rc-stamp) and star Burst (.rc-burst / .rc-star).
+   Colours come only from the :root tokens: text sits on --surface (the stamp) or --info-tint (ribbon, chip),
+   --art-* only fills the stars, each outlined in 2px --ink.
+   Sizes: the art box is 232 px, so it fits the 256 px content width of the card on a 320 px phone.
+   The Burst's ring radius (18 of its 48 viewBox units) scales to 87 px, which clears the 136 px stamp. */
+
+.sm-title:focus:not(:focus-visible) { outline: none; }
+
+.sm-art { position: relative; display: grid; place-items: center; width: 232px; height: 232px; margin: 0 auto; }
+
+/* The Burst is drawn for a 48 px medal; here it fills the art box and keeps a 2 px outline at that size. */
+.sm-art .rc-burst { width: 232px; height: 232px; margin: -116px 0 0 -116px; }
+.sm-art .rc-star { stroke-width: 2px; vector-effect: non-scaling-stroke; }
+
+/* The stamp: a solid ink ring with a dashed ring inside, on --surface, tilted like a real rubber stamp. */
+.sm-stamp {
+  position: relative; box-sizing: border-box; width: 136px; height: 136px; padding: 16px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border: 2px solid var(--ink); border-radius: 50%; background: var(--surface); color: var(--ink);
+  transform: rotate(-8deg);
+}
+.sm-stamp::before {
+  content: ''; position: absolute; inset: 5px; border: 2px dashed var(--ink); border-radius: 50%; pointer-events: none;
+}
+.sm-stamp .rc-stamp { width: 36px; height: 36px; }
+.sm-name { max-width: 100%; font: 700 16px/1.15 var(--serif); overflow-wrap: anywhere; }
+.sm-word { font: 700 14px/1.2 var(--sans); letter-spacing: 0.12em; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Timeline (the card's own 250 ms entrance runs underneath): the stamp thumps down 100-700 ms,
+     then the star ring bursts out once 450-1250 ms. Everything is done in 1.25 s. Transform and opacity only. */
+  .sm-stamp { animation: sm-thump 600ms ease-out backwards 100ms; }
+  @keyframes sm-thump {
+    from { opacity: 0; transform: rotate(-8deg) scale(1.6); }
+    60% { opacity: 1; transform: rotate(-8deg) scale(0.94); }
+    to { opacity: 1; transform: rotate(-8deg) scale(1); }
+  }
+  .sm-stamp .rc-stamp { animation: none; }            /* the stamp thumps as one piece */
+  .sm-art .rc-burst { animation-delay: 450ms; }      /* ResultsCard's 800 ms burst, after the thump */
+}
