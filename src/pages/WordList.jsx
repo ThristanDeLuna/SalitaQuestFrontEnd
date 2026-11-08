@@ -58,6 +58,7 @@ function RegionWords({ code }) {
   const [openId, setOpenId] = useState(null);  // the word whose example sentence is showing
   const [playingId, setPlayingId] = useState(null);
   const [playErr, setPlayErr] = useState('');
+    const [q, setQ] = useState('');                  // the search box; it only filters the list on this screen
   const player = useRef(null);                 // the one <audio> that is playing, if any
 
   useEffect(() => {
@@ -116,6 +117,10 @@ function RegionWords({ code }) {
       </SystemScreen>
     );
   }
+  const needle = q.trim().toLowerCase();
+  const shown = needle
+    ? words.filter((w) => w.word.toLowerCase().includes(needle) || w.translation.toLowerCase().includes(needle))
+    : words;
 
   return (
     <>
@@ -131,8 +136,12 @@ function RegionWords({ code }) {
       )}
       {playErr && <p className="banner error" role="alert">{playErr}</p>}
 
+            <input type="search" className="wl-search" value={q} onChange={(e) => setQ(e.target.value)}
+             placeholder="Search words" aria-label="Search words" />
+      {shown.length === 0 && <p className="muted" role="status">No word matches &ldquo;{q.trim()}&rdquo;.</p>}
+
       <ul className="wl-list">
-        {words.map((w) => (
+        {shown.map((w) => (
           <WordRow key={w.id} word={w} open={openId === w.id} playing={playingId === w.id}
                    onToggle={() => setOpenId(openId === w.id ? null : w.id)}
                    onPlay={() => togglePlay(w)} />
