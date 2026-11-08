@@ -35,21 +35,32 @@ async function send(path, options = {}) {
   }
 }
 
+// A refresh token works only once. When the access token has expired, several calls can get a 401 at the
+// same moment (for example /auth/me, the regions and /api/me/summary after a reload). If each one called
+// /auth/refresh, only the first would succeed and the others would fail and wipe the saved tokens.
+// So all of them share ONE refresh: the first call starts it, the rest wait for the same answer.
+let refreshing = null;
+
+function refreshOnce() {
+  if (!refreshing) {
+    const refresh_token = tokens.get()?.refresh_token;
+    refreshing = send('/auth/refresh', { method: 'POST', body: JSON.stringify({ refresh_token }) })
+      .then(async (r) => {
+        if (r.ok) { tokens.set((await r.json()).tokens); return true; }
+        tokens.clear();   // the refresh token itself is no longer good: the user must sign in again
+        return false;
+      })
+      .finally(() => { refreshing = null; });
+  }
+  return refreshing;
+}
+
 export async function api(path, options = {}) {
   let res = await send(path, options);
 
-  // Expired access token: try the refresh token once, then repeat the call.
+  // Expired access token: refresh once (shared by every call that failed), then repeat this call.
   if (res.status === 401 && tokens.get()?.refresh_token) {
-    const r = await send('/auth/refresh', {
-      method: 'POST',
-      body: JSON.stringify({ refresh_token: tokens.get().refresh_token }),
-    });
-    if (r.ok) {
-      tokens.set((await r.json()).tokens);
-      res = await send(path, options);
-    } else {
-      tokens.clear();
-    }
+    if (await refreshOnce()) res = await send(path, options);
   }
 
   const data = await res.json().catch(() => null);
