@@ -19,7 +19,7 @@
 .rm-name { margin-top: 2px; padding: 0 6px; background: rgba(255, 255, 255, 0.92); border-radius: 3px; color: var(--ink); font: 700 13px/1.4 var(--sans); white-space: nowrap; }
 .rm-stamped .rm-dot { background: var(--ink); color: var(--surface); }
 .rm-in_progress .rm-dot { background: var(--accent); color: var(--accent-text); }
-.rm-locked .rm-dot { background: #d9d4df; border-style: dashed; }
+.rm-locked .rm-dot { background: var(--sidebar); border-style: dashed; }
 .rm-coming_soon .rm-dot { background: var(--info-tint); border-style: dashed; }
 .rm-selected .rm-dot { transform: scale(1.25); outline: 3px solid var(--accent); }
 .leaflet-marker-icon:focus-visible .rm-dot { outline: 3px solid var(--ink); outline-offset: 3px; }
@@ -48,3 +48,74 @@
 /* The two game results in the sheet (signed-in players on an open region) */
 .rm-games { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 4px; }
 .rm-games li { display: flex; justify-content: space-between; gap: 12px; }
+
+/* ---------- Game look (added at the end, so these rules win) ---------- */
+
+/* The heading stays for screen readers, hidden from the eye (the mockup has no heading over the map) */
+.rm-hide { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* The map fills most of the screen, like the mockup, and sits in a game frame */
+.rm-map {
+  height: calc(100vh - 210px); height: calc(100dvh - 210px); min-height: 380px; max-height: 720px;
+  border: 3px solid var(--ink); border-radius: 12px; box-shadow: 0 4px 0 var(--ink);
+}
+.rm-map .leaflet-tile-pane { filter: saturate(1.2); }
+
+/* Pins: a white badge with a colored ring (rings use the art colors; the glyph stays on white, ink or accent) */
+.rm-dot { position: relative; box-shadow: 0 0 0 4px var(--art-water-deep), 0 3px 6px rgba(0, 0, 0, 0.35); }
+.rm-stamped .rm-dot { box-shadow: 0 0 0 4px var(--art-pad), 0 3px 6px rgba(0, 0, 0, 0.35); }
+.rm-locked .rm-dot { box-shadow: 0 0 0 4px var(--art-road), 0 3px 6px rgba(0, 0, 0, 0.35); }
+.rm-coming_soon .rm-dot { box-shadow: 0 0 0 4px var(--art-water), 0 3px 6px rgba(0, 0, 0, 0.25); }
+.rm-selected .rm-dot { outline: 3px solid var(--ink); }
+
+/* The region name as a small ribbon */
+.rm-name {
+  margin-top: 8px; padding: 0 10px; border: 2px solid var(--ink); border-radius: 999px;
+  background: var(--surface); font: 700 13px/1.5 var(--serif); box-shadow: 0 2px 0 var(--ink);
+}
+
+/* The island in progress pulses gently (only when the player allows motion) */
+@media (prefers-reduced-motion: no-preference) {
+  .rm-in_progress .rm-dot::after {
+    content: ''; position: absolute; inset: -7px; border: 3px solid var(--art-yellow); border-radius: 50%;
+    animation: rm-ring 1.8s ease-out infinite;
+  }
+  @keyframes rm-ring { from { transform: scale(0.9); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+}
+.rm-legend .rm-in_progress .rm-dot::after { content: none; }
+
+/* The quest card (the bottom sheet) */
+.rm-sheet { border: 3px solid var(--ink); border-top: 8px solid var(--art-yellow); box-shadow: 0 4px 0 var(--ink); }
+.rm-sheet-head h2 { font-family: var(--serif); }
+
+/* The legend under the map: what each pin look means */
+.rm-legend { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.rm-legend li { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.rm-mini { width: 28px; height: 28px; font-size: 13px; box-shadow: none; }
+/* Game map: flat sea with cartoon islands. The real map is still one button away. */
+.rm-map.rm-game { background: var(--art-water); }
+.rm-land { fill: var(--background); fill-opacity: 1; stroke: var(--ink); stroke-width: 3px; stroke-linejoin: round; }
+.rm-switch { position: absolute; left: 10px; bottom: 10px; z-index: 2; }
+/* Game map, more depth: textured sea, green islands with a raised edge */
+.rm-map.rm-game {
+  background:
+    radial-gradient(circle at 25% 15%, rgba(255, 255, 255, 0.45), transparent 50%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 14px, transparent 14px 28px),
+    var(--art-water);
+}
+.rm-land {
+  fill: #b5e08f;                       /* grass */
+  stroke: var(--ink);
+  stroke-width: 3px;
+  filter: drop-shadow(0 5px 0 rgba(37, 24, 78, 0.28));   /* the island looks lifted off the sea */
+}
+.rm-switch { border-radius: 999px; box-shadow: 0 3px 0 rgba(37, 24, 78, 0.25); }
+/* Sand ring: the same island shape, drawn wider underneath the grass */
+.rm-beach {
+  fill: #f6e3a8;
+  stroke: #f6e3a8;
+  stroke-width: 16px;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 5px 0 rgba(37, 24, 78, 0.28));
+}
+.rm-land { filter: none; }
