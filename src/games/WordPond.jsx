@@ -130,7 +130,7 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
           {header}
           <PondScene caught={pond.meanings.length} total={pond.meanings.length} settled />
         </div>
-        <ResultsCard result={result} rows={matchingRows(result.results, round.words)}
+        <ResultsCard result={result} rows={matchingRows(result.results, round.words)} regionName={regionName}
                      onAgain={onAgain} backTo="/"
                      next={{ to: `/play/listening/${region}`, label: 'Next: Jeepney stop' }} />
       </>

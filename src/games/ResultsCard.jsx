@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+import StampMoment, { STAMP_TITLE_ID } from './StampMoment';
 import './ResultsCard.css';
 
 // The results of one finished game. Shared by Word Pond and Jeepney stop, so it knows
@@ -12,11 +13,14 @@ import './ResultsCard.css';
 //   onAgain called by "Try again"
 //   backTo  where "Back to the Map" goes
 //   next    optional { to, label }: after a pass, the next step becomes the main button
+//   regionName optional display name of the region; only the stamp step uses it (absent: a generic heading)
 // Everything is said in words; symbols and colour are only an extra hint.
 // It shows as a pop-up over the dimmed game: the same .overlay + role="dialog" pattern as the app's other
 // dialogs (Profile sign-out, AdminAudio, AdminPending), rendered into document.body through a portal so no
 // ancestor can break position: fixed. It has no close button and no Escape: the actions are the way out.
-// On open, focus moves to the "Your results" heading. The game behind it is made inert by the game screen.
+// On open, focus moves to the step's heading. The game behind it is made inert by the game screen.
+// Two steps, one dialog: only when the server says stamp_earned, it opens on StampMoment ("<Region> stamped!");
+// its Continue button shows the normal results. Without stamp_earned it opens straight on the results.
 // The answers sit in a collapsed <details>, so score, medal and buttons fit without scrolling.
 
 // The medal values come from Game_rules::medal() on the server: 'gold', 'silver', 'bronze' or null.
@@ -78,14 +82,22 @@ function StampIcon() {
   );
 }
 
-export default function ResultsCard({ result, rows, onAgain, backTo, next }) {
+// useRegionName falls back to the raw code until its request answers: that is no name to show.
+const displayName = (name, code) => (name && name !== code ? name : null);
+
+export default function ResultsCard({ result, rows, onAgain, backTo, next, regionName }) {
   const showNext = Boolean(next) && result.passed;   // only one primary button on the card
+  const [stamping, setStamping] = useState(result.stamp_earned === true);   // only the server decides a stamp
   const titleRef = useRef(null);
-  useEffect(() => { titleRef.current?.focus(); }, []);   // a screen reader starts at the title
+  useEffect(() => { titleRef.current?.focus(); }, [stamping]);   // a screen reader starts at the step's title
 
   return createPortal(
     <div className="overlay rc-overlay">
-      <section className="rc card" role="dialog" aria-modal="true" aria-labelledby="rc-title">
+      <section className="rc card" role="dialog" aria-modal="true" aria-labelledby={stamping ? STAMP_TITLE_ID : 'rc-title'}>
+        {stamping ? (
+          <StampMoment regionName={displayName(regionName, result.region)} starsGained={result.stars_gained}
+                       titleRef={titleRef} icon={<StampIcon />} burst={<Burst />} onContinue={() => setStamping(false)} />
+        ) : (<>
         <h2 id="rc-title" className="rc-ribbon" ref={titleRef} tabIndex={-1}>Your results</h2>
         <p className="rc-score">{result.score} / {result.max_score}</p>
         <Medal medal={result.medal} passed={result.passed} />
@@ -113,6 +125,7 @@ export default function ResultsCard({ result, rows, onAgain, backTo, next }) {
           <button type="button" className={showNext ? 'btn' : 'btn primary'} onClick={onAgain}>Try again</button>
           <Link className="btn" to={backTo}>Back to the Map</Link>
         </div>
+        </>)}
       </section>
     </div>,
     document.body,
