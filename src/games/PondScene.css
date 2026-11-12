@@ -1,7 +1,7 @@
 /* The Word Pond scene: one frame holding the bay (PondBanner, pb-) and the pond water with the fish.
    Every class here starts with ps- so it cannot clash.
-   Size: --scene-scale (1, or 1.6 on wide screens) scales the art of the bay and of the water; the fish
-   (the content) are never scaled.
+   Size: --scene-scale (1, or 1.75 from 900 px) scales
+   the art of the bay and of the water; the fish (the content) are never scaled.
    --art-* colours are fills only: no text sits on them, and every art shape has a 2px var(--ink) outline.
    With reduced motion the art stays, but nothing moves. */
 
@@ -25,9 +25,9 @@
 }
 .ps-art-piece { position: absolute; display: block; pointer-events: none; }
 
-/* 12 px leaves room for the 3 px focus outline, its 2 px offset and the few px of fish drift.
+/* 8 px leaves room for the 3 px focus outline and its 2 px offset (each fish also has 4 px inside its button).
    On the results there are no fish; the min-height still shows a strip of pond with its pads. */
-.ps-content { position: relative; z-index: 1; padding: 12px; min-height: 48px; }
+.ps-content { position: relative; z-index: 1; padding: 8px; min-height: 48px; }
 
 /* Non-scaling outlines stay 2 px when the art is scaled up. */
 .ps-art-piece :is(ellipse, path) { vector-effect: non-scaling-stroke; }
@@ -47,9 +47,20 @@
 .ps-pad-a { top: -10px; left: -12px; --ps-rest: -20deg; }
 .ps-pad-b { bottom: -12px; right: -8px; --ps-rest: 160deg; }
 
-/* Wide screens: a bigger scene (the bay is taller and all its art 1.6 times larger). */
+/* The footer (Finish and its hint) sits inside the frame, on --surface, and sticks to the bottom of the screen
+   while the pond is taller than the screen. On a phone the shell's tab bar is fixed at the bottom (index.css:
+   links at least 56 px tall plus a 1 px top border = 57 px), so the footer stops just above it; from 769 px the
+   tab bar is a side menu and the footer goes to the very bottom. */
+.ps-footer {
+  position: sticky; bottom: 57px; z-index: 2; padding: 8px 12px;
+  background: var(--surface); border-top: 2px solid var(--ink); border-radius: 0 0 14px 14px;
+}
+@media (min-width: 769px) {
+  .ps-footer { bottom: 0; }
+}
+/* Wide screens: the fish are bigger, so the strip is drawn 1.75 times larger (126 px) to stay about 15% of the panel. */
 @media (min-width: 900px) {
-  .ps-pond { --scene-scale: 1.6; }
+  .ps-pond { --scene-scale: 1.75; }
 }
 
 @media (prefers-reduced-motion: no-preference) {

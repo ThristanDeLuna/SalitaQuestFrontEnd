@@ -1,4 +1,4 @@
-/* Word Pond screen. Phone first at 390 px; wider screens only rearrange it.
+/* Word Pond screen. Phone first at 390 px; one column at every width (wide screens only turn the meanings into rows).
    Every class starts with wp- so it cannot clash. Colours come from the :root tokens in src/index.css.
    The selected meaning says "Selected:" in words; the border and fill are only a second hint. */
 
@@ -9,7 +9,28 @@
 .wp-icon { flex: none; display: block; color: var(--ink); }
 .wp-icon-fill { fill: var(--info-tint); stroke: currentColor; stroke-width: 2; }
 .wp-label { margin: 8px 0; }
-.wp-foot { margin: 0; text-align: center; line-height: 20px; }
+
+/* The one-line intro under the title, the How to play toggle (closed by default) and the live status line. */
+.wp-intro { margin: 0 0 4px; color: var(--text); font-size: 16px; line-height: 24px; }
+.wp-help { margin: 0 0 4px; }
+.wp-help > summary {
+  display: flex; align-items: center; gap: 8px; min-height: 44px; width: max-content; max-width: 100%;
+  list-style: none; color: var(--ink); font-weight: 700; cursor: pointer;
+}
+.wp-help > summary::-webkit-details-marker { display: none; }
+/* A small chevron drawn with borders (no icon font): it points down when closed, up when open. */
+.wp-help > summary::before {
+  content: ''; width: 8px; height: 8px; border: solid var(--ink); border-width: 0 2px 2px 0;
+  transform: translateY(-2px) rotate(45deg);
+}
+.wp-help[open] > summary::before { transform: translateY(2px) rotate(-135deg); }
+/* The status line: the sound message on the left, the counter on the right, always one reserved 20 px line. */
+.wp-status {
+  display: flex; justify-content: space-between; gap: 12px; min-height: 20px;
+  font-size: 14px; line-height: 20px; font-weight: 700; color: var(--ink);
+}
+.wp-status p { margin: 0; }
+.wp-count { margin-left: auto; white-space: nowrap; }
 /* Visually hidden, still read by screen readers (index.css has no such utility). */
 .wp-sr {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
@@ -17,12 +38,8 @@
 }
 
 .wp-meanings, .wp-pond { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-/* Meanings: a 2 x 2 grid, so the pond and its first fish fit on a phone screen without scrolling.
-   Only very narrow phones (340 px and below) go back to one column. */
+/* Meanings: a 2 x 2 grid on every phone (320 px too), so the pond starts high enough for Finish to stick on screen. */
 .wp-meanings { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 12px; }
-@media (max-width: 340px) {
-  .wp-meanings { grid-template-columns: minmax(0, 1fr); }
-}
 
 /* Each meaning card is one big button (at least 48 px high); long meanings wrap inside it. */
 .wp-meaning {
@@ -39,10 +56,11 @@
 .wp-slot { justify-self: start; max-width: 100%; padding: 0 8px; line-height: 20px; overflow-wrap: anywhere; }
 .wp-empty { background: var(--surface); color: var(--text-muted); border: 1px dashed var(--ink); line-height: 18px; }
 
-/* The fish: two per row on a phone, more on wider screens. */
+/* The fish: two per row on every screen. The drawing and the button are in Fish.css. Here: the list, and which
+   way each one faces: --wpf-dir is -1 in the second column, so only the drawing flips (the word never does). */
 .wp-pond { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-/* The fish (the drawing and the button) are in Fish.css. Here: the list, and which way each one faces:
-   --wpf-dir is -1 in the second column, so only the drawing flips (the label never does). */
+/* Finish fills the width of the pond panel (only its width; the .btn look is unchanged). */
+.wp-finish { width: 100%; }
 .wp-pond > li:nth-child(even) { --wpf-dir: -1; }
 
 /* The catch twinkle: art beside the fish's top right corner, above the button, never in the way of a tap.
@@ -53,22 +71,12 @@
   stroke: var(--ink); stroke-width: 2; stroke-linecap: round; fill: var(--art-yellow);
 }
 
-@media (min-width: 600px) {
-  .wp-pond { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .wp-pond > li:nth-child(even) { --wpf-dir: 1; }
-  .wp-pond > li:nth-child(3n + 2) { --wpf-dir: -1; }   /* the second column of three */
-}
-
-/* Wide screens: meanings on the left (40%), the pond with its fish and Finish on the right (60%), so the
-   whole round fits one screen. The page column (main, max 960 px) comes from index.css and is not changed.
-   The meanings stack in one column there (the left column is narrow); the fish go back to two per row. */
+/* Wide screens: still one column (title, intro, meanings, big pond). The meanings become rows, the meaning on
+   the left and its chip on the right. The page column (main) comes from index.css and is not changed. */
 @media (min-width: 900px) {
-  .wp-play { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 24px; align-items: start; }
-  .wp-meanings { grid-template-columns: minmax(0, 1fr); margin-bottom: 0; }
-  .wp-pond { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .wp-pond > li:nth-child(3n + 2) { --wpf-dir: 1; }
-  .wp-pond > li:nth-child(even) { --wpf-dir: -1; }
-  .wp-col-pond { padding-top: 8px; }   /* lines the scene up with the "Meanings" heading's top margin */
+  .wp-meanings { grid-template-columns: minmax(0, 1fr); }
+  .wp-meaning { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .wp-slot { flex: none; max-width: 50%; }
 }
 
 /* The same pop for every fish (Fish.css) and meaning: it only says "that registered", never right or wrong (DEC-56). */

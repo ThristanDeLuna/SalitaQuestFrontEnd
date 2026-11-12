@@ -1,20 +1,21 @@
 /* The bay at the top of the Word Pond scene (inside PondScene's frame). Every class starts with pb-.
    --art-* colours are fills only: the bay holds no text, and every art shape has a 2px var(--ink) outline.
    Its own colours: sky --info-tint, unlit lanterns --surface, trunk --accent-text.
-   Size: the bay is drawn at its phone size inside .pb-art and scaled by --scene-scale (set by PondScene:
-   1, or 1.6 on wide screens), so every px position and keyframe below is in phone-size art units.
+   Size: the strip is drawn inside .pb-art and scaled by --scene-scale (set by PondScene:
+   1, or 1.75 from 900 px), so every px position and keyframe below is in art units.
    The rules outside the motion block put everything at rest; the motion block only adds animation,
    so with reduced motion the bay is drawn but nothing moves (the jumping fish stays under water). */
 
-/* 150 px tall at phone size. The frame's border belongs to PondScene; the bay only rounds (and clips) its
+/* A slim shoreline strip, 72 px tall at scale 1 (about 15% of the pond panel), so the panel is mostly water for the fish.
+   The frame's border belongs to PondScene; the bay only rounds (and clips) its
    top corners to fit inside it (16 px frame radius minus the 2 px border). No bottom edge: the pond follows. */
 .pb-sky {
-  height: calc(150px * var(--scene-scale, 1)); overflow: hidden;
+  height: calc(72px * var(--scene-scale, 1)); overflow: hidden;
   background: var(--info-tint); border-radius: 14px 14px 0 0; pointer-events: none;
 }
 /* The drawing: the bay's width divided by the scale, then scaled back up from the top-left corner. */
 .pb-art {
-  position: relative; height: 150px; width: calc(100% / var(--scene-scale, 1));
+  position: relative; height: 72px; width: calc(100% / var(--scene-scale, 1));
   transform: scale(var(--scene-scale, 1)); transform-origin: 0 0;
 }
 .pb-sky * { pointer-events: none; }
@@ -35,10 +36,10 @@
 
 /* ---------- Sky ---------- */
 /* Far layers (sun, hills) are a little see-through, so the near ones stand out. */
-.pb-sun { position: absolute; top: 4px; right: 12px; fill: var(--art-yellow); opacity: 0.9; }
+.pb-sun { position: absolute; top: 4px; right: 12px; width: 36px; height: 36px; fill: var(--art-yellow); opacity: 0.9; }
 .pb-sky .pb-glow { fill: none; stroke: var(--art-yellow); opacity: 0.5; }   /* faint rings, not outlines */
-.pb-hills { position: absolute; left: 0; bottom: 58px; fill: var(--art-pad); opacity: 0.8; }   /* the sea (62 px) hides its foot */
-.pb-palm { position: absolute; left: 8px; bottom: 26px; }
+.pb-hills { position: absolute; left: 0; bottom: 20px; height: 28px; fill: var(--art-pad); opacity: 0.8; }   /* the sea (24 px) hides its foot */
+.pb-palm { position: absolute; left: 8px; bottom: 2px; width: 38px; height: 60px; }   /* the 64 x 100 drawing at 60% */
 .pb-island { fill: var(--art-yellow); }
 .pb-trunk { fill: var(--accent-text); }
 .pb-coconut { fill: var(--accent-text); }
@@ -50,28 +51,28 @@
    --pb-rest is where they wait when nothing moves. */
 .pb-track { position: absolute; left: 0; right: 0; }
 .pb-track > svg { margin-left: var(--pb-rest); }
-.pb-birds { top: 30px; --pb-rest: 34%; }
+.pb-birds { top: 6px; --pb-rest: 34%; }
 
 /* ---------- Sea: a plane tilted back a little; wider than the bay, so the tilt never shows a corner.
    It has the pond's colour and no bottom edge, so it runs straight on into the pond water below. ---------- */
-.pb-sea { position: absolute; left: 0; right: 0; bottom: 0; height: 62px; perspective: 240px; }
+.pb-sea { position: absolute; left: 0; right: 0; bottom: 0; height: 24px; perspective: 240px; }
 .pb-plane {
   position: absolute; top: 0; bottom: 0; left: -15%; right: -15%;
   background: var(--art-water); border-top: calc(2px / var(--scene-scale, 1)) solid var(--ink);   /* 2 px on screen */
   transform: rotateX(24deg); transform-origin: 50% 100%;
 }
 .pb-wave { position: absolute; left: 0; fill: var(--art-water); }   /* only the crests show, as ripples */
-.pb-wave-back { top: 6px; }
-.pb-wave-front { bottom: 8px; }
+.pb-wave-back { top: 0; }
+.pb-wave-front { bottom: -6px; }
 
 /* The jumping fish. */
 .pb-fish { fill: var(--art-yellow); }
 .pb-jumper { fill: var(--art-red); }
 .pb-eye { fill: var(--ink); stroke-width: 0; }
-.pb-jumper { position: absolute; left: 26%; bottom: 30px; opacity: 0; }   /* waits under the water */
+.pb-jumper { position: absolute; left: 26%; bottom: 4px; opacity: 0; }   /* waits under the water */
 
 /* ---------- Banca, floating at the waterline ---------- */
-.pb-banca { position: absolute; left: 44%; bottom: 34px; }
+.pb-banca { position: absolute; left: 44%; bottom: 0; }
 .pb-hull { fill: var(--art-yellow); }
 .pb-stripe { fill: var(--art-red); }
 .pb-bamboo { fill: var(--art-pad); }

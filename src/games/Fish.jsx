@@ -1,31 +1,34 @@
 import './Fish.css';
 
-// FishButton: one fish in the Word Pond, a real <button> with the word on a light label over a drawn fish.
+// FishButton: one fish in the Word Pond, a real <button>: a big plump drawn fish with the word written on its body.
 // The colour comes from the fish's POSITION in the round (0 to 5), never from its word, so it can never hint at an
 // answer (DEC-56). The drawing is decoration (aria-hidden); the button's name is the word. The handlers, disabled
 // state and keyboard behaviour are WordPond's: they come in as props and go straight onto the button.
 // Which way the fish faces (flipped in the second column) is set by WordPond.css through --wpf-dir; only the
-// drawing flips, the label never does. Styles: Fish.css (wpf-).
+// drawing flips, the word never does. Styles: Fish.css (wpf-).
 // Props: word, index (position in the round), onMeaning (the meaning it is caught on, or null), playing, disabled, onTap.
 
 const SHADES = ['coral', 'yellow', 'green', 'purple', 'pink', 'blue'];
 
-// Drawn facing right in a 120 x 64 box. Back to front: dorsal fin, forked tail, body, side fin, details.
+// Body: ellipse centre (114, 62), radii 82 x 42. The back's scale band follows the top of the body from x 46 to
+// x 142, and its lower edge is a zigzag between y 38 and y 30. The middle of the body, where the word sits, stays plain.
+const ZIG_XS = [142, 134, 126, 118, 110, 102, 94, 86, 78, 70, 62, 54, 46];
+const BAND_D = `M46 38.5 A82 42 0 0 1 142 22.5 ${ZIG_XS.map((x, i) => `L${x} ${i % 2 ? 30 : 38}`).join(' ')} Z`;
+
+// Drawn facing right in a 200 x 120 box. Back to front: top and bottom fins, forked tail, body, scale band, eye.
 function FishArt() {
   return (
-    <svg className="wpf-art" viewBox="0 0 120 64" width="112" height="60" aria-hidden="true" focusable="false">
-      <path className="wpf-shape" d="M54 17 Q66 2 90 18 Z" />
-      <path className="wpf-shape" d="M34 36 L6 12 L16 36 L6 60 Z" />
-      <ellipse className="wpf-shape" cx="70" cy="36" rx="46" ry="23" />
-      <path className="wpf-shape" d="M64 42 Q56 58 80 54 Z" />
-      <g className="wpf-scales">
-        <path d="M38 30 Q44 36 38 44" />
-        <path d="M46 27 Q53 36 46 47" />
-        <path d="M54 25 Q62 36 54 49" />
-      </g>
-      <ellipse className="wpf-shine" cx="72" cy="22" rx="22" ry="4" />
-      <circle className="wpf-eye" cx="102" cy="24" r="5" />
-      <circle className="wpf-pupil" cx="103.5" cy="24" r="2.2" />
+    <svg className="wpf-art" viewBox="0 0 200 120" aria-hidden="true" focusable="false">
+      <path className="wpf-shape" d="M70 30 Q84 2 112 2 Q134 4 148 28 Z" />
+      <path className="wpf-shape" d="M92 96 Q100 118 126 116 Q120 106 134 96 Z" />
+      {/* A wide fan with a deep V notch: a clearly forked tail, with a zigzag of scales at its base. */}
+      <path className="wpf-shape" d="M50 62 L8 12 Q2 10 4 18 L22 62 L4 106 Q2 114 8 112 Z" />
+      <path className="wpf-zig" d="M30 42 L24 48 L30 54 L24 60 L30 66 L24 72 L30 78" />
+      <ellipse className="wpf-shape" cx="114" cy="62" rx="82" ry="42" />
+      <path className="wpf-band" d={BAND_D} />
+      <circle className="wpf-eye" cx="166" cy="46" r="11" />
+      <circle className="wpf-pupil" cx="169" cy="46" r="5.5" />
+      <circle className="wpf-glint" cx="171" cy="43" r="2" />
     </svg>
   );
 }
@@ -35,8 +38,10 @@ export default function FishButton({ word, index, onMeaning, playing, disabled, 
     <button type="button"
             className={`wpf wpf-${SHADES[index % SHADES.length]}${onMeaning ? ' wpf-caught' : ''}${playing ? ' wpf-playing' : ''}`}
             disabled={disabled} onClick={onTap}>
-      <FishArt />
-      <strong className="wpf-label">{word}</strong>
+      <span className="wpf-fish">
+        <FishArt />
+        <span className="wpf-text"><strong className="wpf-word">{word}</strong></span>
+      </span>
       {/* Kept for screen readers, as before: where this fish is caught. */}
       {onMeaning && <span className="wpf-sr">on: {onMeaning}</span>}
     </button>

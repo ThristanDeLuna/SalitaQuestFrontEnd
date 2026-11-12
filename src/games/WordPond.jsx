@@ -16,6 +16,7 @@ import RoundGate from './RoundGate';
 import {
   buildPairs, canFinish, caughtWordIds, fishForMeaning, formatTime, initialPond, matchingRows, pondReducer,
 } from './pondLogic';
+import { pondIntro } from './pondIntro';
 import './WordPond.css';
 
 // Word Pond, the matching game (route /play/matching/:region).
@@ -151,51 +152,61 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
         </p>
       )}
 
-      {/* Two blocks in reading order: meanings, then the pond and Finish. On wide screens they sit side by
-          side (WordPond.css); the order of the page, and so the Tab order, is the same at every width. */}
-      <div className="wp-play">
-        <div className="wp-col-meanings">
-          {/* Directions first, then the controls. The steps match pondLogic: the next empty meaning is
-              chosen for you after each catch, and catching a placed fish again moves it. */}
-          <HowToPlay steps={['Tap a meaning.', 'Tap the fish with the matching word.',
-                             `Fill all ${total} meanings, then press Finish.`]}
-                     note="You see your results at the end." status={`${placed} of ${total} fish placed`}
-                     message={audio.failed ? 'Could not play that sound.' : (audio.playingUrl ? 'Playing...' : '')} />
-          <h2 className="wp-label">Meanings</h2>
-          <ul className="wp-meanings">
-            {pond.meanings.map((m) => (
-              <MeaningRow key={m} meaning={m} selected={pond.selected === m}
-                          word={wordOf(fishForMeaning(pond, m))}
-                          onSelect={() => dispatch({ type: 'select', meaning: m })} />
-            ))}
-          </ul>
-        </div>
-
-        <div className="wp-col-pond">
-          {/* The heading stays for screen readers; on screen the scene itself says "pond". */}
-          <h2 className="wp-sr">Fish in the pond</h2>
-          {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong. */}
-          <PondScene caught={placed} total={total}>
-            <ul className="wp-pond">
-              {round.words.map((f, i) => (
-                <Fish key={f.word_id} fish={f} index={i} onMeaning={meaningOf(f.word_id)} disabled={sending}
-                      playing={f.audio_url !== null && audio.playingUrl === f.audio_url}
-                      onTap={() => tapFish(f)} />
-              ))}
-            </ul>
-          </PondScene>
-
-          <div className="actions">
-            <button type="button" className="btn primary" disabled={finishBlocked || sending} onClick={finish}
-                    aria-describedby={finishBlocked ? 'wp-finish-hint' : undefined}>
-              {sending ? 'Checking...' : 'Finish'}
-            </button>
-          </div>
-          {/* The line is always there (empty when Finish works), so the button never moves. */}
-          <p id="wp-finish-hint" className="muted htp-hint">{finishBlocked && `Fill all ${total} meanings to finish.`}</p>
-          <p className="muted wp-foot">Answers are revealed after scoring.</p>
-        </div>
+      {/* One column at every width, in reading (and Tab) order: the intro line, the How to play toggle,
+          the live status line, the meanings, then the pond with Finish stuck to its bottom edge. */}
+      <p className="wp-intro">{pondIntro(total, round.words.length)}</p>
+      {/* The full directions, closed by default. HowToPlay itself is unchanged; its status and message
+          props are left out here because they live in the always-visible line below instead. */}
+      <details className="wp-help">
+        <summary>How to play</summary>
+        {/* The steps match pondLogic: the next empty meaning is chosen for you after each catch, and
+            catching a placed fish again moves it. */}
+        <HowToPlay steps={['Tap a meaning.', 'Tap the fish with the matching word.',
+                           `Fill all ${total} meanings, then press Finish.`]}
+                   note="You see your results at the end." />
+      </details>
+      {/* Always visible, one reserved line, so nothing moves when a message comes or goes. The counter
+          counts fish placed, never fish right (DEC-56). */}
+      <div className="wp-status">
+        <p className="wp-message" role="status">
+          {audio.failed ? 'Could not play that sound.' : (audio.playingUrl ? 'Playing...' : '')}
+        </p>
+        <p className="wp-count" aria-live="polite">{`${placed} of ${total} fish placed`}</p>
       </div>
+
+      <h2 className="wp-label">Meanings</h2>
+      <ul className="wp-meanings">
+        {pond.meanings.map((m) => (
+          <MeaningRow key={m} meaning={m} selected={pond.selected === m}
+                      word={wordOf(fishForMeaning(pond, m))}
+                      onSelect={() => dispatch({ type: 'select', meaning: m })} />
+        ))}
+      </ul>
+
+      {/* The heading stays for screen readers; on screen the scene itself says "pond". */}
+      <h2 className="wp-sr">Fish in the pond</h2>
+      {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong.
+          The footer (Finish and its hint line) sticks to the bottom of the screen while the pond scrolls. */}
+      <PondScene caught={placed} total={total} footer={(
+        <>
+          <button type="button" className="btn primary wp-finish" disabled={finishBlocked || sending} onClick={finish}
+                  aria-describedby={finishBlocked ? 'wp-finish-hint' : undefined}>
+            {sending ? 'Checking...' : 'Finish'}
+          </button>
+          {/* One fixed line under Finish: what is missing while it is blocked, what happens next once it works. */}
+          <p id="wp-finish-hint" className="muted htp-hint">
+            {finishBlocked ? `Fill all ${total} meanings to finish.` : 'Answers are revealed after scoring.'}
+          </p>
+        </>
+      )}>
+        <ul className="wp-pond">
+          {round.words.map((f, i) => (
+            <Fish key={f.word_id} fish={f} index={i} onMeaning={meaningOf(f.word_id)} disabled={sending}
+                  playing={f.audio_url !== null && audio.playingUrl === f.audio_url}
+                  onTap={() => tapFish(f)} />
+          ))}
+        </ul>
+      </PondScene>
     </>
   );
 }

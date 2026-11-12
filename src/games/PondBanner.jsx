@@ -30,10 +30,11 @@ function Sun() {
   );
 }
 
-// ---------- Hills: one wide strip of humps on the horizon (clipped on narrow screens) ----------
+// ---------- Hills: one wide strip of humps on the horizon (clipped on narrow screens; CSS squashes it to the strip) ----------
 function Hills() {
   return (
-    <svg className="pb-hills" viewBox="0 0 1000 44" width="1000" height="44" focusable="false">
+    <svg className="pb-hills" viewBox="0 0 1000 44" width="1000" height="44" preserveAspectRatio="none"
+         focusable="false">
       {/* The foot and the left side run outside the box, so they are cut off and only the hilltops are outlined. */}
       <path d="M-2 46 V40 Q70 4 150 30 Q240 0 330 34 Q430 8 520 32 Q620 2 720 30 Q830 6 920 32 Q960 18 999 26 V46 Z" />
     </svg>

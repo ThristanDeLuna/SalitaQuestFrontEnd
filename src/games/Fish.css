@@ -1,7 +1,8 @@
 /* One Word Pond fish (Fish.jsx). Every class starts with wpf- so it cannot clash.
    The six body colours are set ONCE, here, as local custom properties: A's --art-fish-* tokens when they land in
-   index.css, the fallbacks until then. They are fills only (no text sits on the body); the word sits on a --surface
-   label. Colour goes by position in the round, never by word, so it cannot hint at an answer (DEC-56).
+   index.css, the fallbacks until then. Colour goes by position in the round, never by word, so it cannot hint at an
+   answer (DEC-56). The word is bold var(--ink) straight on the body; every fill, plain or pale, keeps at least
+   4.5:1 against the ink (numbers in the commit message).
    The motion at the end is the same 200 ms pop the caught fish already had; nothing new loops. */
 
 .wpf {
@@ -18,36 +19,42 @@
 .wpf-purple { --wpf-body: var(--wpf-purple); }
 .wpf-pink { --wpf-body: var(--wpf-pink); }
 .wpf-blue { --wpf-body: var(--wpf-blue); }
+/* Caught: the same colour mixed with white (--surface), so the fish turns pale; the ink outline and word stay. */
+.wpf-caught { --wpf-fill: color-mix(in srgb, var(--wpf-body) 40%, var(--surface)); }
 
-/* The button is the whole tap area (64 px tall). A transparent border keeps its size when the caught
-   (dashed) border appears. The fish is drawn 112 x 60 in the middle; the label sits on the body. */
+/* The button is the whole spot (the tap area); the fish fills about 90% of its width, up to 360 px. */
 .wpf {
-  position: relative; width: 100%; min-height: 64px; display: grid; place-items: center; padding: 0;
-  background: transparent; color: var(--ink); border: 2px solid transparent; border-radius: 12px;
-  font: 700 14px/20px var(--sans); cursor: pointer;
+  position: relative; width: 100%; display: grid; place-items: center; padding: 4px 0;
+  background: transparent; color: var(--ink); border: 0; border-radius: 12px;
+  font: 700 16px var(--sans); cursor: pointer;
 }
-.wpf-art { display: block; width: 112px; height: 60px; transform: scaleX(var(--wpf-dir, 1)); }
-.wpf-shape { fill: var(--wpf-body); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
-.wpf-scales path { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; opacity: 0.25; }
-.wpf-shine { fill: var(--surface); opacity: 0.35; }
-.wpf-eye { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+.wpf-fish { position: relative; display: block; width: 90%; max-width: 360px; }
+.wpf-art { display: block; width: 100%; height: auto; transform: scaleX(var(--wpf-dir, 1)); }
+.wpf-shape { fill: var(--wpf-fill, var(--wpf-body)); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+.wpf-art * { vector-effect: non-scaling-stroke; }
+.wpf-zig { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: 0.35; }
+.wpf-band { fill: var(--ink); opacity: 0.15; }
+.wpf-eye { fill: var(--surface); stroke: var(--ink); stroke-width: 2; }
 .wpf-pupil { fill: var(--ink); }
+.wpf-glint { fill: var(--surface); }
 
-/* The word: a light label on the body, never flipped and never faded (only the drawing is). The body centre is
-   8 px right of the drawing's middle, or 8 px left when the fish faces the other way. */
-.wpf-label {
-  position: absolute; left: calc(50% + 8px * var(--wpf-dir, 1)); top: 38px; transform: translate(-50%, -50%);
-  padding: 0 4px; border-radius: 4px; background: var(--surface); color: var(--ink);
-  font: 700 14px/20px var(--sans); white-space: nowrap;
+/* The word: on the plain middle of the body (x 42 to 182 of 200, centred on y 70 of 120), never flipped.
+   When the fish faces the other way the box moves to the mirrored spot (12 px of 200 = 6%). Its size follows the
+   box width (18% of it: at least 18 px on a 390 px phone, never under 14 px), so the long words fit on one line.
+   A multi-word meaning wraps at its spaces; a single word too long for the box breaks rather than spill. */
+.wpf-text {
+  position: absolute; left: calc(15% + 6% * var(--wpf-dir, 1)); top: 58%; width: 70%;
+  transform: translateY(-50%); container-type: inline-size; text-align: center; pointer-events: none;
+}
+.wpf-word {
+  display: block; color: var(--ink); font: 700 clamp(14px, 18cqw, 28px)/1.15 var(--sans);
+  overflow-wrap: break-word;
 }
 
-/* Caught: the body is ghosted and the button gets a dashed outline. It says "placed", never right or wrong. */
-.wpf-caught { border: 2px dashed var(--ink); }
-.wpf-caught .wpf-art { opacity: 0.45; }
-/* The fish whose word is playing: an inset ink ring, which takes no room. */
+/* The fish whose word is playing: an inset ink ring around the spot, which takes no room. */
 .wpf-playing { box-shadow: inset 0 0 0 2px var(--ink); }
 .wpf[disabled] { cursor: not-allowed; }
-.wpf[disabled] .wpf-art { opacity: 0.6; }   /* the drawing only: the word label is never faded */
+.wpf[disabled] .wpf-art { opacity: 0.6; }   /* the drawing only: the word is never faded */
 
 /* Visually hidden, still read by screen readers. */
 .wpf-sr {
