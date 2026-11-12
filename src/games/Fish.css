@@ -22,14 +22,16 @@
 /* Caught: the same colour mixed with white (--surface), so the fish turns pale; the ink outline and word stay. */
 .wpf-caught { --wpf-fill: color-mix(in srgb, var(--wpf-body) 40%, var(--surface)); }
 
-/* The button is the whole spot (the tap area); the fish fills about 90% of its width, up to 360 px. */
+/* The button hugs the fish (4 px all round), so the tap area, the focus ring and the playing ring follow the
+   drawing. The fish's width comes from --wpf-size, which WordPond.css sets from the pond cell (as big as the cell
+   allows, keeping the drawing's 5:3); 160 px when nothing sets it. */
 .wpf {
-  position: relative; width: 100%; display: grid; place-items: center; padding: 4px 0;
+  position: relative; display: grid; place-items: center; padding: 4px;
   background: transparent; color: var(--ink); border: 0; border-radius: 12px;
   font: 700 16px var(--sans); cursor: pointer;
 }
-.wpf-fish { position: relative; display: block; width: 90%; max-width: 360px; }
-.wpf-art { display: block; width: 100%; height: auto; transform: scaleX(var(--wpf-dir, 1)); }
+.wpf-fish { position: relative; display: block; width: var(--wpf-size, 160px); aspect-ratio: 5 / 3; }
+.wpf-art { display: block; width: 100%; height: 100%; transform: scaleX(var(--wpf-dir, 1)); }
 .wpf-shape { fill: var(--wpf-fill, var(--wpf-body)); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
 .wpf-art * { vector-effect: non-scaling-stroke; }
 .wpf-zig { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: 0.35; }
@@ -38,16 +40,16 @@
 .wpf-pupil { fill: var(--ink); }
 .wpf-glint { fill: var(--surface); }
 
-/* The word: on the plain middle of the body (x 42 to 182 of 200, centred on y 70 of 120), never flipped.
+/* The word: on the plain middle of the body (x 30 to 194 of 200, the width of the body, centred on y 70 of 120), never flipped.
    When the fish faces the other way the box moves to the mirrored spot (12 px of 200 = 6%). Its size follows the
-   box width (18% of it: at least 18 px on a 390 px phone, never under 14 px), so words like Kaluguran or Manyaman
-   stay on one line. A multi-word entry wraps at its spaces; a single word too long for the box breaks rather than spill. */
+   box width (16% of it), so it grows and shrinks with the fish but is never under 14 px or over 28 px. Words like
+   Kaluguran or Manyaman stay on one line on most screens. A multi-word entry wraps at its spaces; a single word too long for the box breaks rather than spill. */
 .wpf-text {
-  position: absolute; left: calc(15% + 6% * var(--wpf-dir, 1)); top: 58%; width: 70%;
+  position: absolute; left: calc(9% + 6% * var(--wpf-dir, 1)); top: 58%; width: 82%;
   transform: translateY(-50%); container-type: inline-size; text-align: center; pointer-events: none;
 }
 .wpf-word {
-  display: block; color: var(--ink); font: 700 clamp(14px, 18cqw, 28px)/1.15 var(--sans);
+  display: block; color: var(--ink); font: 700 clamp(14px, 16cqw, 28px)/1.15 var(--sans);
   overflow-wrap: break-word;
 }
 

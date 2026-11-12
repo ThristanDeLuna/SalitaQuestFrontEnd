@@ -1,16 +1,17 @@
 /* The bay at the top of the Word Pond scene (inside PondScene's frame). Every class starts with pb-.
    --art-* colours are fills only: the bay holds no text, and every art shape has a 2px var(--ink) outline.
    Its own colours: sky --info-tint, unlit lanterns --surface, trunk --accent-text.
-   Size: the strip is drawn inside .pb-art and scaled by --scene-scale (set by PondScene:
-   1, or 1.75 from 900 px), so every px position and keyframe below is in art units.
+   Size: the strip is drawn inside .pb-art and scaled by --scene-scale (set by PondScene.css by the screen
+   height, 0.55 to 1.25), so every px position and keyframe below is in art units.
    The rules outside the motion block put everything at rest; the motion block only adds animation,
    so with reduced motion the bay is drawn but nothing moves (the jumping fish stays under water). */
 
-/* A slim shoreline strip, 72 px tall at scale 1 (about 15% of the pond panel), so the panel is mostly water for the fish.
+/* A slim shoreline strip, 72 px tall at scale 1 (about 12-15% of the pond panel), so the panel is mostly water for the fish.
+   It never shrinks (flex: none): the pond water under it takes whatever room is left.
    The frame's border belongs to PondScene; the bay only rounds (and clips) its
    top corners to fit inside it (16 px frame radius minus the 2 px border). No bottom edge: the pond follows. */
 .pb-sky {
-  height: calc(72px * var(--scene-scale, 1)); overflow: hidden;
+  flex: none; height: calc(72px * var(--scene-scale, 1)); overflow: hidden;
   background: var(--info-tint); border-radius: 14px 14px 0 0; pointer-events: none;
 }
 /* The drawing: the bay's width divided by the scale, then scaled back up from the top-left corner. */

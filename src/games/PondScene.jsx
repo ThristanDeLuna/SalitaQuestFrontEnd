@@ -6,8 +6,8 @@ import './PondScene.css';
 // most of the frame, where the fish swim. The bay's sea and the pond have the same colour and no line between them.
 // In the water, ripple rings and two lily pads sit on an art layer behind the fish; the fish list
 // is passed in as children and sits on top, so every button keeps working as before.
-// Props: caught, total, settled (for the lanterns, see PondBanner), children (the fish list; none on the results),
-// footer (optional: Finish and its hint; it sticks to the bottom of the screen while the pond scrolls past).
+// Props: caught, total, settled (for the lanterns, see PondBanner), children (the fish list; none on the results).
+// The scene fills the height its parent gives it (WordPond's stage): the strip keeps its size, the water takes the rest.
 // The art layers are aria-hidden and ignore taps; only they are clipped, so focus outlines are never cut.
 
 // One ripple ring, drawn at its full size; CSS scales it down and fades it in a slow pulse.
@@ -43,7 +43,7 @@ function LilyPad({ className }) {
   );
 }
 
-export default function PondScene({ caught, total, settled, children, footer }) {
+export default function PondScene({ caught, total, settled, children }) {
   return (
     <div className="ps-pond">
       <PondBanner caught={caught} total={total} settled={settled} />
@@ -56,7 +56,6 @@ export default function PondScene({ caught, total, settled, children, footer }) 
         </div>
         <div className="ps-content">{children}</div>
       </div>
-      {footer && <div className="ps-footer">{footer}</div>}
     </div>
   );
 }

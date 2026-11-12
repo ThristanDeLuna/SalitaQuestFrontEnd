@@ -109,16 +109,16 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
     }
   }
 
-  const header = (
+  // Row (a) of the stage: the title, the region and the timer, then (during play) the always-visible status line.
+  const header = (status) => (
     <header className="wp-head">
-      <div>
-        <div className="wp-title">
-          <FishIcon />
-          <h1>Word Pond</h1>
-        </div>
-        <p className="muted">{regionName}</p>
+      <div className="wp-title">
+        <FishIcon />
+        <h1>Word Pond</h1>
+        <p className="muted wp-region">{regionName}</p>
       </div>
       <span className="chip" role="timer" aria-label="Time played">{formatTime(seconds)}</span>
+      {status}
     </header>
   );
 
@@ -127,8 +127,8 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
       <>
         {/* The game stays visible, dimmed behind the results pop-up, every lantern lit (all meanings were
             filled to finish). It is inert while the pop-up is open, so Tab and screen readers skip it. */}
-        <div inert>
-          {header}
+        <div inert className="wp-stage wp-stage-done">
+          {header(null)}
           <PondScene caught={pond.meanings.length} total={pond.meanings.length} settled />
         </div>
         <ResultsCard result={result} rows={matchingRows(result.results, round.words)} regionName={regionName}
@@ -143,38 +143,42 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
   const placed = caughtWordIds(pond).length;      // fish placed, not fish right (DEC-56)
   const finishBlocked = !canFinish(pond);
   return (
-    <>
-      {header}
-
-      {submitErr && (
-        <p className="banner error" role="alert">
-          {errorMessage(errKind)}{errKind === 'invalid' && ` (${submitErr.message})`}
-        </p>
+    // The stage: one card that fills the main area, so the whole game fits on one screen (WordPond.css).
+    // Its rows, in reading (and Tab) order: (a) title and status line, (b) the intro and the How to play
+    // toggle, (c) the meanings, (d) the pond, which takes all the room left, (e) Finish and its hint.
+    <div className="wp-stage">
+      {header(
+        // Always visible, one reserved line, so nothing moves when a message comes or goes. The counter
+        // counts fish placed, never fish right (DEC-56).
+        <div className="wp-status">
+          <p className="wp-message" role="status">
+            {audio.failed ? 'Could not play that sound.' : (audio.playingUrl ? 'Playing...' : '')}
+          </p>
+          <p className="wp-count" aria-live="polite">{`${placed} of ${total} fish placed`}</p>
+        </div>
       )}
 
-      {/* One column at every width, in reading (and Tab) order: the intro line, the How to play toggle,
-          the live status line, the meanings, then the pond with Finish stuck to its bottom edge. */}
-      <p className="wp-intro">{pondIntro(total, round.words.length)}</p>
-      {/* The full directions, closed by default. HowToPlay itself is unchanged; its status and message
-          props are left out here because they live in the always-visible line below instead. */}
-      <details className="wp-help">
-        <summary>How to play</summary>
-        {/* The steps match pondLogic: the next empty meaning is chosen for you after each catch, and
-            catching a placed fish again moves it. */}
-        <HowToPlay steps={['Tap a meaning.', 'Tap the fish with the matching word.',
-                           `Fill all ${total} meanings, then press Finish.`]}
-                   note="You see your results at the end." />
-      </details>
-      {/* Always visible, one reserved line, so nothing moves when a message comes or goes. The counter
-          counts fish placed, never fish right (DEC-56). */}
-      <div className="wp-status">
-        <p className="wp-message" role="status">
-          {audio.failed ? 'Could not play that sound.' : (audio.playingUrl ? 'Playing...' : '')}
-        </p>
-        <p className="wp-count" aria-live="polite">{`${placed} of ${total} fish placed`}</p>
+      <div className="wp-lead">
+        {submitErr && (
+          <p className="banner error" role="alert">
+            {errorMessage(errKind)}{errKind === 'invalid' && ` (${submitErr.message})`}
+          </p>
+        )}
+        <p className="wp-intro">{pondIntro(total, round.words.length)}</p>
+        {/* The full directions, closed by default. HowToPlay itself is unchanged; its status and message
+            props are left out here because they live in the always-visible status line above instead. */}
+        <details className="wp-help">
+          <summary>How to play</summary>
+          {/* The steps match pondLogic: the next empty meaning is chosen for you after each catch, and
+              catching a placed fish again moves it. */}
+          <HowToPlay steps={['Tap a meaning.', 'Tap the fish with the matching word.',
+                             `Fill all ${total} meanings, then press Finish.`]}
+                     note="You see your results at the end." />
+        </details>
       </div>
 
-      <h2 className="wp-label">Meanings</h2>
+      {/* The headings stay for screen readers; on screen the cards and the scene speak for themselves. */}
+      <h2 className="wp-sr">Meanings</h2>
       <ul className="wp-meanings">
         {pond.meanings.map((m) => (
           <MeaningRow key={m} meaning={m} selected={pond.selected === m}
@@ -183,22 +187,9 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
         ))}
       </ul>
 
-      {/* The heading stays for screen readers; on screen the scene itself says "pond". */}
       <h2 className="wp-sr">Fish in the pond</h2>
-      {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong.
-          The footer (Finish and its hint line) sticks to the bottom of the screen while the pond scrolls. */}
-      <PondScene caught={placed} total={total} footer={(
-        <>
-          <button type="button" className="btn primary wp-finish" disabled={finishBlocked || sending} onClick={finish}
-                  aria-describedby={finishBlocked ? 'wp-finish-hint' : undefined}>
-            {sending ? 'Checking...' : 'Finish'}
-          </button>
-          {/* One fixed line under Finish: what is missing while it is blocked, what happens next once it works. */}
-          <p id="wp-finish-hint" className="muted htp-hint wp-hint">
-            {finishBlocked ? `Fill all ${total} meanings to finish.` : 'Answers are revealed after scoring.'}
-          </p>
-        </>
-      )}>
+      {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong. */}
+      <PondScene caught={placed} total={total}>
         <ul className="wp-pond">
           {round.words.map((f, i) => (
             <Fish key={f.word_id} fish={f} index={i} onMeaning={meaningOf(f.word_id)} disabled={sending}
@@ -207,7 +198,18 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
           ))}
         </ul>
       </PondScene>
-    </>
+
+      <div className="wp-foot">
+        <button type="button" className="btn primary wp-finish" disabled={finishBlocked || sending} onClick={finish}
+                aria-describedby={finishBlocked ? 'wp-finish-hint' : undefined}>
+          {sending ? 'Checking...' : 'Finish'}
+        </button>
+        {/* One fixed line under Finish: what is missing while it is blocked, what happens next once it works. */}
+        <p id="wp-finish-hint" className="muted htp-hint wp-hint">
+          {finishBlocked ? `Fill all ${total} meanings to finish.` : 'Answers are revealed after scoring.'}
+        </p>
+      </div>
+    </div>
   );
 }
 

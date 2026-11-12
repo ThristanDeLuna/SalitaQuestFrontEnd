@@ -16,9 +16,10 @@ const ZIG_XS = [142, 134, 126, 118, 110, 102, 94, 86, 78, 70, 62, 54, 46];
 const BAND_D = `M46 38.5 A82 42 0 0 1 142 22.5 ${ZIG_XS.map((x, i) => `L${x} ${i % 2 ? 30 : 38}`).join(' ')} Z`;
 
 // Drawn facing right in a 200 x 120 box. Back to front: top and bottom fins, forked tail, body, scale band, eye.
+// The drawing fills its box (Fish.css sizes the box to the pond cell, keeping the 5:3 shape) and never stretches.
 function FishArt() {
   return (
-    <svg className="wpf-art" viewBox="0 0 200 120" aria-hidden="true" focusable="false">
+    <svg className="wpf-art" viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
       <path className="wpf-shape" d="M70 30 Q84 2 112 2 Q134 4 148 28 Z" />
       <path className="wpf-shape" d="M92 96 Q100 118 126 116 Q120 106 134 96 Z" />
       {/* A wide fan with a deep V notch: a clearly forked tail, with a zigzag of scales at its base. */}

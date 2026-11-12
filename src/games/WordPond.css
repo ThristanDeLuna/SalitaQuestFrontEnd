@@ -1,18 +1,66 @@
-/* Word Pond screen. Phone first at 390 px; one column at every width (wide screens only turn the meanings into rows).
-   Every class starts with wp- so it cannot clash. Colours come from the :root tokens in src/index.css.
-   The selected meaning says "Selected:" in words; the border and fill are only a second hint. */
+/* Word Pond screen. The whole game sits in ONE card (the stage) that fills the main area, so it fits on one
+   screen with no page scrolling. Every class starts with wp- so it cannot clash. Colours come from the :root
+   tokens in src/index.css. The selected meaning says "Selected:" in words; the border and fill are only a second hint. */
 
-.wp-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+/* ---------- The stage ---------- */
+/* The room the shell leaves for a page. Measured from the shell; replace with A's variables.
+   index.css has no variables for these: the top bar is 56 px (.topbar min-height, border inside), main's padding
+   is 16 px on top and 88 px below on a phone (the 88 already makes room for the 57 px fixed tab bar), and 32 px
+   all round from 769 px, where the tab bar becomes the side menu. */
+.wp-stage {
+  --wp-shell-head: 56px;
+  --wp-main-pad: 104px;      /* 16 + 88 */
+  --wp-stage-min: 520px;     /* very short phones keep this, and the page scrolls instead */
+}
+@media (min-width: 769px) {
+  .wp-stage { --wp-main-pad: 64px; }   /* 32 + 32 */
+}
+
+/* Rows: (a) title and status line, (b) intro and How to play, (c) meanings, (d) the pond, which takes all the
+   room left (never under 240 px), (e) Finish and its hint. The headings in between are visually hidden, so they
+   take no row. With How to play open the card simply grows and the page may scroll. A small offset ink shadow
+   makes the card stand off the page. */
+.wp-stage {
+  display: grid; grid-template-rows: auto auto auto minmax(240px, 1fr) auto; gap: 6px;
+  width: 100%; min-height: max(var(--wp-stage-min), calc(100dvh - var(--wp-shell-head) - var(--wp-main-pad)));
+  padding: 8px; background: var(--surface);
+  border: 2px solid var(--ink); border-radius: 16px; box-shadow: 4px 4px 0 var(--ink);
+}
+/* The results: the title and the settled pond stay behind the pop-up, in the same card. */
+.wp-stage-done { grid-template-rows: auto minmax(240px, 1fr); }
+@media (min-width: 769px) {
+  .wp-stage { gap: 8px; padding: 12px 16px; }
+}
+
+/* ---------- (a) Title row: title and region, timer, then the status line ---------- */
+.wp-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 12px; }
 .wp-head p { margin: 0; }
-.wp-title { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.wp-title h1 { margin: 0; }
-.wp-icon { flex: none; display: block; color: var(--ink); }
+.wp-title { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; min-width: 0; }
+.wp-title h1 { margin: 0; font-size: 24px; line-height: 32px; }
+.wp-region { line-height: 20px; }
+.wp-icon { flex: none; display: block; align-self: center; width: 24px; height: 24px; color: var(--ink); }
 .wp-icon-fill { fill: var(--info-tint); stroke: currentColor; stroke-width: 2; }
-.wp-label { margin: 8px 0; }
+/* The status line: the sound message on the left, the counter on the right, always one reserved 20 px line. */
+.wp-status {
+  grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 12px; min-height: 20px;
+  font-size: 14px; line-height: 20px; font-weight: 700; color: var(--ink);
+}
+.wp-status p { margin: 0; }
+.wp-count { margin-left: auto; white-space: nowrap; }
+/* Wide screens: one line, the status between the title and the timer. */
+@media (min-width: 769px) {
+  .wp-head { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .wp-status { grid-column: 2; grid-row: 1; }
+  .wp-head > .chip { grid-column: 3; grid-row: 1; }
+}
 
-/* The one-line intro under the title, the How to play toggle (closed by default) and the live status line. */
-.wp-intro { margin: 0 0 4px; color: var(--text); font-size: 16px; line-height: 24px; }
-.wp-help { margin: 0 0 4px; }
+/* ---------- (b) The intro line beside the How to play toggle (closed by default) ---------- */
+/* Open, the toggle drops to its own full-width line under the intro and the card grows. */
+.wp-lead { display: flex; flex-wrap: wrap; align-items: center; column-gap: 12px; }
+.wp-lead > .banner { flex: 1 1 100%; margin: 0 0 8px; }
+.wp-intro { flex: 1 1 180px; margin: 0; color: var(--text); font-size: 14px; line-height: 20px; }
+.wp-help { flex: none; max-width: 100%; }
+.wp-help[open] { flex: 1 1 100%; }
 .wp-help > summary {
   display: flex; align-items: center; gap: 8px; min-height: 44px; width: max-content; max-width: 100%;
   list-style: none; color: var(--ink); font-weight: 700; cursor: pointer;
@@ -24,28 +72,23 @@
   transform: translateY(-2px) rotate(45deg);
 }
 .wp-help[open] > summary::before { transform: translateY(2px) rotate(-135deg); }
-/* The status line: the sound message on the left, the counter on the right, always one reserved 20 px line. */
-.wp-status {
-  display: flex; justify-content: space-between; gap: 12px; min-height: 20px;
-  font-size: 14px; line-height: 20px; font-weight: 700; color: var(--ink);
-}
-.wp-status p { margin: 0; }
-.wp-count { margin-left: auto; white-space: nowrap; }
-/* Visually hidden, still read by screen readers (index.css has no such utility). */
+
+/* Visually hidden, still read by screen readers (index.css has no such utility). Absolutely placed, so it
+   takes no row of the stage. */
 .wp-sr {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
   overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }
 
+/* ---------- (c) Meanings: a compact 2 x 2 grid on every screen ---------- */
 .wp-meanings, .wp-pond { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-/* Meanings: a 2 x 2 grid on every phone (320 px too), so the pond starts high enough for Finish to stick on screen. */
-.wp-meanings { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 12px; }
+.wp-meanings { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 /* Each meaning card is one big button (at least 48 px high); long meanings wrap inside it. */
 .wp-meaning {
   width: 100%; height: 100%; min-height: 48px; display: grid; gap: 2px; align-content: center; text-align: left;
-  padding: 6px 12px; background: var(--surface); color: var(--ink);
-  border: 1px solid var(--sidebar-active); border-radius: 6px; font: 16px var(--sans); cursor: pointer;
+  padding: 4px 8px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--sidebar-active); border-radius: 6px; font: 16px/20px var(--sans); cursor: pointer;
 }
 .wp-meaning:hover { background: var(--info-tint); }
 .wp-meaning-text { overflow-wrap: anywhere; }
@@ -55,32 +98,39 @@
 /* The slot under each meaning is a chip: "tap a fish" until a fish is caught, then "caught · word". */
 .wp-slot { justify-self: start; max-width: 100%; padding: 0 8px; line-height: 20px; overflow-wrap: anywhere; }
 .wp-empty { background: var(--surface); color: var(--text-muted); border: 1px dashed var(--ink); line-height: 18px; }
+/* Wide cards: the meaning on the left and its chip on the right, one line each. */
+@media (min-width: 900px) {
+  .wp-meaning { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 4px 12px; }
+  .wp-slot { flex: none; max-width: 50%; }
+}
 
-/* The fish: two per row on every screen. The drawing and the button are in Fish.css. Here: the list, and which
-   way each one faces: --wpf-dir is -1 in the second column, so only the drawing flips (the word never does). */
-.wp-pond { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* ---------- (d) The pond: six fish, 2 columns x 3 rows, filling the water ---------- */
+/* The rows share the water's height, so the fish are big on a tall screen and smaller on a short one.
+   --wpf-dir is -1 in the second column, so only the drawing flips (the word never does). */
+.wp-pond { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); gap: 0 8px; }
 .wp-pond > li:nth-child(even) { --wpf-dir: -1; }
 
-/* The catch twinkle: art beside the fish's top right corner, above the button, never in the way of a tap.
+/* Each cell is a size container with the fish button in its middle: the fish (Fish.css) is as wide as the cell,
+   or as tall as it allows, whichever is smaller (keeping the drawing's 5:3), minus the button's 4 px all round. */
+.wp-fish-spot {
+  position: relative; container-type: size; min-height: 0; display: grid; place-items: center;
+  --wpf-size: min(100cqw - 8px, (100cqh - 8px) * 5 / 3);
+}
+
+/* The catch twinkle: art just past the fish's top right corner, above the button, never in the way of a tap.
    At rest (and with reduced motion) it is invisible; the motion block flashes it once. */
-.wp-fish-spot { position: relative; }
 .wp-sparkle {
-  position: absolute; top: -14px; right: 8px; z-index: 1; display: block; pointer-events: none; opacity: 0;
+  position: absolute; z-index: 1; display: block; pointer-events: none; opacity: 0;
+  top: calc(50% - var(--wpf-size) * 0.3 - 12px); right: calc(50% - var(--wpf-size) * 0.5);
   stroke: var(--ink); stroke-width: 2; stroke-linecap: round; fill: var(--art-yellow);
 }
 
-/* Finish fills the width of the pond panel (only its width; the .btn look is unchanged). */
-.wp-finish { width: 100%; }
-/* The hint under Finish: always one 20 px line (both texts fit on one line at 320 px), so Finish never moves. */
-.wp-hint { height: 20px; white-space: nowrap; }
-
-/* Wide screens: still one column (title, intro, meanings, big pond). The meanings become rows, the meaning on
-   the left and its chip on the right. The page column (main) comes from index.css and is not changed. */
-@media (min-width: 900px) {
-  .wp-meanings { grid-template-columns: minmax(0, 1fr); }
-  .wp-meaning { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .wp-slot { flex: none; max-width: 50%; }
-}
+/* ---------- (e) Finish and its hint, side by side ---------- */
+/* Finish takes half the card (only its width; the .btn look is unchanged) and the hint the other half, up to
+   two 20 px lines beside the 44 px button, so the row never changes height and Finish never moves. */
+.wp-foot { display: flex; align-items: center; gap: 12px; }
+.wp-finish { flex: 0 0 50%; }
+.wp-foot > .wp-hint { flex: 1 1 0; margin: 0; text-align: left; }
 
 /* The same pop for every fish (Fish.css) and meaning: it only says "that registered", never right or wrong (DEC-56). */
 @media (prefers-reduced-motion: no-preference) {
