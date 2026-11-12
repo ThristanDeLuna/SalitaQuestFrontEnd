@@ -1,0 +1,40 @@
+/* Rail cards (shell right rail, 300 px). Every class starts with rc- so it cannot clash.
+   Colours come from the :root tokens in src/index.css; --art-* is used only as a fill. */
+
+.rc-rail { display: grid; gap: 16px; width: 100%; max-width: 300px; }
+.rc-rail .banner { margin: 0; }
+.rc-card { display: grid; gap: 12px; }
+.rc-card .muted { margin: 0; }
+.rc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.rc-head h2 { margin: 0; }
+.rc-aside { font-weight: 700; color: var(--ink); }
+
+/* Thin bar: the number next to it says the same thing. */
+.rc-bar { height: 8px; border-radius: 4px; background: var(--info-tint); overflow: hidden; }
+.rc-fill { height: 100%; background: var(--art-water-deep); }
+
+.rc-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.rc-row { display: flex; align-items: center; gap: 12px; }
+
+/* A circle: filled with a check when done, an empty ring when not. */
+.rc-circle {
+  flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; box-sizing: border-box;
+  border: 2px solid var(--ink); border-radius: 50%; background: var(--surface);
+  font-size: 14px; font-weight: 700; line-height: 1; color: var(--ink);
+}
+.rc-on { background: var(--art-pad); }
+
+.rc-week { list-style: none; margin: 0; padding: 0; display: flex; justify-content: space-between; }
+.rc-day { display: grid; justify-items: center; gap: 4px; font-size: 14px; color: var(--text-muted); }
+
+.rc-island { display: grid; gap: 4px; }
+.rc-island-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.rc-island-top strong { color: var(--ink); }
+
+.rc-goal { margin: 0; }
+
+/* Text only screen readers hear. */
+.rc-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
