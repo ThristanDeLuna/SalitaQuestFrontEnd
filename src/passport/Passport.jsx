@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import { useSummary } from '../auth/useSummary';
 import {
-  badgeInfo, bestText, daysLabel, questList, regionStatusText, stickerHeading, weekDotLabel,
+  badgeInfo, bestScoreLine, comingSoonLabel, daysLabel, questList, regionChipText, starsPercent,
+  stickerHeading, weekDotLabel,
 } from './passportLogic';
 import './Passport.css';
 
@@ -19,50 +20,100 @@ const TABS = [
   ['badges', 'Badges'],
 ];
 
-// ---------- Progress: stars, streak, week, regions, today's quests ----------
+// ---------- Progress: stars card, streak card, islands, today's quests ----------
+// Small inline icons; always aria-hidden, the words next to them say the same thing.
+const ICON_PATHS = {
+  check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
+  play: <path d="M8 5.5v13l11-6.5z" fill="currentColor" />,
+  lock: (
+    <>
+      <rect x="5" y="11" width="14" height="9" rx="2" fill="currentColor" />
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="8" />
+      <path d="M12 7.5V12l3 2" />
+    </>
+  ),
+};
+function Icon({ name }) {
+  return (
+    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"
+         fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {ICON_PATHS[name]}
+    </svg>
+  );
+}
+const STATUS_ICON = { stamped: 'check', in_progress: 'play', not_started: 'play', locked: 'lock', coming_soon: 'clock' };
+
 function ProgressTab({ summary, nameOf }) {
   const { streak } = summary;
+  const percent = starsPercent(summary.stars, summary.max_stars);
+  const soon = comingSoonLabel(summary.regions);
   return (
-    <>
-      <p className="pp-big">Stars {summary.stars} / {summary.max_stars}</p>
+    <div className="pp-progress">
+      <section className="pp-stars" aria-label="Total stars">
+        <p className="pp-stars-label">Total stars</p>
+        <p className="pp-big">{summary.stars} / {summary.max_stars}</p>
+        {percent !== null && (
+          <div className="pp-bar" aria-hidden="true"><div className="pp-bar-fill" style={{ width: `${percent}%` }} /></div>
+        )}
+        {soon && <p className="pp-stars-soon">{soon}</p>}
+      </section>
 
-      <h2>Streak</h2>
-      <p>{daysLabel(streak.current)} <span className="muted">· Longest: {daysLabel(streak.longest)}</span></p>
-      <ul className="pp-week" aria-label="This week">
-        {streak.week.map((d) => (
-          <li key={d.date} className={d.active ? 'pp-dot pp-played' : 'pp-dot'}>
-            <span aria-hidden="true" className="pp-dot-mark">{d.active ? '●' : '○'}</span>
-            <span aria-hidden="true">{d.day}</span>
-            <span className="pp-sr">{weekDotLabel(d)}</span>
-          </li>
-        ))}
-      </ul>
+      <section className="pp-card pp-streak" aria-label="Streak">
+        <div className="pp-streak-top">
+          <h2>Streak</h2>
+          <strong>{daysLabel(streak.current)}</strong>
+        </div>
+        <ul className="pp-week" aria-label="This week">
+          {streak.week.map((d) => (
+            <li key={d.date} className="pp-day">
+              <span className={d.active ? 'pp-circle pp-played' : 'pp-circle'}>
+                {d.active && <Icon name="check" />}
+              </span>
+              <span aria-hidden="true">{d.day}</span>
+              <span className="pp-sr">{weekDotLabel(d)}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="muted">Longest: {daysLabel(streak.longest)}</p>
+      </section>
 
-      <h2>Regions</h2>
-      <ul className="pp-list">
-        {summary.regions.map((r) => (
-          <li key={r.code} className="card pp-region">
-            <div className="pp-region-top">
-              <Link to={`/regions/${r.code}`}><strong>{nameOf(r.code)}</strong></Link>
-              <span className="chip">{regionStatusText(r)}</span>
-            </div>
-            <span className="muted">{bestText('Word Pond', r.matching)}</span>
-            <span className="muted">{bestText('Jeepney stop', r.listening)}</span>
-          </li>
-        ))}
-      </ul>
+      <section className="pp-islands">
+        <h2>Your islands</h2>
+        <ul className="pp-list">
+          {summary.regions.map((r) => {
+            const scores = bestScoreLine(r);
+            return (
+              <li key={r.code} className={`pp-island pp-${r.status}`}>
+                <span className="pp-tile"><Icon name={STATUS_ICON[r.status] ?? 'clock'} /></span>
+                <span className="pp-island-text">
+                  <Link to={`/regions/${r.code}`} className="pp-island-name">{nameOf(r.code)}</Link>
+                  {scores && <span className="muted">{scores}</span>}
+                </span>
+                <span className="chip">{regionChipText(r)}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
 
-      <h2>Today's quests</h2>
-      <ul className="pp-list">
-        {questList(summary.quests_today).map((q) => (
-          <li key={q.key} className="pp-quest">
-            <span aria-hidden="true">{q.done ? '✓' : '○'}</span>
-            <span>{q.text}</span>
-            <span className={q.done ? 'pp-done' : 'muted'}>{q.done ? 'Done' : 'Not done'}</span>
-          </li>
-        ))}
-      </ul>
-    </>
+      <section className="pp-card pp-quests">
+        <h2>Today's quests</h2>
+        <ul className="pp-list">
+          {questList(summary.quests_today).map((q) => (
+            <li key={q.key} className="pp-quest">
+              <span aria-hidden="true">{q.done ? '✓' : '○'}</span>
+              <span>{q.text}</span>
+              <span className={q.done ? 'pp-done' : 'muted'}>{q.done ? 'Done' : 'Not done'}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
   );
 }
 

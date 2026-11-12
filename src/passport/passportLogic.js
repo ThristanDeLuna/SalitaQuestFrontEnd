@@ -8,25 +8,40 @@ export function daysLabel(n) {
   return `${days} ${days === 1 ? 'day' : 'days'}`;
 }
 
-// The status of one region in words. The server decides the status (Game_rules::region_status).
-const STATUS_TEXT = {
+// The state chip of one region, in words. The server decides the status (Game_rules::region_status).
+const CHIP_TEXT = {
   stamped: 'Stamped',
   not_started: 'Not started',
   locked: 'Locked',
   coming_soon: 'Coming soon',
 };
-export function regionStatusText(region) {
-  if (region?.status === 'in_progress') return `${region.games_passed ?? 0} of 2 games`;
-  return STATUS_TEXT[region?.status] ?? 'Not available';
+export function regionChipText(region) {
+  if (region?.status === 'in_progress') return `${region.games_passed ?? 0} of 2`;
+  return CHIP_TEXT[region?.status] ?? 'Not available';
 }
 
-// The best score of one game in one region, e.g. "Word Pond: 30 / 40 (Bronze medal)".
-// game is null when it was never played. The medal is 'gold', 'silver', 'bronze' or null (no medal).
-const MEDAL_TEXT = { gold: 'Gold medal', silver: 'Silver medal', bronze: 'Bronze medal' };
-export function bestText(label, game) {
-  if (!game) return `${label}: not played yet`;
-  const medal = MEDAL_TEXT[game.medal];
-  return `${label}: ${game.best} / ${game.max}${medal ? ` (${medal})` : ''}`;
+// The small second line of an island row: "Word Pond 30/40 · Jeepney 20/50".
+// A game never played shows "—". Locked and coming soon islands have no second line (null).
+function scoreText(label, game) {
+  return `${label} ${game ? `${game.best}/${game.max}` : '—'}`;
+}
+export function bestScoreLine(region) {
+  if (!region || region.status === 'coming_soon' || region.status === 'locked') return null;
+  return `${scoreText('Word Pond', region.matching)} · ${scoreText('Jeepney', region.listening)}`;
+}
+
+// "1 island coming soon", "3 islands coming soon", or '' when there are none.
+export function comingSoonLabel(regions) {
+  const n = Array.isArray(regions) ? regions.filter((r) => r?.status === 'coming_soon').length : 0;
+  if (n === 0) return '';
+  return `${n} ${n === 1 ? 'island' : 'islands'} coming soon`;
+}
+
+// How full the stars bar is, 0 to 100, or null when there is nothing to divide by (no bar then).
+export function starsPercent(stars, max) {
+  if (!Number.isFinite(max) || max <= 0) return null;
+  const value = Number.isFinite(stars) && stars > 0 ? stars : 0;
+  return Math.min(100, Math.round((value / max) * 100));
 }
 
 // The server sends only badge keys (Game_rules::BADGE_IDS), so the titles live here.
@@ -63,12 +78,12 @@ export function questList(questsToday) {
     .map(([key, text]) => ({ key, text, done: questsToday[key] === true }));
 }
 
-// A screen-reader text for one week dot, e.g. "Mon: played".
+// A screen-reader text for one week circle, e.g. "Thursday, played".
 // The server's `day` is one letter (M T W T F S S), and T and S are ambiguous, so the
-// short name comes from the `date` ('Y-m-d') when it is there; otherwise the letter is used.
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+// name comes from the `date` ('Y-m-d') when it is there; otherwise the letter is used.
+const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 export function weekDotLabel(day) {
   const at = /^\d{4}-\d{2}-\d{2}$/.test(day?.date ?? '') ? new Date(`${day.date}T00:00:00Z`) : null;
   const name = at && !Number.isNaN(at.getTime()) ? WEEKDAYS[at.getUTCDay()] : (day?.day ?? '?');
-  return `${name}: ${day?.active ? 'played' : 'not played'}`;
+  return `${name}, ${day?.active ? 'played' : 'not played'}`;
 }
