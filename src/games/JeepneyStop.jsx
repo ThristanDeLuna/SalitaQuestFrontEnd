@@ -10,6 +10,7 @@ import HowToPlay from './HowToPlay';
 import ResultsCard from './ResultsCard';
 import RoadScene from './RoadScene';
 import RoundGate from './RoundGate';
+import { doneShare } from './jeepneyLook';
 import {
   buildAnswers, canFinish, canNext, currentQuestion, initialQuiz, isLastQuestion, listeningRows,
   progressLabel, quizReducer,
@@ -109,7 +110,7 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
         <div inert>
           {header}
           <div className="jp-end-scene">
-            <RoadScene stopIndex={quiz.index} parked>
+            <RoadScene stopIndex={quiz.index} parked regionName={regionName}>
               <p className="jp-thanks">Thanks for riding!</p>
             </RoadScene>
           </div>
@@ -131,6 +132,11 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
     <>
       {header}
       <p className="jp-progress">{progressLabel(quiz)}</p>
+      {/* How many questions are done (N-1 at the start of question N). Only progress, never right or wrong
+          (DEC-56); hidden from screen readers because the line above already says it. */}
+      <div className="jp-bar" aria-hidden="true">
+        <div className="jp-bar-done" style={{ width: `${doneShare(quiz.index, quiz.questions.length) * 100}%` }} />
+      </div>
 
       {submitErr && (
         <p className="banner error" role="alert">
@@ -147,7 +153,7 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
                    note="You can hear each word again. Your results come after Finish."
                    message={audio.failed ? 'Could not play that sound.' : (playing ? 'Playing...' : '')} />
         {/* quiz.index (0 = first question) picks which of the two jeepneys is at the stop. */}
-        <RoadScene stopIndex={quiz.index} playing={playing}>
+        <RoadScene stopIndex={quiz.index} playing={playing} regionName={regionName}>
           {question.audio_url ? (
             <button type="button" className="btn primary jp-hear" onClick={() => audio.play(question.audio_url)}>
               Hear the driver

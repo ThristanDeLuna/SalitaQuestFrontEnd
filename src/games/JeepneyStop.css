@@ -10,7 +10,11 @@
 .jp-icon-body { fill: var(--sidebar); stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
 .jp-icon-line { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 .jp-icon-window { fill: var(--surface); stroke: currentColor; stroke-width: 1; }
-.jp-progress { margin: 0 0 12px; font-weight: 700; color: var(--ink); }
+.jp-progress { margin: 0 0 4px; font-weight: 700; color: var(--ink); }
+/* Thin bar under "Question N of 5": the questions done, in --ink on a light track. Progress only (DEC-56). */
+.jp-bar { max-width: 520px; height: 8px; margin-bottom: 12px; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--ink); border-radius: 4px; }
+.jp-bar-done { height: 100%; background: var(--ink); }
 
 .jp-question { display: grid; gap: 12px; max-width: 520px; }
 .jp-question p { margin: 0; }
@@ -41,6 +45,7 @@
    and becomes two columns: the street on the left, the question and options on the right. Only the
    placement changes; the order of the page, and so the Tab order, stays the same. */
 @media (min-width: 900px) {
+  .jp-bar { max-width: none; }   /* as wide as the question card */
   .jp-question { max-width: none; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; align-content: start; }
   .jp-question > .rs-scene { grid-column: 1; grid-row: 1 / span 3; align-self: start; }   /* beside all the rest */
   .jp-question > :not(.rs-scene) { grid-column: 2; }

@@ -14,7 +14,7 @@
      --rs-driver-x the driver's face in that drawing (cx of .rs-face in JeepneyArt.jsx);
      --rs-tail-x   how far in from the bubble's left edge its tail sits. */
   --rs-jeep-x: 12px;
-  --rs-driver-x: 76px;
+  --rs-driver-x: 93px;
   --rs-tail-x: 40px;
   --scene-scale: 1;
   position: relative;

@@ -15,24 +15,32 @@
 .rs-puff { fill: var(--art-road); opacity: 0; transform-box: fill-box; transform-origin: center; }
 .rs-art .rs-puff { stroke-width: 1.5; }
 
-/* Two paint jobs, so the player can see that a different jeepney has come. */
-.rs-paint-a { --rs-paint: var(--art-yellow); }
-.rs-paint-b { --rs-paint: var(--art-red); }
+/* Two paint jobs, so the player can see that a different jeepney has come: a red one with yellow and white
+   stripes, and a white one with blue and red stripes. They only change these four colours. */
+.rs-paint-a { --rs-paint: var(--art-red); --rs-roof: var(--art-yellow); --rs-stripe-1: var(--art-yellow); --rs-stripe-2: var(--surface); }
+.rs-paint-b { --rs-paint: var(--surface); --rs-roof: var(--art-water-deep); --rs-stripe-1: var(--art-water-deep); --rs-stripe-2: var(--art-red); }
 .rs-body { fill: var(--rs-paint); }
-/* The trim: a white band with alternating red and yellow diamonds (no outline: too small for one). */
-.rs-trim { fill: var(--surface); }
-.rs-art .rs-trim-a, .rs-art .rs-trim-b { stroke: none; }
-.rs-trim-a { fill: var(--art-red); }
-.rs-trim-b { fill: var(--art-yellow); }
-.rs-rack { fill: var(--art-road); }
-.rs-window { fill: var(--info-tint); }
+.rs-roof { fill: var(--rs-roof); }
+/* The stripes are flat bands on the paint (no outline: the body's outline frames them). */
+.rs-art .rs-stripe-1, .rs-art .rs-stripe-2 { stroke: none; }
+.rs-stripe-1 { fill: var(--rs-stripe-1); }
+.rs-stripe-2 { fill: var(--rs-stripe-2); }
+/* Silver parts: --art-road. The trim line, the horse and the hub centre are small, so a thinner outline. */
+.rs-chrome, .rs-chrome-line, .rs-fender, .rs-horse, .rs-hub-cap { fill: var(--art-road); }
+.rs-art .rs-chrome-line, .rs-art .rs-horse, .rs-art .rs-hub-cap { stroke-width: 1; }
+/* Roof sign: --ink capitals on a --surface panel (the only text in the art). */
+.rs-sign { fill: var(--surface); }
+.rs-sign-text { fill: var(--ink); font: 800 11px var(--sans); letter-spacing: 0; }
+/* Inside the open windows and the back entrance: silver-grey shadow with dark rider silhouettes. */
+.rs-inside { fill: var(--art-road); }
+.rs-art .rs-rider { fill: var(--ink); stroke: none; }
+.rs-glass { fill: var(--art-water-deep); }
 .rs-art .rs-glare { fill: var(--surface); opacity: 0.8; stroke: none; }
-.rs-chrome, .rs-hub { fill: var(--surface); }
-.rs-art .rs-mirror, .rs-art .rs-lamp, .rs-art .rs-hub { stroke-width: 1.5; }
-.rs-mirror { fill: var(--surface); }
+.rs-art .rs-lamp, .rs-art .rs-hub { stroke-width: 1.5; }
+.rs-hub { fill: var(--surface); }
 .rs-lamp { fill: var(--art-yellow); }
-.rs-tyre { fill: var(--ink); }
-.rs-face { fill: var(--accent); }
+.rs-tyre, .rs-well { fill: var(--ink); }
+.rs-face { fill: var(--surface); }
 .rs-cap { fill: var(--ink); }
 .rs-mouth { fill: var(--ink); stroke-width: 0; }
 /* Rotate and scale these parts around their own centre, not the drawing's corner. */
@@ -46,9 +54,11 @@
   @keyframes rs-drive-in { from { transform: translateX(-160px); } }   /* past the left edge: 12 + 132 px */
   .rs-leave { animation: rs-drive-out 700ms ease-in forwards; }
   @keyframes rs-drive-out { from { transform: none; } }
-  /* The wheels turn twice while the jeepney moves, slowing or speeding up with it. */
-  .rs-arrive .rs-wheel { animation: rs-spin-in 700ms ease-out forwards; }
+  /* The wheels turn twice while the jeepney moves, slowing or speeding up with it. Once the jeepney is in,
+     its wheels keep turning slowly, in step with the scrolling road (one turn in 3 s). */
+  .rs-arrive .rs-wheel { animation: rs-spin-in 700ms ease-out, rs-roll 3s linear 700ms infinite; }
   @keyframes rs-spin-in { from { transform: rotate(-720deg); } }
+  @keyframes rs-roll { to { transform: rotate(360deg); } }
   .rs-leave .rs-wheel { animation: rs-spin-out 700ms ease-in forwards; }
   @keyframes rs-spin-out { to { transform: rotate(720deg); } }
   /* While a jeepney moves, its two puffs drift back, grow and fade (one after the other). */
@@ -59,8 +69,9 @@
     to { opacity: 0; transform: translateX(-14px) scale(1.3); }
   }
 
-  /* The parked jeepney bobs 1 px. The drive is on the lane and the bob on the drawing, so they never clash. */
-  .rs-here .rs-jeep { animation: rs-bob 2.4s ease-in-out 700ms infinite alternate; }
+  /* The parked jeepney's body bobs 1 px on its wheels. The drive is on the lane and the bob on the body
+     group, so they never clash, and the wheels stay on the road. */
+  .rs-here .rs-jeep-body { animation: rs-bob 2.4s ease-in-out 700ms infinite alternate; }
   @keyframes rs-bob { to { transform: translateY(-1px); } }
 
   /* While the word plays, the parked driver's mouth opens and closes. */
