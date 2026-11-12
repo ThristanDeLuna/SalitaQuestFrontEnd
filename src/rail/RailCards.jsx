@@ -13,18 +13,18 @@ import './RailCards.css';
 
 function Bar({ percent }) {
   return (
-    <div className="rc-bar" aria-hidden="true">
-      <div className="rc-fill" style={{ width: `${percent}%` }} />
+    <div className="rl-bar" aria-hidden="true">
+      <div className="rl-fill" style={{ width: `${percent}%` }} />
     </div>
   );
 }
 
 function Card({ title, aside, children, labelId }) {
   return (
-    <section className="card rc-card" aria-labelledby={labelId}>
-      <div className="rc-head">
+    <section className="card rl-card" aria-labelledby={labelId}>
+      <div className="rl-head">
         <h2 id={labelId}>{title}</h2>
-        {aside && <span className="rc-aside">{aside}</span>}
+        {aside && <span className="rl-aside">{aside}</span>}
       </div>
       {children}
     </section>
@@ -32,7 +32,7 @@ function Card({ title, aside, children, labelId }) {
 }
 
 function Check({ done }) {
-  return <span className={done ? 'rc-circle rc-on' : 'rc-circle'} aria-hidden="true">{done ? '✓' : ''}</span>;
+  return <span className={done ? 'rl-circle rl-on' : 'rl-circle'} aria-hidden="true">{done ? '✓' : ''}</span>;
 }
 
 export default function RailCards() {
@@ -51,7 +51,7 @@ export default function RailCards() {
 
   if (!summary && error !== null && !loading) {
     return (
-      <div className="rc-rail">
+      <div className="rl-rail">
         <p className="banner error" role="alert">Could not load your progress. Please try again later.</p>
       </div>
     );
@@ -64,16 +64,16 @@ export default function RailCards() {
   const count = questCount(summary?.quests_today);
 
   return (
-    <div className="rc-rail">
-      <Card title="Today's quests" labelId="rc-quests" aside={wait ? null : `${count.done} / ${count.total}`}>
+    <div className="rl-rail">
+      <Card title="Today's quests" labelId="rl-quests" aside={wait ? null : `${count.done} / ${count.total}`}>
         {wait ? <p className="muted">Loading...</p> : (
           <>
             <Bar percent={(count.done / count.total) * 100} />
-            <ul className="rc-list">
+            <ul className="rl-list">
               {questRows(summary.quests_today).map((q) => (
-                <li key={q.key} className="rc-row">
+                <li key={q.key} className="rl-row">
                   <Check done={q.done} />
-                  <span>{q.text}{q.done && <span className="rc-sr"> (done)</span>}</span>
+                  <span>{q.text}{q.done && <span className="rl-sr"> (done)</span>}</span>
                 </li>
               ))}
             </ul>
@@ -82,14 +82,14 @@ export default function RailCards() {
       </Card>
 
       {(wait || week.length > 0) && (
-        <Card title="This week" labelId="rc-week">
+        <Card title="This week" labelId="rl-week">
           {wait ? <p className="muted">Loading...</p> : (
-            <ul className="rc-week">
+            <ul className="rl-week">
               {week.map((d, i) => (
-                <li key={d.date ?? i} className="rc-day">
+                <li key={d.date ?? i} className="rl-day">
                   <Check done={d.active === true} />
                   <span aria-hidden="true">{d.day}</span>
-                  <span className="rc-sr">{weekDotLabel(d)}</span>
+                  <span className="rl-sr">{weekDotLabel(d)}</span>
                 </li>
               ))}
             </ul>
@@ -97,15 +97,15 @@ export default function RailCards() {
         </Card>
       )}
 
-      <Card title="Island progress" labelId="rc-islands">
+      <Card title="Island progress" labelId="rl-islands">
         {wait ? <p className="muted">Loading...</p> : (
-          <ul className="rc-list">
+          <ul className="rl-list">
             {regions.map((r) => {
               const pct = islandPercent(r);
               const note = pct !== null ? `${pct}%` : r.status === 'locked' ? 'Locked' : 'Coming soon';
               return (
-                <li key={r.code} className="rc-island">
-                  <div className="rc-island-top">
+                <li key={r.code} className="rl-island">
+                  <div className="rl-island-top">
                     <span>{names[r.code] ?? r.code}</span>
                     <strong>{note}</strong>
                   </div>
@@ -117,8 +117,8 @@ export default function RailCards() {
         )}
       </Card>
 
-      <Card title="Next goal" labelId="rc-goal">
-        {wait ? <p className="muted">Loading...</p> : <p className="rc-goal">{nextGoal(regions, names)}</p>}
+      <Card title="Next goal" labelId="rl-goal">
+        {wait ? <p className="muted">Loading...</p> : <p className="rl-goal">{nextGoal(regions, names)}</p>}
       </Card>
     </div>
   );
