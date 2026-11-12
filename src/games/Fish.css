@@ -34,10 +34,10 @@
 .wpf-pupil { fill: var(--ink); }
 
 /* The word: a light label on the body, never flipped and never faded (only the drawing is). The body centre is
-   9 px right of the drawing's middle, or 9 px left when the fish faces the other way. */
+   8 px right of the drawing's middle, or 8 px left when the fish faces the other way. */
 .wpf-label {
-  position: absolute; left: calc(50% + 9px * var(--wpf-dir, 1)); top: 40px; transform: translate(-50%, -50%);
-  padding: 0 6px; border-radius: 6px; background: var(--surface); color: var(--ink);
+  position: absolute; left: calc(50% + 8px * var(--wpf-dir, 1)); top: 38px; transform: translate(-50%, -50%);
+  padding: 0 4px; border-radius: 4px; background: var(--surface); color: var(--ink);
   font: 700 14px/20px var(--sans); white-space: nowrap;
 }
 
@@ -46,7 +46,8 @@
 .wpf-caught .wpf-art { opacity: 0.45; }
 /* The fish whose word is playing: an inset ink ring, which takes no room. */
 .wpf-playing { box-shadow: inset 0 0 0 2px var(--ink); }
-.wpf[disabled] { opacity: 0.6; cursor: not-allowed; }
+.wpf[disabled] { cursor: not-allowed; }
+.wpf[disabled] .wpf-art { opacity: 0.6; }   /* the drawing only: the word label is never faded */
 
 /* Visually hidden, still read by screen readers. */
 .wpf-sr {
