@@ -1,55 +1,221 @@
-/* Jeepney stop screen. Phone first at 390 px; wider screens only rearrange it.
-   Every class starts with jp- so it cannot clash. Colours come from the :root tokens in src/index.css.
-   The chosen option says "Selected:" in words; the border and fill are only a second hint. */
+/* Jeepney stop screen. The whole game sits in ONE card (the stage) that fills the main area, so it fits on one
+   screen with no page scrolling, and the street scene takes all the room the question and answers leave.
+   Every class starts with js- (the stage) or jp- (the pieces) so it cannot clash. Colours come from the :root
+   tokens in src/index.css. The chosen option says "Selected:" in words; the border and fill are only a second hint. */
 
-.jp-head { margin-bottom: 8px; }
-.jp-head p { margin: 0; }
-.jp-title { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.jp-title h1 { margin: 0; }
-.jp-icon { flex: none; display: block; color: var(--ink); }
+/* ---------- The stage ---------- */
+/* The room the shell leaves for a page. Measured from the shell; replace with A's variables.
+   index.css has no variables for these: the top bar is 56 px (.topbar min-height, border inside), main's padding
+   is 16 px on top and 88 px below on a phone (the 88 already makes room for the 57 px fixed tab bar), and 32 px
+   all round from 769 px, where the tab bar becomes the side menu. Same numbers as the Word Pond stage. */
+.js-stage {
+  --js-shell-head: 56px;
+  --js-main-pad: 104px;      /* 16 + 88 */
+  --js-stage-min: 520px;     /* very short phones keep this, and the page scrolls instead */
+  /* The least room the street (its own minimum, see RoadScene.css) and two rows of answers need: only matters
+     with How to play open, when the card grows and the page scrolls. */
+  --js-play-min: calc(68px * var(--rs-scale) + 90px + 8px + 120px);
+  --js-s-w: 1;               /* the street's scale the screen's WIDTH allows ... */
+  --js-s-h: 1;               /* ... and the one its HEIGHT allows; the smaller of the two is used (see "Street size") */
+}
+@media (min-width: 769px) {
+  .js-stage { --js-main-pad: 64px; }   /* 32 + 32 */
+}
+@media (min-width: 769px) and (max-height: 879px) {
+  .js-stage { --js-play-min: max(260px, calc(68px * var(--rs-scale) + 90px)); }   /* two columns: the street's own minimum, or four 56 px answers */
+}
+
+/* Rows: (a) the title, the progress and the status line, (b) the question and How to play, (c) the street and
+   the answers, which take all the room left, (d) Next / Finish and its hint. With How to play open the card
+   simply grows and the page may scroll. A small offset ink shadow makes the card stand off the page. */
+.js-stage {
+  display: grid; grid-template-rows: auto minmax(var(--js-play-min), 1fr) auto; gap: 6px;
+  width: 100%; min-height: max(var(--js-stage-min), calc(100dvh - var(--js-shell-head) - var(--js-main-pad)));
+  padding: 8px; background: var(--surface);
+  border: 2px solid var(--ink); border-radius: 16px; box-shadow: 4px 4px 0 var(--ink);
+}
+/* The results: the title and the parked street stay behind the pop-up, in the same card. */
+.js-stage-done { grid-template-rows: auto minmax(var(--js-play-min), 1fr); }
+@media (min-width: 769px) {
+  .js-stage { gap: 8px; padding: 12px 16px; }
+}
+
+/* ---------- (a) Title row: title and region, "Question N of 5" with its bar, then the status line ---------- */
+/* The head, the progress, the bar and the status are separate children of the stage, so on a phone they are
+   placed by a small grid of their own (display: contents lets the stage's rows hold them), and from 769 px
+   they share one line. */
+.js-stage { grid-template-columns: minmax(0, 1fr); }
+.js-head { margin: 0; }
+.js-title { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; min-width: 0; }
+.js-title h1 { margin: 0; font-size: 24px; line-height: 32px; }
+.js-region { margin: 0; line-height: 20px; }
+.jp-icon { flex: none; display: block; align-self: center; width: 32px; height: 26px; color: var(--ink); }
 .jp-icon-body { fill: var(--sidebar); stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
 .jp-icon-line { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 .jp-icon-window { fill: var(--surface); stroke: currentColor; stroke-width: 1; }
-.jp-progress { margin: 0 0 4px; font-weight: 700; color: var(--ink); }
+
+.js-progress { margin: 0; font-size: 14px; line-height: 20px; font-weight: 700; color: var(--ink); }
 /* Thin bar under "Question N of 5": the questions done, in --ink on a light track. Progress only (DEC-56). */
-.jp-bar { max-width: 520px; height: 8px; margin-bottom: 12px; overflow: hidden;
-  background: var(--surface); border: 1px solid var(--ink); border-radius: 4px; }
-.jp-bar-done { height: 100%; background: var(--ink); }
+.js-bar { height: 8px; overflow: hidden; background: var(--surface); border: 1px solid var(--ink); border-radius: 4px; }
+.js-bar-done { height: 100%; background: var(--ink); }
+/* The status line: "Playing..." or the sound message, always one reserved 20 px line. */
+.js-status { margin: 0; min-height: 20px; font-size: 14px; line-height: 20px; font-weight: 700; color: var(--ink); }
 
-.jp-question { display: grid; gap: 12px; max-width: 520px; }
-.jp-question p { margin: 0; }
-.jp-question h2 { margin: 4px 0 0; }
-.jp-hear { justify-self: start; }
-/* The directions card is the first row of the question card; the card's 12 px gap spaces it. */
-.jp-question > .htp { margin: 0; }
+/* Phone: the title, then the label with the bar under it and the status line on the right. */
+@media (max-width: 768px) {
+  .js-stage { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto auto minmax(var(--js-play-min), 1fr) auto; column-gap: 12px; row-gap: 0; }
+  .js-stage-done { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(var(--js-play-min), 1fr); }
+  .js-head { grid-column: 1 / -1; grid-row: 1; margin-bottom: 4px; }
+  .js-progress { grid-column: 1; grid-row: 2; }
+  .js-bar { grid-column: 1; grid-row: 3; align-self: start; max-width: 520px; }
+  .js-status { grid-column: 2; grid-row: 2; text-align: right; }
+  .js-quiz, .js-foot { grid-column: 1 / -1; margin-top: 6px; }
+  .js-quiz { grid-row: 4; }
+  .js-foot { grid-row: 5; }
+}
+/* From 769 px: one line, the title, the progress with its bar under it, the status on the right. */
+@media (min-width: 769px) {
+  .js-stage { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: auto minmax(var(--js-play-min), 1fr) auto; }
+  .js-stage-done { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(var(--js-play-min), 1fr); }
+  .js-stage > .js-head, .js-stage > .js-progress, .js-stage > .js-bar, .js-stage > .js-status { grid-row: 1; }
+  .js-head { grid-column: 1; }
+  .js-progress { grid-column: 2; align-self: start; justify-self: center; width: min(100%, 260px); text-align: left; line-height: 18px; }
+  .js-bar { grid-column: 2; align-self: end; justify-self: center; width: min(100%, 260px); }
+  .js-status { grid-column: 3; align-self: center; }
+  .js-quiz, .js-foot { grid-column: 1 / -1; }
+  .js-quiz { grid-row: 2; }
+  .js-foot { grid-row: 3; }
+}
 
-/* After Finish: the street sits above the results card, as wide as the card and centred like it. */
-.jp-end-scene { max-width: 480px; margin: 0 auto; }
-.jp-thanks { margin: 0; font-weight: 700; }
+/* ---------- (b) The question beside the How to play toggle (closed by default) ---------- */
+/* The quiz section holds the lead (question and toggle) and the play area, so its aria-label still covers them. */
+.js-quiz { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 6px; min-height: 0; }
+.js-lead { display: flex; flex-wrap: wrap; align-items: center; column-gap: 12px; }
+.js-lead > .banner { flex: 1 1 100%; margin: 0 0 8px; }
+.js-question { flex: 1 1 200px; margin: 0; font-size: 18px; line-height: 24px; }
+.js-help { flex: none; max-width: 100%; }
+.js-help[open] { flex: 1 1 100%; }
+.js-help > summary {
+  display: flex; align-items: center; gap: 8px; min-height: 44px; width: max-content; max-width: 100%;
+  list-style: none; color: var(--ink); font-weight: 700; cursor: pointer;
+}
+.js-help > summary::-webkit-details-marker { display: none; }
+/* A small chevron drawn with borders (no icon font): it points down when closed, up when open. */
+.js-help > summary::before {
+  content: ''; width: 8px; height: 8px; border: solid var(--ink); border-width: 0 2px 2px 0;
+  transform: translateY(-2px) rotate(45deg);
+}
+.js-help[open] > summary::before { transform: translateY(2px) rotate(-135deg); }
+.js-help .htp { margin: 0 0 8px; }
 
-.jp-options { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+/* ---------- (c) The play area: the street on top (it grows), the answers below; two columns from 769 px ---------- */
+.js-play { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; min-height: 0; }
+
+.jp-options { list-style: none; margin: 0; padding: 0; min-height: 0; display: grid; gap: 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .jp-option {
-  width: 100%; min-height: 56px; padding: 8px 16px; text-align: left;
+  width: 100%; height: 100%; min-height: 48px; padding: 4px 10px; text-align: left;
   background: var(--surface); color: var(--ink); border: 1px solid var(--sidebar-active); border-radius: 6px;
-  font: 16px var(--sans); cursor: pointer; overflow-wrap: anywhere;
+  font: 16px/20px var(--sans); cursor: pointer; overflow-wrap: anywhere;
 }
 .jp-option:hover { background: var(--info-tint); }
 .jp-chosen { border: 2px solid var(--ink); background: var(--sidebar); }
 .jp-now { font-weight: 700; }
 .jp-option[disabled] { opacity: 0.6; cursor: not-allowed; }
+.jp-thanks { margin: 0; font-weight: 700; }
 
-@media (min-width: 600px) {
-  .jp-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* After Finish: the street fills the card under the title. */
+.js-end-scene { display: grid; min-height: 0; }
+
+/* From 769 px the answers get bigger type and room. */
+@media (min-width: 769px) {
+  .jp-options { gap: 12px; grid-auto-rows: minmax(56px, auto); }
+  .jp-option { font-size: 18px; line-height: 24px; padding: 8px 14px; }
 }
-/* Wide screens: the card takes the whole page column (main, max 960 px, from index.css, not changed here)
-   and becomes two columns: the street on the left, the question and options on the right. Only the
-   placement changes; the order of the page, and so the Tab order, stays the same. */
-@media (min-width: 900px) {
-  .jp-bar { max-width: none; }   /* as wide as the question card */
-  .jp-question { max-width: none; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; align-content: start; }
-  .jp-question > .rs-scene { grid-column: 1; grid-row: 1 / span 3; align-self: start; }   /* beside all the rest */
-  .jp-question > :not(.rs-scene) { grid-column: 2; }
+/* From 769 px on a screen that is not tall (under 880 px): the street on the left, filling the full height of the
+   play area; the answers on the right, stacked, vertically centred. Only the placement changes; the order, and so
+   the Tab order, stays the same. On a tall screen (880 px and more) a column that high would be mostly sky and
+   white space, so the phone layout stays (street on top, 2 x 2 answers below) and the street spans the card. */
+@media (min-width: 769px) and (max-height: 879px) {
+  .js-play { grid-template-rows: minmax(0, 1fr); grid-template-columns: minmax(0, 1fr) clamp(200px, 36%, 340px); gap: 16px; }
+  /* contain: size keeps the answers from asking for their tallest size (4 rows of 88 px) when the card's own height
+     is worked out; they take the room the row gives them, between 56 and 88 px a row. */
+  .jp-options { grid-template-columns: minmax(0, 1fr); align-content: center; grid-auto-rows: minmax(56px, 88px); contain: size; }
 }
+
+/* ---------- (d) Next / Finish and its hint, side by side ---------- */
+/* The button takes half the card (only its width; the .btn look is unchanged) and the hint the other half,
+   up to two 20 px lines beside the 44 px button, so the row never changes height and the button never moves. */
+.js-foot { display: flex; align-items: center; gap: 12px; }
+.js-next { flex: 0 0 50%; }
+.js-foot > .js-hint { flex: 1 1 0; margin: 0; text-align: left; }
+
+/* ---------- Street size ---------- */
+/* The street is drawn at phone size and scaled (RoadScene.css reads --rs-scale). Two things limit the scale: the
+   scene's WIDTH (the jeepney is 132 art px, the bubble over its cab is real px) and its HEIGHT (the art wants
+   about 145 art px of it, so the sun is not cut off). The width steps are picked from the narrowest the scene is
+   at each screen width, and from 1366 px on they assume the 300 px rail may sit beside main, so the street fits
+   with and without it. The height steps come from the room the rows above and below leave. The smaller wins. */
+.js-stage { --rs-scale: min(var(--js-s-w), var(--js-s-h)); }
+
+/* Phone (stacked): width steps ... */
+@media (max-width: 768px) {
+  .js-stage { --js-s-w: 1; }
+}
+@media (min-width: 360px) and (max-width: 768px) { .js-stage { --js-s-w: 1.5; } }   /* under 360 px the answers wrap more, so 1 */
+@media (min-width: 380px) and (max-width: 768px) { .js-stage { --js-s-w: 1.75; } }
+@media (min-width: 410px) and (max-width: 768px) { .js-stage { --js-s-w: 2; } }
+@media (min-width: 440px) and (max-width: 768px) { .js-stage { --js-s-w: 2.25; } }
+@media (min-width: 480px) and (max-width: 768px) { .js-stage { --js-s-w: 2.5; } }
+@media (min-width: 560px) and (max-width: 768px) { .js-stage { --js-s-w: 3; } }
+@media (min-width: 640px) and (max-width: 768px) { .js-stage { --js-s-w: 3.5; } }
+/* ... and height steps (the scene is about the screen's height minus 520 px, or 470 px when the answers
+   do not wrap). */
+@media (max-width: 768px) and (min-height: 700px) { .js-stage { --js-s-h: 1.25; } }
+@media (max-width: 768px) and (min-height: 730px) { .js-stage { --js-s-h: 1.5; } }
+@media (max-width: 768px) and (min-height: 780px) { .js-stage { --js-s-h: 1.75; } }
+@media (max-width: 768px) and (min-height: 820px) { .js-stage { --js-s-h: 2; } }
+@media (max-width: 768px) and (min-height: 860px) { .js-stage { --js-s-h: 2.25; } }
+@media (max-width: 768px) and (min-height: 900px) { .js-stage { --js-s-h: 2.5; } }
+@media (max-width: 768px) and (min-height: 950px) { .js-stage { --js-s-h: 2.75; } }
+@media (max-width: 768px) and (min-height: 1000px) { .js-stage { --js-s-h: 3; } }
+@media (max-width: 768px) and (min-height: 1100px) { .js-stage { --js-s-h: 3.5; } }
+
+/* From 769 px (two columns): width steps. The scene is the card minus the answers column (200 to 340 px), so
+   from 1366 px they use the width with the 300 px rail (main at most 960 px wide from 1460 px, so no change then). */
+@media (min-width: 769px) { .js-stage { --js-s-w: 1; } }
+@media (min-width: 800px) { .js-stage { --js-s-w: 1.25; } }
+@media (min-width: 850px) { .js-stage { --js-s-w: 1.5; } }
+@media (min-width: 900px) { .js-stage { --js-s-w: 1.75; } }
+@media (min-width: 1000px) { .js-stage { --js-s-w: 2.25; } }
+@media (min-width: 1100px) { .js-stage { --js-s-w: 3; } }
+@media (min-width: 1460px) { .js-stage { --js-s-w: 3.5; } }
+/* ... and height steps (the scene is the screen's height minus 290 px). */
+@media (min-width: 769px) and (min-height: 560px) { .js-stage { --js-s-h: 1.5; } }
+@media (min-width: 769px) and (min-height: 600px) { .js-stage { --js-s-h: 2; } }
+@media (min-width: 769px) and (min-height: 640px) { .js-stage { --js-s-h: 2.25; } }
+@media (min-width: 769px) and (min-height: 680px) { .js-stage { --js-s-h: 2.5; } }
+@media (min-width: 769px) and (min-height: 720px) { .js-stage { --js-s-h: 2.75; } }
+@media (min-width: 769px) and (min-height: 760px) { .js-stage { --js-s-h: 3; } }
+@media (min-width: 769px) and (min-height: 800px) { .js-stage { --js-s-h: 3.25; } }
+@media (min-width: 769px) and (min-height: 850px) { .js-stage { --js-s-h: 3.5; } }
+
+/* Tall screens (880 px and more) use the stacked layout, so the street spans the card: its width is the card's
+   (main, at most 960 px, minus 64 px of padding and 36 px of card) and its height the screen's minus about 430 px
+   (the rows above and below, and two rows of answers). From 1366 px the width steps again assume the rail. */
+@media (min-width: 769px) and (min-height: 880px) { .js-stage { --js-s-w: 3; --js-s-h: 3; } }
+@media (min-width: 820px) and (min-height: 880px) { .js-stage { --js-s-w: 3.5; } }
+@media (min-width: 900px) and (min-height: 880px) { .js-stage { --js-s-w: 4; } }
+@media (min-width: 1000px) and (min-height: 880px) { .js-stage { --js-s-w: 4.5; } }
+@media (min-width: 1100px) and (min-height: 880px) { .js-stage { --js-s-w: 5; } }
+@media (min-width: 1460px) and (min-height: 880px) { .js-stage { --js-s-w: 5.5; } }
+@media (min-width: 769px) and (min-height: 920px) { .js-stage { --js-s-h: 3.25; } }
+@media (min-width: 769px) and (min-height: 960px) { .js-stage { --js-s-h: 3.5; } }
+@media (min-width: 769px) and (min-height: 1000px) { .js-stage { --js-s-h: 3.75; } }
+@media (min-width: 769px) and (min-height: 1040px) { .js-stage { --js-s-h: 4; } }
+@media (min-width: 769px) and (min-height: 1080px) { .js-stage { --js-s-h: 4.25; } }
+@media (min-width: 769px) and (min-height: 1120px) { .js-stage { --js-s-h: 4.5; } }
+@media (min-width: 769px) and (min-height: 1200px) { .js-stage { --js-s-h: 5; } }
+@media (min-width: 769px) and (min-height: 1300px) { .js-stage { --js-s-h: 5.5; } }
 
 /* The same pop for every option: it only says "that registered", never right or wrong (DEC-56). */
 @media (prefers-reduced-motion: no-preference) {
