@@ -133,12 +133,14 @@ function RegionCard({ r, mode, onEdit, onAskDelete, onClose, onSave, onDelete })
         />
       ) : (
         <>
-          <h3 className="ar-name">{r.name} <span className="chip">{r.ready ? 'Ready' : 'Coming soon'}</span></h3>
-          <p className="muted">{r.area} &middot; code: {r.code}</p>
-          {r.description ? <p>{r.description}</p> : null}
-          <p className="muted">
-            {r.word_count} words, {r.audio_word_count} with a recording &middot; pin at {r.latitude}, {r.longitude}
-          </p>
+          {/* Mockup page 23: name and counts on the left, status chip on the right */}
+          <div className="ar-head">
+            <div>
+              <h3 className="ar-name">{r.name}</h3>
+              <p className="muted ar-counts">{r.word_count} words &middot; {r.audio_word_count} with audio</p>
+            </div>
+            <span className={`chip ${r.ready ? '' : 'ar-soon'}`}>{r.ready ? 'Active' : 'Coming soon'}</span>
+          </div>
 
           {mode === 'delete' ? (
             <div role="alert">
@@ -214,24 +216,6 @@ export default function AdminRegions() {
 
       {note && <p className="banner info" role="status">{note}</p>}
 
-      {regions && !adding && (
-        <button type="button" className="btn primary ar-add" onClick={() => { setAdding(true); setOpen(null); setNote(''); }}>
-          Add a region
-        </button>
-      )}
-      {adding && (
-        <div className="ar-card">
-          <h2>New region</h2>
-          <RegionForm
-            initial={{ code: '', name: '', area: '', description: '', latitude: '', longitude: '' }}
-            codeLocked={false}
-            submitLabel="Add region"
-            onSave={create}
-            onCancel={() => setAdding(false)}
-          />
-        </div>
-      )}
-
       {!regions && !err && <p className="muted" role="status">Loading regions...</p>}
       {regions && regions.length === 0 && <p className="muted">There are no regions yet.</p>}
       {regions && regions.length > 0 && (
@@ -249,6 +233,24 @@ export default function AdminRegions() {
             />
           ))}
         </ul>
+      )}
+
+      {regions && !adding && (
+        <button type="button" className="btn primary ar-add" onClick={() => { setAdding(true); setOpen(null); setNote(''); }}>
+          + Add region
+        </button>
+      )}
+      {adding && (
+        <div className="ar-card">
+          <h2>New region</h2>
+          <RegionForm
+            initial={{ code: '', name: '', area: '', description: '', latitude: '', longitude: '' }}
+            codeLocked={false}
+            submitLabel="Add region"
+            onSave={create}
+            onCancel={() => setAdding(false)}
+          />
+        </div>
       )}
     </div>
   );
