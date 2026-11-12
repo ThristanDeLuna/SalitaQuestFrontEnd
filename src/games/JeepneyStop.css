@@ -12,8 +12,9 @@
   --js-shell-head: 56px;
   --js-main-pad: 104px;      /* 16 + 88 */
   --js-stage-min: 520px;     /* very short phones keep this, and the page scrolls instead */
-  /* The least room the street (its own minimum, see RoadScene.css) and two rows of answers need: only matters
-     with How to play open, when the card grows and the page scrolls. */
+  /* The least room the street (its own minimum, see RoadScene.css) and two rows of answers need. It is the floor of the
+     quiz row, which also holds the question line (about 50 px), so it matters mostly with How to play open, when the
+     card grows and the page scrolls. */
   --js-play-min: calc(68px * var(--rs-scale) + 90px + 8px + 120px);
   --js-s-w: 1;               /* the street's scale the screen's WIDTH allows ... */
   --js-s-h: 1;               /* ... and the one its HEIGHT allows; the smaller of the two is used (see "Street size") */
@@ -42,7 +43,7 @@
 
 /* ---------- (a) Title row: title and region, "Question N of 5" with its bar, then the status line ---------- */
 /* The head, the progress, the bar and the status are separate children of the stage, so on a phone they are
-   placed by a small grid of their own (display: contents lets the stage's rows hold them), and from 769 px
+   placed straight into the stage grid (the label with its bar under it, the status on its right), and from 769 px
    they share one line. */
 .js-stage { grid-template-columns: minmax(0, 1fr); }
 .js-head { margin: 0; }
@@ -157,10 +158,7 @@
    with and without it. The height steps come from the room the rows above and below leave. The smaller wins. */
 .js-stage { --rs-scale: min(var(--js-s-w), var(--js-s-h)); }
 
-/* Phone (stacked): width steps ... */
-@media (max-width: 768px) {
-  .js-stage { --js-s-w: 1; }
-}
+/* Phone (stacked): width steps (1 under 360 px, the default) ... */
 @media (min-width: 360px) and (max-width: 768px) { .js-stage { --js-s-w: 1.5; } }   /* under 360 px the answers wrap more, so 1 */
 @media (min-width: 380px) and (max-width: 768px) { .js-stage { --js-s-w: 1.75; } }
 @media (min-width: 410px) and (max-width: 768px) { .js-stage { --js-s-w: 2; } }
@@ -182,7 +180,6 @@
 
 /* From 769 px (two columns): width steps. The scene is the card minus the answers column (200 to 340 px), so
    from 1366 px they use the width with the 300 px rail (main at most 960 px wide from 1460 px, so no change then). */
-@media (min-width: 769px) { .js-stage { --js-s-w: 1; } }
 @media (min-width: 800px) { .js-stage { --js-s-w: 1.25; } }
 @media (min-width: 850px) { .js-stage { --js-s-w: 1.5; } }
 @media (min-width: 900px) { .js-stage { --js-s-w: 1.75; } }
