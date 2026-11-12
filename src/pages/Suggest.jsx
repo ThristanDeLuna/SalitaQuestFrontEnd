@@ -60,7 +60,7 @@ function NewWord({ onSent }) {
   }
 
   return (
-    <form onSubmit={submit} className="form">
+    <form onSubmit={submit} className="form sg-form">
       {/* Mockup order: Word first, then Region */}
       <label htmlFor="word">Word</label>
       <input id="word" value={word} maxLength={100} required onChange={(e) => setWord(e.target.value)} />
