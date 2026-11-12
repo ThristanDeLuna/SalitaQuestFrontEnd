@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api/client';
+import { coverageByRegion, filterOptions, regionLabel } from './audioCoverage';
 import './AdminAudio.css';
 
 // The listening game needs this many recorded words in a region before it can be played.
 const AUDIO_NEEDED_PER_REGION = 5;
 
-// Region codes from the API, with the names people read.
-const REGIONS = { tagalog: 'Tagalog', cebuano: 'Cebuano', hiligaynon: 'Hiligaynon' };
-const regionName = (code) => REGIONS[code] || code;
 
 // The same limits the server checks. The server is still the real check.
 const ALLOWED_TYPES = ['mp3', 'm4a', 'wav', 'ogg'];
@@ -140,26 +138,23 @@ function DeleteDialog({ row, onClose, onDone }) {
 }
 
 // ---------- Coverage card: recorded words per region ----------
-function Coverage({ rows }) {
+// One row per region of GET /api/regions, counted from the audio list (DEC-114).
+function Coverage({ regions, rows }) {
   return (
     <section className="audio-coverage" aria-labelledby="au-title">
       <h1 id="au-title">Audio coverage</h1>
       <p className="muted">Needs {AUDIO_NEEDED_PER_REGION} per region for the listening game</p>
-      {rows && (
+      {rows && regions && (
         <ul className="audio-coverage-list">
-          {Object.keys(REGIONS).map((code) => {
-            const count = rows.filter((r) => r.region_code === code && r.has_audio).length;
-            const missing = AUDIO_NEEDED_PER_REGION - count;
-            return (
-              <li key={code}>
-                <span>{regionName(code)}</span>
-                <strong>{count}</strong>
-                {missing <= 0
-                  ? <span className="chip audio-ready">✓ Ready</span>
-                  : <span className="chip audio-short">Needs {missing} more</span>}
-              </li>
-            );
-          })}
+          {coverageByRegion(regions, rows, AUDIO_NEEDED_PER_REGION).map((c) => (
+            <li key={c.code}>
+              <span className="audio-region-name">{c.name}</span>
+              <strong>{c.count}</strong>
+              {c.ready
+                ? <span className="chip audio-ready">✓ Ready</span>
+                : <span className="chip audio-short">Needs {c.missing} more</span>}
+            </li>
+          ))}
         </ul>
       )}
     </section>
@@ -167,7 +162,7 @@ function Coverage({ rows }) {
 }
 
 // ---------- One word ----------
-function WordRow({ row, playing, onPlay, onUpload, onDelete }) {
+function WordRow({ row, regionName, playing, onPlay, onUpload, onDelete }) {
   return (
     <li className="audio-row">
       <div className="audio-row-top">
@@ -177,7 +172,7 @@ function WordRow({ row, playing, onPlay, onUpload, onDelete }) {
           : <span className="chip audio-none">No audio</span>}
       </div>
       <p className="audio-meta">
-        <span className="chip">{regionName(row.region_code)}</span> {row.translation}
+        <span className="chip">{regionName}</span> {row.translation}
       </p>
       <div className="audio-buttons">
         {row.has_audio && (
@@ -210,6 +205,17 @@ export default function AdminAudio() {
   const [playingId, setPlayingId] = useState(null);
   const [playErr, setPlayErr] = useState('');
   const player = useRef(null);                  // the one <audio> that is playing, if any
+  const [regions, setRegions] = useState(null); // GET /api/regions, in the API's order; null = loading
+  const [regionsErr, setRegionsErr] = useState(false);
+
+  // The regions, once. If this fails the audio list still works: words show their region code.
+  useEffect(() => {
+    let alive = true;
+    api('/api/regions')
+      .then((res) => { if (alive) { setRegions(res?.data ?? []); setRegionsErr(false); } })
+      .catch(() => { if (alive) setRegionsErr(true); });
+    return () => { alive = false; };
+  }, []);
 
   useEffect(() => {
     let alive = true;                           // ignore answers that arrive after we left
@@ -258,14 +264,20 @@ export default function AdminAudio() {
 
   return (
     <>
-      <Coverage rows={rows} />
+      <Coverage regions={regions} rows={rows} />
+      {rows && !regions && !regionsErr && <p className="muted">Loading regions...</p>}
 
       {note && <p className="banner info" role="status" aria-live="polite">{note}</p>}
       {err && <p className="banner error" role="alert">{err}</p>}
+      {regionsErr && (
+        <p className="banner error" role="alert">
+          Could not load the regions, so region names and coverage are not shown. The word list still works.
+        </p>
+      )}
       {playErr && <p className="banner error" role="alert">{playErr}</p>}
 
       <div className="audio-filters" role="group" aria-label="Show region">
-        {[['all', 'All'], ...Object.entries(REGIONS)].map(([code, label]) => (
+        {filterOptions(regions, rows).map(({ code, label }) => (
           <button key={code} type="button" className="audio-filter" aria-pressed={region === code}
                   onClick={() => setRegion(code)}>
             {label}
@@ -278,7 +290,7 @@ export default function AdminAudio() {
 
       <ul className="audio-list">
         {shown.map((r) => (
-          <WordRow key={r.word_id} row={r} playing={playingId === r.word_id}
+          <WordRow key={r.word_id} row={r} regionName={regionLabel(regions, r.region_code)} playing={playingId === r.word_id}
                    onPlay={() => togglePlay(r)}
                    onUpload={() => setDialog({ kind: 'upload', row: r })}
                    onDelete={() => setDialog({ kind: 'delete', row: r })} />
