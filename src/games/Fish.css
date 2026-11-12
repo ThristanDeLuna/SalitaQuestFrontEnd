@@ -53,6 +53,10 @@
   overflow-wrap: break-word;
 }
 
+/* The keyboard focus ring (index.css: 3 px ink) is drawn inside the button's 4 px padding, so it never touches the
+   pond frame or the fish in the next row now that the button hugs the fish. */
+.wpf:focus-visible { outline-offset: -3px; }
+
 /* The fish whose word is playing: an inset ink ring around the spot, which takes no room. */
 .wpf-playing { box-shadow: inset 0 0 0 2px var(--ink); }
 .wpf[disabled] { cursor: not-allowed; }

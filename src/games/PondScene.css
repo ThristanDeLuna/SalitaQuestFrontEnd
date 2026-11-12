@@ -27,8 +27,8 @@
 }
 .ps-art-piece { position: absolute; display: block; pointer-events: none; }
 
-/* 4 px, plus the 4 px above and below inside each fish button (and the fish at most 90% of its width), leaves room
-   for the 3 px focus outline and its 2 px offset.
+/* 4 px round the fish. Each fish button draws its focus ring inside its own 4 px padding (Fish.css), so the ring
+   stays clear of this frame and of the other fish.
    On the results there are no fish; the min-height still shows a strip of pond with its pads. */
 .ps-content { position: relative; z-index: 1; display: grid; padding: 4px; min-height: 48px; }
 
