@@ -22,7 +22,7 @@
   border: 2px solid var(--ink); border-radius: 50%; background: var(--surface);
   font-size: 14px; font-weight: 700; line-height: 1; color: var(--ink);
 }
-.rc-on { background: var(--art-pad); }
+.rc-on { background: var(--ink); color: var(--surface); }   /* the check is text, so no --art-* colour here */
 
 .rc-week { list-style: none; margin: 0; padding: 0; display: flex; justify-content: space-between; }
 .rc-day { display: grid; justify-items: center; gap: 4px; font-size: 14px; color: var(--text-muted); }
