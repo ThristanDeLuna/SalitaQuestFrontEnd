@@ -40,8 +40,8 @@
 
 /* The word: on the plain middle of the body (x 42 to 182 of 200, centred on y 70 of 120), never flipped.
    When the fish faces the other way the box moves to the mirrored spot (12 px of 200 = 6%). Its size follows the
-   box width (18% of it: at least 18 px on a 390 px phone, never under 14 px), so the long words fit on one line.
-   A multi-word meaning wraps at its spaces; a single word too long for the box breaks rather than spill. */
+   box width (18% of it: at least 18 px on a 390 px phone, never under 14 px), so words like Kaluguran or Manyaman
+   stay on one line. A multi-word entry wraps at its spaces; a single word too long for the box breaks rather than spill. */
 .wpf-text {
   position: absolute; left: calc(15% + 6% * var(--wpf-dir, 1)); top: 58%; width: 70%;
   transform: translateY(-50%); container-type: inline-size; text-align: center; pointer-events: none;

@@ -59,8 +59,6 @@
 /* The fish: two per row on every screen. The drawing and the button are in Fish.css. Here: the list, and which
    way each one faces: --wpf-dir is -1 in the second column, so only the drawing flips (the word never does). */
 .wp-pond { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-/* Finish fills the width of the pond panel (only its width; the .btn look is unchanged). */
-.wp-finish { width: 100%; }
 .wp-pond > li:nth-child(even) { --wpf-dir: -1; }
 
 /* The catch twinkle: art beside the fish's top right corner, above the button, never in the way of a tap.
@@ -70,6 +68,11 @@
   position: absolute; top: -14px; right: 8px; z-index: 1; display: block; pointer-events: none; opacity: 0;
   stroke: var(--ink); stroke-width: 2; stroke-linecap: round; fill: var(--art-yellow);
 }
+
+/* Finish fills the width of the pond panel (only its width; the .btn look is unchanged). */
+.wp-finish { width: 100%; }
+/* The hint under Finish: always one 20 px line (both texts fit on one line at 320 px), so Finish never moves. */
+.wp-hint { height: 20px; white-space: nowrap; }
 
 /* Wide screens: still one column (title, intro, meanings, big pond). The meanings become rows, the meaning on
    the left and its chip on the right. The page column (main) comes from index.css and is not changed. */
@@ -94,11 +97,10 @@
   }
 
   /* The fish drift on the water. The drift is on the <li>, so it never fights the button's pop.
-     Only a slide (1.5 px sideways, 0.5 px up and down), no tilt: a tilt moves the corners further the
-     bigger the pill is, and a fish caught on a long meaning can be several lines tall. With a slide every
-     point moves the same: at most about 1.6 px from the middle and about 3.2 px end to end, inside the
-     4 px limit at any size. Only the first 3 fish drift (the bay in the same scene has its own motion, and the
-     whole screen stays within the animation budget); three speeds and delays so they never move together. */
+     Only a slide (1.5 px sideways, 0.5 px up and down), no tilt: every point moves the same, at most about
+     3.2 px end to end, inside the 4 px limit at any fish size. Only the first 3 fish drift (the strip in the same
+     scene has its own motion, and the screen stays within the animation budget); three speeds and delays so
+     they never move together. */
   .wp-pond > li:nth-child(-n + 3) { animation: wp-drift 4s ease-in-out infinite alternate; }
   .wp-pond > li:nth-child(3n + 2) { animation-duration: 3s; animation-delay: -1s; }
   .wp-pond > li:nth-child(3n) { animation-duration: 5s; animation-delay: -2.5s; }

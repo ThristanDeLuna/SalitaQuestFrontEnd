@@ -194,7 +194,7 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
             {sending ? 'Checking...' : 'Finish'}
           </button>
           {/* One fixed line under Finish: what is missing while it is blocked, what happens next once it works. */}
-          <p id="wp-finish-hint" className="muted htp-hint">
+          <p id="wp-finish-hint" className="muted htp-hint wp-hint">
             {finishBlocked ? `Fill all ${total} meanings to finish.` : 'Answers are revealed after scoring.'}
           </p>
         </>

@@ -25,7 +25,7 @@
 }
 .ps-art-piece { position: absolute; display: block; pointer-events: none; }
 
-/* 8 px leaves room for the 3 px focus outline and its 2 px offset (each fish also has 4 px inside its button).
+/* 8 px leaves room for the 3 px focus outline and its 2 px offset (each fish button also has 4 px above and below, and the fish is 90% of its width).
    On the results there are no fish; the min-height still shows a strip of pond with its pads. */
 .ps-content { position: relative; z-index: 1; padding: 8px; min-height: 48px; }
 
