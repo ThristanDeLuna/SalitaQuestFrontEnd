@@ -6,7 +6,6 @@ import './AdminAudio.css';
 // The listening game needs this many recorded words in a region before it can be played.
 const AUDIO_NEEDED_PER_REGION = 5;
 
-
 // The same limits the server checks. The server is still the real check.
 const ALLOWED_TYPES = ['mp3', 'm4a', 'wav', 'ogg'];
 const MAX_BYTES = 1000000;   // 1 MB (decimal)

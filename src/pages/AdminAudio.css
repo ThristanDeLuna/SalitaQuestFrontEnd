@@ -6,7 +6,7 @@
 .audio-coverage h1 { font-size: 20px; margin: 0; }
 .audio-coverage .muted { margin: 0 0 8px; }
 .audio-coverage-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-.audio-coverage-list li { display: grid; grid-template-columns: minmax(0, 1fr) 16px auto; align-items: center; gap: 6px; min-height: 32px; }
+.audio-coverage-list li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16px, auto) auto; align-items: center; gap: 6px; min-height: 32px; }
 .audio-coverage-list .chip { justify-self: start; white-space: nowrap; }
 .audio-coverage-list strong { text-align: center; }
 .audio-region-name { overflow-wrap: anywhere; }
