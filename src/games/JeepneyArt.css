@@ -20,7 +20,7 @@
 .rs-paint-a { --rs-paint: var(--art-red); --rs-roof: var(--art-yellow); --rs-stripe-1: var(--art-yellow); --rs-stripe-2: var(--surface); }
 .rs-paint-b { --rs-paint: var(--surface); --rs-roof: var(--art-water-deep); --rs-stripe-1: var(--art-water-deep); --rs-stripe-2: var(--art-red); }
 .rs-body { fill: var(--rs-paint); }
-.rs-roof { fill: var(--rs-roof); }
+.rs-jeep-roof { fill: var(--rs-roof); }   /* not .rs-roof: that is the house roofs in RoadScene.css */
 /* The stripes are flat bands on the paint (no outline: the body's outline frames them). */
 .rs-art .rs-stripe-1, .rs-art .rs-stripe-2 { stroke: none; }
 .rs-stripe-1 { fill: var(--rs-stripe-1); }

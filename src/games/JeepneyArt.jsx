@@ -75,7 +75,7 @@ export default function JeepneyArt({ className, regionName }) {
           <rect className="rs-sign" x={SIGN.x} y={SIGN.y} width={SIGN.w} height={SIGN.h} rx="2" />
           <text className="rs-sign-text" x={SIGN.x + SIGN.w / 2} y={SIGN.y + 10.5} textAnchor="middle"
                 textLength={signTextLength(sign)} lengthAdjust="spacingAndGlyphs">{sign}</text>
-          <rect className="rs-roof" x="2" y="15" width="102" height="3" rx="1" />
+          <rect className="rs-jeep-roof" x="2" y="15" width="102" height="3" rx="1" />
 
           <path className="rs-body" d={BODY} />
           <path className="rs-hi" d="M6 19 H99 V20.5 H6 Z M108 31 H119 V32.5 H108 Z" />

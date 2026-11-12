@@ -13,7 +13,8 @@ export function signText(name) {
   return text || SIGN_FALLBACK;
 }
 
-// Every letter gets the same width, and a long name is squeezed to fit the panel instead of spilling over.
+// Every letter gets the same width (about its natural bold width), and a long name is squeezed to fit
+// the panel instead of spilling over.
 export function signTextLength(text) {
   return Math.min(SIGN_TEXT_MAX, text.length * SIGN_CHAR_W);
 }

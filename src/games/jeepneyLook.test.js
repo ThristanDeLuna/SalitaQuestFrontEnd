@@ -13,7 +13,7 @@ test('signText falls back to the game name when there is no region name', () => 
   for (const name of [undefined, null, '', '   ', 42]) assert.equal(signText(name), SIGN_FALLBACK);
 });
 
-test('signTextLength keeps short names natural and squeezes long ones to the panel', () => {
+test('signTextLength gives each letter 7 px and squeezes long names to the panel', () => {
   assert.equal(signTextLength('CEBUANO'), 49);
   assert.ok(signTextLength('KAPAMPANGAN') <= SIGN_TEXT_MAX);
   assert.equal(signTextLength('A VERY LONG REGION NAME'), SIGN_TEXT_MAX);
