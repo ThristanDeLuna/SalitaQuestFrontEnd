@@ -104,11 +104,18 @@
   .wp-slot { flex: none; max-width: 50%; }
 }
 
-/* ---------- (d) The pond: six fish, 2 columns x 3 rows, filling the water ---------- */
+/* ---------- (d) The pond: six fish filling the water, 2 columns x 3 rows on a phone, 3 x 2 from 769 px ---------- */
 /* The rows share the water's height, so the fish are big on a tall screen and smaller on a short one.
-   --wpf-dir is -1 in the second column, so only the drawing flips (the word never does). */
+   Alternate columns face the other way: --wpf-dir is -1 in the second column, so only the drawing flips (the word
+   never does). With 3 columns that is the middle one, so the first two face each other and the third faces right. */
 .wp-pond { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); gap: 0 8px; }
 .wp-pond > li:nth-child(even) { --wpf-dir: -1; }
+/* From the side-menu breakpoint the pond is wide and short, so 3 columns x 2 rows give the fish more room. */
+@media (min-width: 769px) {
+  .wp-pond { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .wp-pond > li:nth-child(even) { --wpf-dir: 1; }
+  .wp-pond > li:nth-child(3n + 2) { --wpf-dir: -1; }
+}
 
 /* Each cell is a size container with the fish button in its middle: the fish (Fish.css) is as wide as the cell,
    or as tall as it allows, whichever is smaller (keeping the drawing's 5:3), minus the button's 4 px all round. */
