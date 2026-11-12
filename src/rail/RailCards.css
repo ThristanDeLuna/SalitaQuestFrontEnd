@@ -4,6 +4,9 @@
 .rc-rail { display: grid; gap: 16px; width: 100%; max-width: 300px; }
 .rc-rail .banner { margin: 0; }
 .rc-card { display: grid; gap: 12px; }
+/* The same pop-out look as the game stages (.wp-stage): ink border, 16px corners, offset ink shadow.
+   Written as .rc-rail .rc-card so it wins over the plain .card rule whatever the stylesheet order. */
+.rc-rail .rc-card { background: var(--surface); border: 2px solid var(--ink); border-radius: 16px; box-shadow: 4px 4px 0 var(--ink); }
 .rc-card .muted { margin: 0; }
 .rc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .rc-head h2 { margin: 0; }
