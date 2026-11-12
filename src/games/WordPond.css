@@ -9,6 +9,7 @@
 .wp-icon { flex: none; display: block; color: var(--ink); }
 .wp-icon-fill { fill: var(--info-tint); stroke: currentColor; stroke-width: 2; }
 .wp-label { margin: 8px 0; }
+.wp-foot { margin: 0; text-align: center; line-height: 20px; }
 /* Visually hidden, still read by screen readers (index.css has no such utility). */
 .wp-sr {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
@@ -33,21 +34,16 @@
 .wp-meaning-text { overflow-wrap: anywhere; }
 .wp-selected { border: 2px solid var(--ink); background: var(--sidebar); }
 .wp-now { font-weight: 700; }
-.wp-caught { font-weight: 700; overflow-wrap: anywhere; }
+.wp-caught { overflow-wrap: anywhere; }
+/* The slot under each meaning is a chip: "tap a fish" until a fish is caught, then "caught · word". */
+.wp-slot { justify-self: start; max-width: 100%; padding: 0 8px; line-height: 20px; overflow-wrap: anywhere; }
+.wp-empty { background: var(--surface); color: var(--text-muted); border: 1px dashed var(--ink); line-height: 18px; }
 
 /* The fish: two per row on a phone, more on wider screens. */
 .wp-pond { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.wp-fish {
-  width: 100%; min-height: 56px; display: grid; gap: 2px; align-content: center; justify-items: center;
-  padding: 8px; background: var(--info-tint); color: var(--ink);
-  border: 1px solid var(--ink); border-radius: 999px; font: 16px var(--sans); cursor: pointer;
-}
-.wp-fish strong { overflow-wrap: anywhere; }
-.wp-fish-caught { background: var(--surface); border-style: dashed; }
-/* The fish whose word is playing: an inset ink ring, which takes no room (the words "Playing..." are in
-   the How to play card's reserved status line, so no fish grows while it plays). */
-.wp-fish-playing { box-shadow: inset 0 0 0 2px var(--ink); }
-.wp-fish[disabled] { opacity: 0.6; cursor: not-allowed; }
+/* The fish (the drawing and the button) are in Fish.css. Here: the list, and which way each one faces:
+   --wpf-dir is -1 in the second column, so only the drawing flips (the label never does). */
+.wp-pond > li:nth-child(even) { --wpf-dir: -1; }
 
 /* The catch twinkle: art beside the fish's top right corner, above the button, never in the way of a tap.
    At rest (and with reduced motion) it is invisible; the motion block flashes it once. */
@@ -59,6 +55,8 @@
 
 @media (min-width: 600px) {
   .wp-pond { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .wp-pond > li:nth-child(even) { --wpf-dir: 1; }
+  .wp-pond > li:nth-child(3n + 2) { --wpf-dir: -1; }   /* the second column of three */
 }
 
 /* Wide screens: meanings on the left (40%), the pond with its fish and Finish on the right (60%), so the
@@ -68,12 +66,14 @@
   .wp-play { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 24px; align-items: start; }
   .wp-meanings { grid-template-columns: minmax(0, 1fr); margin-bottom: 0; }
   .wp-pond { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wp-pond > li:nth-child(3n + 2) { --wpf-dir: 1; }
+  .wp-pond > li:nth-child(even) { --wpf-dir: -1; }
   .wp-col-pond { padding-top: 8px; }   /* lines the scene up with the "Meanings" heading's top margin */
 }
 
-/* The same pop for every fish and meaning: it only says "that registered", never right or wrong (DEC-56). */
+/* The same pop for every fish (Fish.css) and meaning: it only says "that registered", never right or wrong (DEC-56). */
 @media (prefers-reduced-motion: no-preference) {
-  .wp-selected, .wp-fish-caught, .wp-caught { animation: wp-pop 200ms ease-out; }
+  .wp-selected, .wp-caught { animation: wp-pop 200ms ease-out; }
   .wp-caught { transform-origin: left center; }
   @keyframes wp-pop { 50% { transform: scale(1.04); } }
 

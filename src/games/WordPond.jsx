@@ -8,6 +8,7 @@ import useCountUp from './useCountUp';
 import useRegionName from './useRegionName';
 import useRound from './useRound';
 import PondScene from './PondScene';
+import FishButton from './Fish';
 import CatchSparkle from './CatchSparkle';
 import HowToPlay from './HowToPlay';
 import ResultsCard from './ResultsCard';
@@ -46,23 +47,22 @@ function MeaningRow({ meaning, word, selected, onSelect }) {
           {meaning}
         </span>
         {/* The key restarts the pop when a different fish lands here. */}
-        <span key={word ?? 'empty'} className={word ? 'wp-caught' : 'muted'}>{word ?? 'tap a fish'}</span>
+        <span key={word ?? 'empty'} className={word ? 'chip wp-slot wp-caught' : 'chip wp-slot wp-empty'}>
+          {word ? `caught · ${word}` : 'tap a fish'}
+        </span>
       </button>
     </li>
   );
 }
 
 // ---------- One fish: tap it to catch it (and hear it, if it has a recording) ----------
-function Fish({ fish, onMeaning, playing, disabled, onTap }) {
+// The drawing and the button are in Fish.jsx; this keeps the list item and the catch twinkle.
+function Fish({ fish, index, onMeaning, playing, disabled, onTap }) {
   return (
     <li className="wp-fish-spot">
       {/* The key replays the twinkle each time this fish lands on a (different) meaning. */}
       {onMeaning && <CatchSparkle key={onMeaning} />}
-      <button type="button" className={`wp-fish${onMeaning ? ' wp-fish-caught' : ''}${playing ? ' wp-fish-playing' : ''}`}
-              disabled={disabled} onClick={onTap}>
-        <strong>{fish.word}</strong>
-        {onMeaning && <span className="muted">on: {onMeaning}</span>}
-      </button>
+      <FishButton word={fish.word} index={index} onMeaning={onMeaning} playing={playing} disabled={disabled} onTap={onTap} />
     </li>
   );
 }
@@ -177,8 +177,8 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
           {/* One lantern per meaning, lit as fish are caught: it counts catches, never right or wrong. */}
           <PondScene caught={placed} total={total}>
             <ul className="wp-pond">
-              {round.words.map((f) => (
-                <Fish key={f.word_id} fish={f} onMeaning={meaningOf(f.word_id)} disabled={sending}
+              {round.words.map((f, i) => (
+                <Fish key={f.word_id} fish={f} index={i} onMeaning={meaningOf(f.word_id)} disabled={sending}
                       playing={f.audio_url !== null && audio.playingUrl === f.audio_url}
                       onTap={() => tapFish(f)} />
               ))}
@@ -193,6 +193,7 @@ function PondGame({ round, region, regionName, onAgain, audio }) {
           </div>
           {/* The line is always there (empty when Finish works), so the button never moves. */}
           <p id="wp-finish-hint" className="muted htp-hint">{finishBlocked && `Fill all ${total} meanings to finish.`}</p>
+          <p className="muted wp-foot">Answers are revealed after scoring.</p>
         </div>
       </div>
     </>

@@ -46,8 +46,8 @@
 .pb-leaves { fill: var(--art-pad); transform-box: view-box; transform-origin: 38px 28px; }   /* the trunk top */
 .pb-birds path { fill: none; stroke-linecap: round; }
 
-/* Birds and swimming fish ride full-width tracks, so a 100% transform carries them edge to edge.
-   --pb-rest is where each one waits when nothing moves. */
+/* The birds ride a full-width track, so a 100% transform carries them edge to edge.
+   --pb-rest is where they wait when nothing moves. */
 .pb-track { position: absolute; left: 0; right: 0; }
 .pb-track > svg { margin-left: var(--pb-rest); }
 .pb-birds { top: 30px; --pb-rest: 34%; }
@@ -64,13 +64,10 @@
 .pb-wave-back { top: 6px; }
 .pb-wave-front { bottom: 8px; }
 
-/* Fish: smaller ones higher up, as if further away. */
+/* The jumping fish. */
 .pb-fish { fill: var(--art-yellow); }
-.pb-swim-mid .pb-fish, .pb-jumper { fill: var(--art-red); }
+.pb-jumper { fill: var(--art-red); }
 .pb-eye { fill: var(--ink); stroke-width: 0; }
-.pb-swim-far { bottom: 40px; --pb-rest: 62%; }
-.pb-swim-mid { bottom: 24px; --pb-rest: 14%; }
-.pb-swim-near { bottom: 4px; --pb-rest: 80%; }
 .pb-jumper { position: absolute; left: 26%; bottom: 30px; opacity: 0; }   /* waits under the water */
 
 /* ---------- Banca, floating at the waterline ---------- */
@@ -101,13 +98,6 @@
   @keyframes pb-fly {
     0% { transform: translateX(-44px); }
     45%, 100% { transform: translateX(100%); }
-  }
-  .pb-swim-far { animation: pb-swim 26s linear -8s infinite; }
-  .pb-swim-mid { animation: pb-swim 20s linear -15s infinite; }
-  .pb-swim-near { animation: pb-swim 15s linear -3s infinite; }
-  @keyframes pb-swim {
-    from { transform: translateX(-32px); }   /* the biggest fish is 28 px long */
-    to { transform: translateX(100%); }
   }
 
   /* Both wave strips slide one crest to the left (48 px = WAVE_P in PondBanner.jsx), the near one faster. */
