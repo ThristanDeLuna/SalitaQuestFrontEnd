@@ -1,4 +1,4 @@
-/* Admin Regions. All class names start with aw- so they cannot clash with other screens. */
+/* Admin Regions. All class names start with ar- so they cannot clash with other screens. */
 .ar-field { display: grid; gap: 4px; margin: 0 0 12px; }
 .ar-field > span { font-weight: 700; color: var(--ink); }
 .ar-field input, .ar-field select, .ar-field textarea {
@@ -8,7 +8,7 @@
 .ar-field textarea { resize: vertical; }
 .ar-field input[disabled] { background: var(--sidebar); }
 
-.ar-add { margin: 0 0 16px; }
+.ar-add { width: 100%; min-height: 48px; margin: 16px 0 0; font-size: 16px; }   /* full-width coral button under the list */
 
 .ar-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .ar-card { margin: 0 0 12px; padding: 16px; background: var(--surface); border: 1px solid var(--sidebar-active); border-radius: 6px; }
@@ -26,3 +26,11 @@
 /* Latitude and longitude side by side when there is room */
 .ar-pair { display: grid; gap: 0 12px; }
 @media (min-width: 480px) { .ar-pair { grid-template-columns: 1fr 1fr; } }
+
+/* Name and counts on the left, status chip on the right (mockup page 23) */
+.ar-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.ar-head .ar-name { margin: 0; }
+.ar-counts { margin: 0; }
+/* Active uses the default .chip colors (blue tint). Coming soon is lavender. Text stays dark ink,
+   and the word says the state, so color is not the only signal. Only existing tokens are used. */
+.ar-head .chip.ar-soon { background: var(--sidebar); }
