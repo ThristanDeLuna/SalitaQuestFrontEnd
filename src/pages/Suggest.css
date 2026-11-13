@@ -22,3 +22,10 @@
 .form.sg-form .btn { border-width: 2px; border-radius: 12px; }
 /* The Send button: big, with a dark edge underneath like a pressable game button. */
 .form.sg-form .btn.primary { min-height: 48px; margin-top: 8px; font-size: 16px; box-shadow: 0 4px 0 var(--ink); }
+
+/* 6. My words rows (mockup page 12): word on the left, status chip on the right, "Rejected" with a capital. */
+.sg-mine-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.sg-status { text-transform: capitalize; }
+
+/* Withdraw: the same game button look as Send, Reject and Approve. */
+.sg-row .btn { min-height: 48px; border-width: 2px; border-radius: 12px; box-shadow: 0 4px 0 var(--ink); }

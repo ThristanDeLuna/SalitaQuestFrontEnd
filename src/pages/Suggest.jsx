@@ -117,16 +117,22 @@ function MyWords({ reload, onChange }) {
     <ul className="list">
       {rows.map((r) => (
         <li key={r.id} className="card sg-card">
-          <strong>{r.word}</strong> <span className="muted sg-region">({r.region_code})</span>
-          <p>{r.suggested_translation}</p>
-          {/* chip and Withdraw sit in one row with a gap (Suggest.css) */}
-          <div className="sg-row">
-            <span className="chip">{r.status}</span>
-            {r.status === 'pending' && (
-              <button type="button" className="btn" onClick={() => withdraw(r.id)}>Withdraw</button>
-            )}
+          {/* Mockup: the word on the left, the status chip on the right (Suggest.css) */}
+          <div className="sg-mine-head">
+            <strong>{r.word}</strong>
+            <span className="chip sg-status">{r.status}</span>
           </div>
-          {r.status === 'rejected' && r.reject_reason && <p className="muted">Reason: {r.reject_reason}</p>}
+          {/* Region, and for a rejected word the reason, on one line */}
+          <p className="muted">
+            <span className="sg-region">{r.region_code}</span>
+            {r.status === 'rejected' && r.reject_reason ? ` · ${r.reject_reason}` : ''}
+          </p>
+          <p>{r.suggested_translation}</p>
+          {r.status === 'pending' && (
+            <div className="sg-row">
+              <button type="button" className="btn" onClick={() => withdraw(r.id)}>Withdraw</button>
+            </div>
+          )}
         </li>
       ))}
     </ul>
