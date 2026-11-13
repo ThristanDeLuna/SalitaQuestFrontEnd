@@ -3,7 +3,8 @@ import './Suggest.css';
 import { api } from '../api/client';
 
 // Region codes are what the API stores; labels are what people read (DEC-61: "Cebuano").
-const REGIONS = [['tagalog', 'Tagalog'], ['cebuano', 'Cebuano'], ['hiligaynon', 'Hiligaynon']];
+// Codes must match submissions_regions in the backend (app/config/submissions.php).
+const REGIONS = [['tagalog', 'Tagalog'], ['cebuano', 'Cebuano'], ['hiligaynon', 'Hiligaynon'], ['kapampangan', 'Kapampangan'], ['ilocano', 'Ilocano']];
 
 // Words for each error the API can answer. The server is the real check; this is only friendly text.
 function errorText(e) {
