@@ -21,7 +21,9 @@ export default function Layout() {
           </ErrorBoundary>
         </main>
         {/* The rail: shown from 1520 px up and only when RailCards has something (a visitor sees nothing). */}
-        <aside className="rail" aria-label="Your progress"><RailCards /></aside>
+                {!pathname.startsWith('/admin') && (
+          <aside className="rail" aria-label="Your progress"><RailCards /></aside>
+        )}
       </div>
     </div>
   );
