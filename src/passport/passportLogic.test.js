@@ -3,7 +3,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  badgeInfo, bestText, daysLabel, questList, regionStatusText, stickerHeading, weekDotLabel,
+  badgeInfo, bestScoreLine, comingSoonLabel, daysLabel, questList, regionChipText, starsPercent, stickerHeading,
+  weekDotLabel,
 } from './passportLogic.js';
 
 test('daysLabel', () => {
@@ -14,21 +15,43 @@ test('daysLabel', () => {
   assert.equal(daysLabel(-2), '0 days');
 });
 
-test('regionStatusText for every status and an unknown one', () => {
-  assert.equal(regionStatusText({ status: 'stamped', games_passed: 2 }), 'Stamped');
-  assert.equal(regionStatusText({ status: 'in_progress', games_passed: 1 }), '1 of 2 games');
-  assert.equal(regionStatusText({ status: 'not_started', games_passed: 0 }), 'Not started');
-  assert.equal(regionStatusText({ status: 'locked', games_passed: 0 }), 'Locked');
-  assert.equal(regionStatusText({ status: 'coming_soon', games_passed: 0 }), 'Coming soon');
-  assert.equal(regionStatusText({ status: 'flying', games_passed: 0 }), 'Not available');
+test('regionChipText for every status and an unknown one', () => {
+  assert.equal(regionChipText({ status: 'stamped', games_passed: 2 }), 'Stamped');
+  assert.equal(regionChipText({ status: 'in_progress', games_passed: 1 }), '1 of 2');
+  assert.equal(regionChipText({ status: 'in_progress' }), '0 of 2');
+  assert.equal(regionChipText({ status: 'not_started', games_passed: 0 }), 'Not started');
+  assert.equal(regionChipText({ status: 'locked', games_passed: 0 }), 'Locked');
+  assert.equal(regionChipText({ status: 'coming_soon', games_passed: 0 }), 'Coming soon');
+  assert.equal(regionChipText({ status: 'flying', games_passed: 0 }), 'Not available');
 });
 
-test('bestText for each medal and for a game never played', () => {
-  assert.equal(bestText('Word Pond', { best: 40, max: 40, medal: 'gold' }), 'Word Pond: 40 / 40 (Gold medal)');
-  assert.equal(bestText('Word Pond', { best: 40, max: 50, medal: 'silver' }), 'Word Pond: 40 / 50 (Silver medal)');
-  assert.equal(bestText('Word Pond', { best: 30, max: 40, medal: 'bronze' }), 'Word Pond: 30 / 40 (Bronze medal)');
-  assert.equal(bestText('Jeepney stop', { best: 20, max: 50, medal: null }), 'Jeepney stop: 20 / 50');
-  assert.equal(bestText('Jeepney stop', null), 'Jeepney stop: not played yet');
+test('bestScoreLine: scores, a game never played, and no line for locked / coming soon', () => {
+  const both = { status: 'stamped', matching: { best: 30, max: 40 }, listening: { best: 50, max: 50 } };
+  assert.equal(bestScoreLine(both), 'Word Pond 30/40 · Jeepney 50/50');
+  assert.equal(bestScoreLine({ status: 'in_progress', matching: { best: 30, max: 40 }, listening: null }),
+    'Word Pond 30/40 · Jeepney —');
+  assert.equal(bestScoreLine({ status: 'not_started', matching: null, listening: null }),
+    'Word Pond — · Jeepney —');
+  assert.equal(bestScoreLine({ status: 'locked' }), null);
+  assert.equal(bestScoreLine({ status: 'coming_soon' }), null);
+  assert.equal(bestScoreLine(undefined), null);
+});
+
+test('comingSoonLabel: none, one, many', () => {
+  assert.equal(comingSoonLabel([{ status: 'stamped' }]), '');
+  assert.equal(comingSoonLabel([]), '');
+  assert.equal(comingSoonLabel(undefined), '');
+  assert.equal(comingSoonLabel([{ status: 'coming_soon' }, { status: 'stamped' }]), '1 island coming soon');
+  assert.equal(comingSoonLabel([{ status: 'coming_soon' }, { status: 'coming_soon' }]), '2 islands coming soon');
+});
+
+test('starsPercent never divides by zero', () => {
+  assert.equal(starsPercent(110, 450), 24);
+  assert.equal(starsPercent(0, 450), 0);
+  assert.equal(starsPercent(500, 450), 100);
+  assert.equal(starsPercent(10, 0), null);
+  assert.equal(starsPercent(10, undefined), null);
+  assert.equal(starsPercent(undefined, 450), 0);
 });
 
 test('badgeInfo for every badge key the server sends, and an unknown key', () => {
@@ -63,7 +86,7 @@ test('questList uses the server keys in a fixed order', () => {
 });
 
 test('weekDotLabel for a played and a not played day', () => {
-  assert.equal(weekDotLabel({ date: '2026-11-02', day: 'M', active: true }), 'Mon: played');
-  assert.equal(weekDotLabel({ date: '2026-11-05', day: 'T', active: false }), 'Thu: not played');
-  assert.equal(weekDotLabel({ day: 'S', active: false }), 'S: not played');   // no date: the letter
+  assert.equal(weekDotLabel({ date: '2026-11-02', day: 'M', active: true }), 'Monday, played');
+  assert.equal(weekDotLabel({ date: '2026-11-05', day: 'T', active: false }), 'Thursday, not played');
+  assert.equal(weekDotLabel({ day: 'S', active: false }), 'S, not played');   // no date: the letter
 });
