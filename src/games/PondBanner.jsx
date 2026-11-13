@@ -6,8 +6,8 @@ import './PondBanner.css';
 // same frame, so the bay's sea and the pond read as one body of water). Decoration only: it holds no text
 // and no buttons, so the whole bay is the art layer (aria-hidden, ignores taps, clipped to the top corners).
 // Back to front: the sun with pulsing rays, far hills, birds now and then, the sea (two wave layers on
-// a slightly tilted plane, for a 2.5D look), a palm on a little island in the sea, three fish swimming across,
-// one fish that jumps, and a banca (outrigger boat) bobbing with one lantern per meaning.
+// a slightly tilted plane, for a 2.5D look), a palm on a little island in the sea,
+// one fish that jumps (the fish you catch are real buttons in WordPond, so no decorative swimmers), and a banca (outrigger boat) bobbing with one lantern per meaning.
 // The palm (PalmArt) and the banca (BancaArt) have their own files. Light comes from the top left.
 // Props: caught (how many meanings hold a fish), total (how many meanings, 4), settled (true on the results:
 // the lanterns are simply lit, without the pop each one gets when it lights up during play).
@@ -30,10 +30,11 @@ function Sun() {
   );
 }
 
-// ---------- Hills: one wide strip of humps on the horizon (clipped on narrow screens) ----------
+// ---------- Hills: one wide strip of humps on the horizon (clipped on narrow screens; CSS squashes it to the strip) ----------
 function Hills() {
   return (
-    <svg className="pb-hills" viewBox="0 0 1000 44" width="1000" height="44" focusable="false">
+    <svg className="pb-hills" viewBox="0 0 1000 44" width="1000" height="44" preserveAspectRatio="none"
+         focusable="false">
       {/* The foot and the left side run outside the box, so they are cut off and only the hilltops are outlined. */}
       <path d="M-2 46 V40 Q70 4 150 30 Q240 0 330 34 Q430 8 520 32 Q620 2 720 30 Q830 6 920 32 Q960 18 999 26 V46 Z" />
     </svg>
@@ -76,7 +77,7 @@ function Wave({ className }) {
   );
 }
 
-// ---------- Fish: body, tail and eye, drawn for a given width (the outline stays 2 px at every size) ----------
+// ---------- Jumping fish: body, tail and eye, drawn for a given width (the outline stays 2 px at every size) ----------
 function Fish({ w, className = '' }) {
   const h = Math.round(w * 0.55);   // a fish is a bit more than half as tall as it is long
   return (
@@ -87,9 +88,6 @@ function Fish({ w, className = '' }) {
     </svg>
   );
 }
-
-// Three swimmers: [class, width]. Smaller ones swim higher and slower, so they look further away.
-const SWIMMERS = [['pb-swim-far', 16], ['pb-swim-mid', 22], ['pb-swim-near', 28]];
 
 export default function PondBanner({ caught = 0, total = 4, settled = false }) {
   return (
@@ -105,9 +103,6 @@ export default function PondBanner({ caught = 0, total = 4, settled = false }) {
           </div>
         </div>
         <PalmArt />
-        {SWIMMERS.map(([cls, w]) => (
-          <div key={cls} className={`pb-track ${cls}`}><Fish w={w} /></div>
-        ))}
         <Fish w={24} className="pb-jumper" />
         <BancaArt caught={caught} total={total} />
       </div>
