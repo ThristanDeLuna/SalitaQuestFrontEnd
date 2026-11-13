@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import './Suggest.css';
+import './AdminPending.css';
 import { api } from '../api/client';
 
 // Friendly text for the errors the API can answer (the server is the real check).
@@ -109,17 +110,22 @@ export default function AdminPending() {
       <ul className="list">
         {(rows || []).map((r) => (
           <li key={r.id} className="card sg-card">
-            <strong>{r.word}</strong> <span className="muted sg-region">({r.region_code})</span>
+            {/* Word and region chip on one row (AdminPending.css). sg-region shows "cebuano" as "Cebuano". */}
+            <div className="pd-head">
+              <strong>{r.word}</strong>
+              <span className="chip sg-region">{r.region_code}</span>
+            </div>
             <p>{r.suggested_translation}</p>
             {r.mymemory_text && <p className="muted">Machine suggestion: {r.mymemory_text}</p>}
             <p className="muted">From {r.user_name || r.user_email}</p>
-            <div className="actions sg-actions">
+            {/* Mockup order: Reject on the left, Approve on the right */}
+            <div className="actions sg-actions pd-actions">
+              <button type="button" className="btn" onClick={() => setTarget(r)}
+                      disabled={approvingId !== null}>Reject</button>
               <button type="button" className="btn primary" onClick={() => approve(r)}
                       disabled={approvingId !== null}>
                 {approvingId === r.id ? 'Approving…' : 'Approve'}
               </button>
-              <button type="button" className="btn" onClick={() => setTarget(r)}
-                      disabled={approvingId !== null}>Reject</button>
             </div>
           </li>
         ))}

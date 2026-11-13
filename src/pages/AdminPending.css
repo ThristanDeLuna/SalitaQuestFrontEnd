@@ -1,0 +1,9 @@
+/* Admin Pending look (mockup page 13). Own file, so it cannot collide with Suggest.css.
+   Rules from A: variables only, steps of 4 px, shared .btn and .card are not changed. */
+
+/* Word and region chip on one row. */
+.pd-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+
+/* The two buttons in the same game look as the Send button on Suggest. */
+.pd-actions .btn { min-height: 48px; border-width: 2px; border-radius: 12px; font-size: 16px; box-shadow: 0 4px 0 var(--ink); }
+.pd-actions .btn.primary { box-shadow: 0 4px 0 var(--ink); }
