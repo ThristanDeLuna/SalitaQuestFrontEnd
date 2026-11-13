@@ -257,14 +257,14 @@ export default function RegionMap() {
 
         {open && (
           <section className="rm-sheet" aria-label={`${open.name} details`}>
-                      <div className="rm-handle" aria-hidden="true" />
+            <div className="rm-handle" aria-hidden="true" />
             <div className="rm-sheet-head">
               <h2>{open.name}</h2>
               <button type="button" className="btn" onClick={() => setSelected(null)}>Close</button>
             </div>
             <p className="rm-state"><span className="chip">{STATES[openState].label}</span> {open.area}</p>
             <p>{sheetText(openState, Boolean(user))}</p>
-                                    {PLAYABLE.includes(openState) && (
+            {PLAYABLE.includes(openState) && (
               <>
                 {user && (
                   <div className="rm-cards">
@@ -277,9 +277,12 @@ export default function RegionMap() {
                 </Link>
               </>
             )}
-                  <div className="rm-actions">
-              {!user && openState === 'browse' && <Link className="btn primary" to="/signin">Sign in to play</Link>}
-            </div>
+            {/* Only a visitor gets this row, so a signed-in user has no empty div */}
+            {!user && openState === 'browse' && (
+              <div className="rm-actions">
+                <Link className="btn primary" to="/signin">Sign in to play</Link>
+              </div>
+            )}
             <Link className="rm-browse" to={`/regions/${open.code}`}>Browse words</Link>
           </section>
         )}
