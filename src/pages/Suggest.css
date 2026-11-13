@@ -13,3 +13,12 @@
 
 /* 4. Approve and Reject share the card width equally (each is still 44 px high). */
 .sg-actions .btn { flex: 1; }
+
+/* 5. Game-style form (mockup page 12). Only the form that also has .sg-form, so the shared
+   .form, .btn and index.css stay untouched. ".form.sg-form" beats ".form" without !important. */
+.form.sg-form label { margin-top: 8px; font-size: 14px; }
+.form.sg-form input,
+.form.sg-form select { min-height: 48px; border: 2px solid var(--ink); border-radius: 12px; }
+.form.sg-form .btn { border-width: 2px; border-radius: 12px; }
+/* The Send button: big, with a dark edge underneath like a pressable game button. */
+.form.sg-form .btn.primary { min-height: 48px; margin-top: 8px; font-size: 16px; box-shadow: 0 4px 0 var(--ink); }

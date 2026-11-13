@@ -60,14 +60,15 @@ function NewWord({ onSent }) {
   }
 
   return (
-    <form onSubmit={submit} className="form">
-      <label htmlFor="region">Language</label>
+    <form onSubmit={submit} className="form sg-form">
+      {/* Mockup order: Word first, then Region */}
+      <label htmlFor="word">Word</label>
+      <input id="word" value={word} maxLength={100} required onChange={(e) => setWord(e.target.value)} />
+
+      <label htmlFor="region">Region</label>
       <select id="region" value={region} onChange={(e) => { setRegion(e.target.value); setHint(null); }}>
         {REGIONS.map(([code, label]) => <option key={code} value={code}>{label}</option>)}
       </select>
-
-      <label htmlFor="word">Word</label>
-      <input id="word" value={word} maxLength={100} required onChange={(e) => setWord(e.target.value)} />
 
       <button type="button" className="btn" onClick={suggest} disabled={busy}>Suggest meaning</button>
       {hint && (
@@ -80,7 +81,7 @@ function NewWord({ onSent }) {
       <label htmlFor="meaning">Meaning in English</label>
       <input id="meaning" value={meaning} maxLength={255} required onChange={(e) => setMeaning(e.target.value)} />
 
-      <button type="submit" className="btn primary" disabled={busy}>Send for review</button>
+      <button type="submit" className="btn primary" disabled={busy}>Send for approval</button>
 
       {/* aria-live: screen readers hear the result without the focus moving */}
       <p role="status" aria-live="polite" className={note?.kind === 'error' ? 'banner error' : note ? 'banner info' : ''}>
