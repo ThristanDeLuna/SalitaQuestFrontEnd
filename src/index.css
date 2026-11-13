@@ -155,6 +155,20 @@ main { padding: 16px 16px 88px; min-width: 0; width: 100%; max-width: 960px; mar
     main { grid-column: 2; padding: 32px; }
 }
 
+/* ---------- Right rail (from 1520 px): the page and RailCards side by side ----------
+   1520 = 200 side menu + 960 page cap + 24 gap + 300 rail + 32 right padding, so the page keeps its full width. */
+.content { min-width: 0; }
+.rail { display: none; }
+@media (min-width: 769px) {
+  .content { grid-column: 2; }   /* in the wider layout the content wrapper takes the page column */
+}
+@media (min-width: 1520px) {
+  .content { display: flex; justify-content: center; align-items: flex-start; gap: 24px; padding-right: 32px; }
+  .content main { flex: 1 1 0; margin: 0; }
+  .rail { display: block; flex: none; width: 300px; padding-top: 32px; position: sticky; top: calc(var(--header-h) + 8px); }
+  .rail:empty { display: none; }   /* a visitor: no empty column */
+}
+
 /* ---------- Suggest a word (all screen sizes) ---------- */
 .form { display: grid; gap: 8px; max-width: 420px; }
 .form label { font-weight: 700; color: var(--ink); }
