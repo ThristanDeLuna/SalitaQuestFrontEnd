@@ -3,12 +3,12 @@
    tokens in src/index.css. The selected meaning says "Selected:" in words; the border and fill are only a second hint. */
 
 /* ---------- The stage ---------- */
-/* The room the shell leaves for a page. Measured from the shell; replace with A's variables.
-   index.css has no variables for these: the top bar is 56 px (.topbar min-height, border inside), main's padding
-   is 16 px on top and 88 px below on a phone (the 88 already makes room for the 57 px fixed tab bar), and 32 px
-   all round from 769 px, where the tab bar becomes the side menu. */
+/* The room the shell leaves for a page. The header height comes from --header-h in src/index.css (56 px, border inside).
+   Main's padding is 16 px on top and 88 px below on a phone (the 88 already makes room for the fixed tab bar, which is
+   calc(var(--tabbar-h) + 1px) = 57 px with its border), and 32 px all round from 769 px, where the tab bar becomes the
+   side menu. */
 .wp-stage {
-  --wp-shell-head: 56px;
+  --wp-shell-head: var(--header-h, 56px);
   --wp-main-pad: 104px;      /* 16 + 88 */
   --wp-stage-min: 520px;     /* very short phones keep this, and the page scrolls instead */
 }

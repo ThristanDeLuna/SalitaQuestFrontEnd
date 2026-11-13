@@ -7,7 +7,7 @@
 
 .wpf {
   --wpf-coral: var(--art-fish-coral, #f4845f);
-  --wpf-yellow: var(--art-fish-yellow, #ffcf4d);
+  --wpf-yellow: var(--art-yellow, #ffcf4d);
   --wpf-green: var(--art-fish-green, #7cc88f);
   --wpf-purple: var(--art-fish-purple, #a38bea);
   --wpf-pink: var(--art-fish-pink, #f28bb4);
