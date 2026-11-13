@@ -82,6 +82,30 @@ function makeIcon(region, state) {
   // iconAnchor puts the middle of the dot (18 px from the top) on the coordinates.
   return new L.DivIcon({ html: root, className: 'rm-icon', iconSize: [110, 60], iconAnchor: [55, 18] });
 }
+// How far a game is from full marks, 0 to 1 (not played counts as 0).
+const progress = (r) => (r && r.max ? r.best / r.max : 0);
+
+// Which game to suggest: the one not played yet; if both were played, the one further from full marks.
+function nextGame(mine) {
+  if (!mine?.matching) return 'matching';
+  if (!mine?.listening) return 'listening';
+  return progress(mine.listening) < progress(mine.matching) ? 'listening' : 'matching';
+}
+
+// One game card in the sheet: title, score, progress bar and a medal chip (or "To do").
+// The whole card is a link to that game. Words in the chip mean color is never the only signal.
+function GameCard({ title, result, to }) {
+  const chip = result?.medal ? MEDALS[result.medal] : (result ? 'Not passed yet' : 'To do');
+  const chipClass = result?.medal ? `rm-medal-${result.medal}` : 'rm-todo';
+  return (
+    <Link className="rm-card" to={to} aria-label={`${title}: ${gameLine(result)}`}>
+      <span className="rm-card-title">{title}</span>
+      <span className="rm-card-score">{gameLine(result)}</span>
+      <span className="rm-bar" aria-hidden="true"><span style={{ width: `${Math.round(progress(result) * 100)}%` }} /></span>
+      <span className={`rm-chip ${chipClass}`}>{chip}</span>
+    </Link>
+  );
+}
 
 export default function RegionMap() {
   const { user } = useAuth();                      // null means a visitor
@@ -233,28 +257,30 @@ export default function RegionMap() {
 
         {open && (
           <section className="rm-sheet" aria-label={`${open.name} details`}>
+                      <div className="rm-handle" aria-hidden="true" />
             <div className="rm-sheet-head">
               <h2>{open.name}</h2>
               <button type="button" className="btn" onClick={() => setSelected(null)}>Close</button>
             </div>
             <p className="rm-state"><span className="chip">{STATES[openState].label}</span> {open.area}</p>
             <p>{sheetText(openState, Boolean(user))}</p>
-                        {user && PLAYABLE.includes(openState) && (
-              <ul className="rm-games">
-                <li><span>Word Pond</span> <strong>{gameLine(mine?.matching)}</strong></li>
-                <li><span>Jeepney stop</span> <strong>{gameLine(mine?.listening)}</strong></li>
-              </ul>
+                                    {PLAYABLE.includes(openState) && (
+              <>
+                {user && (
+                  <div className="rm-cards">
+                    <GameCard title="Word Pond" result={mine?.matching} to={`/play/matching/${open.code}`} />
+                    <GameCard title="Jeepney stop" result={mine?.listening} to={`/play/listening/${open.code}`} />
+                  </div>
+                )}
+                <Link className="btn primary rm-play" to={`/play/${nextGame(mine)}/${open.code}`}>
+                  {nextGame(mine) === 'matching' ? 'Play Word Pond' : 'Play Jeepney stop'}
+                </Link>
+              </>
             )}
-            <div className="rm-actions">
-              <Link className="btn" to={`/regions/${open.code}`}>Browse words</Link>
-              {PLAYABLE.includes(openState) && (
-                <>
-                  <Link className="btn primary" to={`/play/matching/${open.code}`}>Play Word Pond</Link>
-                  <Link className="btn primary" to={`/play/listening/${open.code}`}>Play Jeepney stop</Link>
-                </>
-              )}
+                  <div className="rm-actions">
               {!user && openState === 'browse' && <Link className="btn primary" to="/signin">Sign in to play</Link>}
             </div>
+            <Link className="rm-browse" to={`/regions/${open.code}`}>Browse words</Link>
           </section>
         )}
       </div>
