@@ -6,8 +6,10 @@
 .audio-coverage h1 { font-size: 20px; margin: 0; }
 .audio-coverage .muted { margin: 0 0 8px; }
 .audio-coverage-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-.audio-coverage-list li { display: grid; grid-template-columns: 96px 40px 1fr; align-items: center; gap: 8px; min-height: 32px; }
-.audio-coverage-list .chip { justify-self: start; }
+.audio-coverage-list li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16px, auto) auto; align-items: center; gap: 6px; min-height: 32px; }
+.audio-coverage-list .chip { justify-self: start; white-space: nowrap; }
+.audio-coverage-list strong { text-align: center; }
+.audio-region-name { overflow-wrap: anywhere; }
 
 /* Words always say the state; color is only a second hint. */
 .audio-ready, .audio-has { background: var(--sidebar); }
@@ -45,4 +47,6 @@
 @media (min-width: 600px) {
   .audio-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
   .audio-coverage-list { grid-template-columns: repeat(3, auto); justify-content: start; column-gap: 32px; }
+  .audio-coverage-list li { grid-template-columns: auto 40px auto; }
+  .audio-region-name, .audio-coverage-list .chip { white-space: nowrap; }
 }
