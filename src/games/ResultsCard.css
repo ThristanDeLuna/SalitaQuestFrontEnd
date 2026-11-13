@@ -28,7 +28,7 @@
 
 /* The medal: a 72 px round badge, 2px ink outline, filled with its --medal-* token; the word inside in ink
    (ink text on the medal tokens is allowed). No medal: a --surface circle with "-" and "No medal yet" under it. */
-.rc-medal { display: grid; justify-items: center; gap: 4px; margin: 16px 0; }
+.rc-medal { display: grid; justify-items: center; gap: 4px; margin: 24px 0; }
 .rc .rc-medal-badge {
   position: relative; display: grid; place-items: center; width: 72px; height: 72px; margin: 0;
   border: 2px solid var(--ink); border-radius: 50%; color: var(--ink); font: 700 16px/1 var(--sans);
@@ -42,7 +42,8 @@
 .rc-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* The star ring, centred on the medal. Drawn at 112 px round the 72 px badge: the stars sit 40-56 px from its
-   centre, just outside the badge, and the badge's 16 px margins keep them off the lines above and below. */
+   centre (up to 20 px past the badge's edge), so the badge's 24 px margins keep them off the lines above and
+   below at rest; at the burst's brief 1.15x peak a star tip may cross a line by a few px (decoration only). */
 .rc-burst { position: absolute; left: 50%; top: 50%; margin: -24px 0 0 -24px; pointer-events: none; }
 .rc-medal-badge .rc-burst { width: 112px; height: 112px; margin: -56px 0 0 -56px; }
 .rc-star { stroke: var(--ink); stroke-width: 2px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
