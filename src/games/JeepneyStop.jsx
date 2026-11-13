@@ -10,6 +10,7 @@ import HowToPlay from './HowToPlay';
 import ResultsCard from './ResultsCard';
 import RoadScene from './RoadScene';
 import RoundGate from './RoundGate';
+import { doneShare } from './jeepneyLook';
 import {
   buildAnswers, canFinish, canNext, currentQuestion, initialQuiz, isLastQuestion, listeningRows,
   progressLabel, quizReducer,
@@ -91,25 +92,27 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
     }
   }
 
+  // Row (a) of the stage, first part: the title and the region. The progress and the status line follow it.
   const header = (
-    <header className="jp-head">
-      <div className="jp-title">
+    <header className="js-head">
+      <div className="js-title">
         <JeepneyIcon />
         <h1>Jeepney stop</h1>
+        <p className="muted js-region">{regionName}</p>
       </div>
-      <p className="muted">{regionName}</p>
     </header>
   );
 
   if (result) {
     return (
       <>
-        {/* The street stays visible, dimmed behind the results pop-up: the last jeepney stays parked and
-            says goodbye. It is inert while the pop-up is open, so Tab and screen readers skip it. */}
-        <div inert>
+        {/* The street stays visible, dimmed behind the results pop-up, in the same card: the last jeepney
+            stays parked and says goodbye. It is inert while the pop-up is open, so Tab and screen readers
+            skip it. */}
+        <div inert className="js-stage js-stage-done">
           {header}
-          <div className="jp-end-scene">
-            <RoadScene stopIndex={quiz.index} parked>
+          <div className="js-end-scene">
+            <RoadScene stopIndex={quiz.index} parked regionName={regionName}>
               <p className="jp-thanks">Thanks for riding!</p>
             </RoadScene>
           </div>
@@ -120,7 +123,7 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
     );
   }
 
-  if (!question) return header;                      // no questions at all: nothing to ask (should not happen)
+  if (!question) return <div className="js-stage js-stage-done">{header}</div>;   // no questions at all (should not happen)
 
   const errKind = submitErr ? errorKind(submitErr) : null;
   const chosen = quiz.choices[question.word_id];
@@ -128,58 +131,77 @@ function QuizGame({ round, region, regionName, onAgain, audio }) {
   const blocked = last ? !canFinish(quiz) : !canNext(quiz);   // no meaning picked for this question yet
 
   return (
-    <>
+    // The stage: one card that fills the main area, so the whole game fits on one screen (JeepneyStop.css).
+    // Its rows, in reading (and Tab) order: (a) title, progress and status line, (b) the question and the
+    // How to play toggle, (c) the street and the answers, which take all the room left, (d) Next / Finish
+    // and its hint.
+    <div className="js-stage">
       {header}
-      <p className="jp-progress">{progressLabel(quiz)}</p>
+      <p className="js-progress">{progressLabel(quiz)}</p>
+      {/* How many questions are done (N-1 at the start of question N). Only progress, never right or wrong
+          (DEC-56); hidden from screen readers because the line above already says it. */}
+      <div className="js-bar" aria-hidden="true">
+        <div className="js-bar-done" style={{ width: `${doneShare(quiz.index, quiz.questions.length) * 100}%` }} />
+      </div>
+      {/* Always visible, one reserved line, so nothing moves when a message comes or goes. */}
+      <p className="js-status" role="status">{audio.failed ? 'Could not play that sound.' : (playing ? 'Playing...' : '')}</p>
 
-      {submitErr && (
-        <p className="banner error" role="alert">
-          {errorMessage(errKind)}{errKind === 'invalid' && ` (${submitErr.message})`}
-        </p>
-      )}
-
-      <section className="card jp-question" aria-label={progressLabel(quiz)}>
-        {/* Directions first, then the controls. True to listenLogic and useAudio: every tap on "Hear the
-            driver" plays the word again, the pick can change until Next, and the last button is Finish. */}
-        <HowToPlay title={`How to play: ${quiz.questions.length} questions`}
-                   steps={['Press Hear the driver and listen.', 'Tap the meaning of the word you heard.',
-                           'Press Next. At the end, press Finish.']}
-                   note="You can hear each word again. Your results come after Finish."
-                   message={audio.failed ? 'Could not play that sound.' : (playing ? 'Playing...' : '')} />
-        {/* quiz.index (0 = first question) picks which of the two jeepneys is at the stop. */}
-        <RoadScene stopIndex={quiz.index} playing={playing}>
-          {question.audio_url ? (
-            <button type="button" className="btn primary jp-hear" onClick={() => audio.play(question.audio_url)}>
-              Hear the driver
-            </button>
-          ) : (
-            <p className="muted">The sound for this question is not available.</p>
+      <section className="js-quiz" aria-label={progressLabel(quiz)}>
+        <div className="js-lead">
+          {submitErr && (
+            <p className="banner error" role="alert">
+              {errorMessage(errKind)}{errKind === 'invalid' && ` (${submitErr.message})`}
+            </p>
           )}
-        </RoadScene>
+          <h2 className="js-question">What does the driver's word mean?</h2>
+          {/* The full directions, closed by default. HowToPlay itself is unchanged; its message prop is left
+              out because the status line above shows it instead. True to listenLogic and useAudio: every tap
+              on "Hear the driver" plays the word again, the pick can change until Next, and the last button
+              is Finish. */}
+          <details className="js-help">
+            <summary>How to play</summary>
+            <HowToPlay title={`How to play: ${quiz.questions.length} questions`}
+                       steps={['Press Hear the driver and listen.', 'Tap the meaning of the word you heard.',
+                               'Press Next. At the end, press Finish.']}
+                       note="You can hear each word again. Your results come after Finish." />
+          </details>
+        </div>
 
-        <h2>What does the driver's word mean?</h2>
-        <ul className="jp-options">
-          {question.options.map((o) => (
-            <Option key={o} text={o} chosen={chosen === o} disabled={sending}
-                    onChoose={() => dispatch({ type: 'choose', option: o })} />
-          ))}
-        </ul>
+        <div className="js-play">
+          {/* quiz.index (0 = first question) picks which of the two jeepneys is at the stop. */}
+          <RoadScene stopIndex={quiz.index} playing={playing} regionName={regionName}>
+            {question.audio_url ? (
+              <button type="button" className="btn primary jp-hear" onClick={() => audio.play(question.audio_url)}>
+                Hear the driver
+              </button>
+            ) : (
+              <p className="muted">The sound for this question is not available.</p>
+            )}
+          </RoadScene>
+          <ul className="jp-options">
+            {question.options.map((o) => (
+              <Option key={o} text={o} chosen={chosen === o} disabled={sending}
+                      onChoose={() => dispatch({ type: 'choose', option: o })} />
+            ))}
+          </ul>
+        </div>
       </section>
 
-      <div className="actions">
+      {/* Next / Finish takes half the card and its hint the other half, so the row never changes height and
+          the button never moves. The hint line is always there (empty when the button works). */}
+      <div className="js-foot">
         {last ? (
-          <button type="button" className="btn primary" disabled={blocked || sending} onClick={finish}
+          <button type="button" className="btn primary js-next" disabled={blocked || sending} onClick={finish}
                   aria-describedby={blocked ? 'jp-next-hint' : undefined}>
             {sending ? 'Checking...' : 'Finish'}
           </button>
         ) : (
-          <button type="button" className="btn primary" disabled={blocked} onClick={next}
+          <button type="button" className="btn primary js-next" disabled={blocked} onClick={next}
                   aria-describedby={blocked ? 'jp-next-hint' : undefined}>Next</button>
         )}
+        <p id="jp-next-hint" className="muted htp-hint js-hint">{blocked && `Pick a meaning to ${last ? 'finish' : 'continue'}.`}</p>
       </div>
-      {/* The line is always there (empty when the button works), so the button never moves. */}
-      <p id="jp-next-hint" className="muted htp-hint">{blocked && `Pick a meaning to ${last ? 'finish' : 'continue'}.`}</p>
-    </>
+    </div>
   );
 }
 

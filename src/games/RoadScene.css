@@ -3,8 +3,10 @@
    The scene's own colours: sky --info-tint, clouds, walls and windows --surface, face --accent, cap --ink,
    tree trunk --accent-text.
    The jeepneys' own look and their crossing animation live in JeepneyArt.css.
-   Size: the whole art layer is drawn at its phone size and scaled by --scene-scale (1, 1.25 or 1.6 on wide
-   screens), so every px position and keyframe below is in phone-size art units. Content is never scaled.
+   Size: the whole art layer is drawn at its phone size and scaled by --scene-scale, which the page that holds
+   the scene sets through --rs-scale (the Jeepney stop picks it from the screen's width and height, see
+   JeepneyStop.css; 1 when nothing sets it), so every px position and keyframe below is in phone-size art
+   units. Content is never scaled.
    The rules outside the motion block put everything at rest: the "here" jeepney parked, the "gone" one
    off the right edge. The motion block only adds animation, so with reduced motion nothing moves. */
 
@@ -14,23 +16,17 @@
      --rs-driver-x the driver's face in that drawing (cx of .rs-face in JeepneyArt.jsx);
      --rs-tail-x   how far in from the bubble's left edge its tail sits. */
   --rs-jeep-x: 12px;
-  --rs-driver-x: 76px;
+  --rs-driver-x: 93px;
   --rs-tail-x: 40px;
-  --scene-scale: 1;
+  --scene-scale: var(--rs-scale, 1);
   position: relative;
   display: flex; flex-direction: column;   /* so the bubble row can sit at the bottom, right over the cab */
-  min-height: calc(150px * var(--scene-scale));
+  /* The true least height: the bubble row's 12 px top, the bubble (44 px button + 16 padding + 4 border), the
+     jeepney (68 px, scaled) and the 14 px under the bubble. The page gives the scene more, never less. */
+  min-height: calc(68px * var(--scene-scale) + 90px);
   background: var(--info-tint);
   border: 2px solid var(--ink);
   border-radius: 12px;
-}
-
-/* Wide screens: a bigger street (taller scene, art 1.25 times larger from 900 px and 1.6 times from 1100 px). */
-@media (min-width: 900px) {
-  .rs-scene { --scene-scale: 1.25; }   /* the street shares the card with the question from 900 px */
-}
-@media (min-width: 1100px) {
-  .rs-scene { --scene-scale: 1.6; }
 }
 
 /* ---------- Art layer: the only thing clipped (radius 12 minus the 2 px border) ----------

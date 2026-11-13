@@ -8,7 +8,8 @@ import './RoadScene.css';
 // right edge). On a new stop they cross, by CSS classes alone (no timers). The bubble holds the real
 // content (the "Hear the driver" button, or plain text) and only fades in, so it never moves under a finger.
 // Props: stopIndex (0-based stop number), parked (true: nobody drives, e.g. on the results),
-// playing (true while the sound plays: the driver talks, the waves pulse), children (the bubble content).
+// playing (true while the sound plays: the driver talks, the waves pulse), regionName (the jeepneys' roof
+// sign), children (the bubble content).
 // The art is aria-hidden and ignores taps; only the art layer is clipped, never the bubble.
 
 // ---------- Far view: a sun over a two-peaked mountain; it never moves (the slowest parallax layer) ----------
@@ -78,7 +79,7 @@ function jeepClasses(isHere, stopIndex, parked) {
   return stopIndex > 0 && !parked ? 'rs-gone rs-leave' : 'rs-gone';
 }
 
-export default function RoadScene({ stopIndex = 0, parked = false, playing = false, children }) {
+export default function RoadScene({ stopIndex = 0, parked = false, playing = false, regionName, children }) {
   const here = stopIndex % 2;
   return (
     <div className={`rs-scene${playing ? ' rs-playing' : ''}`}>
@@ -90,7 +91,8 @@ export default function RoadScene({ stopIndex = 0, parked = false, playing = fal
         <Road />
         {/* Fixed keys: the same two jeepneys stay mounted, so a class change is what starts each drive. */}
         {PAINTS.map((paint, i) => (
-          <JeepneyArt key={paint} className={`${paint} ${jeepClasses(i === here, stopIndex, parked)}`} />
+          <JeepneyArt key={paint} className={`${paint} ${jeepClasses(i === here, stopIndex, parked)}`}
+                      regionName={regionName} />
         ))}
       </div>
       <div className="rs-content">
