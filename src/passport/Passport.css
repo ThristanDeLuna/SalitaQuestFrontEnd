@@ -1,7 +1,7 @@
 /* Passport (wireframe page 11). Phone first: one column at 390 px; wider screens only add room.
    Every class starts with pp- so it cannot clash. Colours come from the :root tokens in src/index.css. */
 
-.pp-progress, .pp-panel { --pp-card: var(--ink); }   /* the stars card colour: one line to swap for a new token */
+.pp-progress, .pp-panel { --pp-card: var(--passport-card, var(--ink)); --pp-card-2: var(--passport-card-2, var(--pp-card)); }   /* the stars card colours, from src/index.css */
 
 /* Tabs: a segmented bar. The selected tab is filled; its bold text is the second hint. */
 .pp-tabs {
@@ -35,7 +35,7 @@
 }
 
 /* Stars card */
-.pp-stars { padding: 16px; background: var(--pp-card); color: var(--surface); border-radius: 12px; }
+.pp-stars { padding: 16px; background: linear-gradient(135deg, var(--pp-card), var(--pp-card-2)); color: var(--surface); border-radius: 12px; }
 .pp-stars p { margin: 0; }
 .pp-stars-label { font-size: 14px; }
 .pp-big { font: 700 32px/1.2 var(--serif); color: var(--surface); margin: 4px 0 8px; }
