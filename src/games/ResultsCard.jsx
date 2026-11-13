@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import StampMoment, { STAMP_TITLE_ID } from './StampMoment';
+import { coachingLine } from './resultsLogic';
 import './ResultsCard.css';
 
 // The results of one finished game. Shared by Word Pond and Jeepney stop, so it knows
@@ -19,21 +20,19 @@ import './ResultsCard.css';
 // dialogs (Profile sign-out, AdminAudio, AdminPending), rendered into document.body through a portal so no
 // ancestor can break position: fixed. It has no close button and no Escape: the actions are the way out.
 // On open, focus moves to the step's heading. The game behind it is made inert by the game screen.
+// Under the score: one coaching line from resultsLogic's coachingLine (server fields only), then the medal badge.
 // Two steps, one dialog: only when the server says stamp_earned, it opens on StampMoment ("<Region> stamped!");
 // its Continue button shows the normal results. Without stamp_earned it opens straight on the results.
 // The answers sit in a collapsed <details>, so score, medal and buttons fit without scrolling.
 
 // The medal values come from Game_rules::medal() on the server: 'gold', 'silver', 'bronze' or null.
-const MEDALS = {
-  gold: { symbol: '🥇', label: 'Gold medal' },
-  silver: { symbol: '🥈', label: 'Silver medal' },
-  bronze: { symbol: '🥉', label: 'Bronze medal' },
-};
+// Each is a round badge filled with its --medal-* token (ink text on it is allowed), the word inside.
+const MEDALS = { gold: 'Gold', silver: 'Silver', bronze: 'Bronze' };
 
 // A ring of 8 small stars round the medal after a pass (art only). With motion they burst out once;
 // without motion they simply stand in the ring.
 const BURST_ANGLES = Array.from({ length: 8 }, (_, i) => i * 45);   // one star every 45 degrees
-const BURST_R = 18;                                                  // ring radius round the medal's centre
+const BURST_R = 20.5;   // ring radius in the 48-unit box: the 3.5-unit stars just fit inside; CSS sets the drawn size
 const STAR_D = 'M0 -3.5 L1 -1 L3.5 0 L1 1 L0 3.5 L-1 1 L-3.5 0 L-1 -1 Z';   // a small 4-point star
 
 function Burst() {
@@ -46,13 +45,24 @@ function Burst() {
   );
 }
 
+// The medal comes ONLY from the server's medal field. No medal: a plain --surface circle with "-".
 function Medal({ medal, passed }) {
-  const m = MEDALS[medal];
-  if (!m) return <p className="rc-medal">No medal this time</p>;
+  const word = MEDALS[medal];
+  if (!word) {
+    return (
+      <div className="rc-medal">
+        <span className="rc-medal-badge rc-medal-none" aria-hidden="true">-</span>
+        <p className="rc-medal-text">No medal yet</p>
+      </div>
+    );
+  }
   return (
-    <p className="rc-medal">
-      <span className="rc-medal-symbol" aria-hidden="true">{m.symbol}{passed && <Burst />}</span> {m.label}
-    </p>
+    <div className="rc-medal">
+      <p className={`rc-medal-badge rc-medal-${medal}`}>
+        {word}<span className="rc-sr"> medal</span>
+        {passed && <Burst />}
+      </p>
+    </div>
   );
 }
 
@@ -89,6 +99,7 @@ export default function ResultsCard({ result, rows, onAgain, backTo, next, regio
   const showNext = Boolean(next) && result.passed;   // only one primary button on the card
   const [stamping, setStamping] = useState(result.stamp_earned === true);   // only the server decides a stamp
   const titleRef = useRef(null);
+  const coaching = coachingLine(result);   // server fields only (DEC-13); the results card is after play (DEC-56)
   useEffect(() => { titleRef.current?.focus(); }, [stamping]);   // a screen reader starts at the step's title
 
   return createPortal(
@@ -96,10 +107,11 @@ export default function ResultsCard({ result, rows, onAgain, backTo, next, regio
       <section className="rc card" role="dialog" aria-modal="true" aria-labelledby={stamping ? STAMP_TITLE_ID : 'rc-title'}>
         {stamping ? (
           <StampMoment regionName={displayName(regionName, result.region)} starsGained={result.stars_gained}
-                       titleRef={titleRef} icon={<StampIcon />} burst={<Burst />} onContinue={() => setStamping(false)} />
+                       titleRef={titleRef} burst={<Burst />} onContinue={() => setStamping(false)} />
         ) : (<>
         <h2 id="rc-title" className="rc-ribbon" ref={titleRef} tabIndex={-1}>Your results</h2>
         <p className="rc-score">{result.score} / {result.max_score}</p>
+        {coaching && <p className="rc-coach">{coaching}</p>}
         <Medal medal={result.medal} passed={result.passed} />
         <p>
           {result.passed ? 'Passed' : 'Not passed yet'} <span className="muted">· Pass mark {result.pass_mark}</span>

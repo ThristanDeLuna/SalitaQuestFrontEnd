@@ -1,31 +1,36 @@
 /* The "Stamp earned" step of the results pop-up. Every class starts with sm-; it also reuses ResultsCard's
-   .rc-ribbon heading, StampIcon (.rc-stamp) and star Burst (.rc-burst / .rc-star).
-   Colours come only from the :root tokens: text sits on --surface (the stamp) or --info-tint (ribbon, chip),
-   --art-* only fills the stars, each outlined in 2px --ink.
-   Sizes: the art box is 232 px, so it fits the 256 px content width of the card on a 320 px phone.
-   The Burst's ring radius (18 of its 48 viewBox units) scales to 87 px, which clears the 136 px stamp. */
+   .rc-ribbon heading and star Burst (.rc-burst / .rc-star).
+   Colours come only from the :root tokens: text sits on --surface (label, stamp disc) or --info-tint (ribbon,
+   chip). --art-stamp-yellow is only the decorative band behind the stamp (no text on it); --art-yellow fills the
+   star, outlined in 2px --ink.
+   Sizes: the art box is 256 px, the card's content width on a 320 px phone. The stamp is 168 px; the Burst
+   (ring radius 20.5 of its 48 units) puts its stars 91-128 px from the centre, clear of the stamp's 84 px. */
 
 .sm-title:focus:not(:focus-visible) { outline: none; }
 
-.sm-art { position: relative; display: grid; place-items: center; width: 232px; height: 232px; margin: 0 auto; }
+.rc .sm-label { margin: 0 0 8px; font: 700 14px/1.2 var(--sans); letter-spacing: 0.12em; color: var(--ink); }
+
+/* A band of --art-stamp-yellow across the whole card, ink lines above and below. */
+.sm-band {
+  margin: 0 -16px; padding: 4px 0; overflow: hidden;
+  background: var(--art-stamp-yellow); border-block: 2px solid var(--ink);
+}
+.sm-art { position: relative; display: grid; place-items: center; width: 256px; height: 256px; margin: 0 auto; }
 
 /* The Burst is drawn for a 48 px medal; here it fills the art box and keeps a 2 px outline at that size. */
-.sm-art .rc-burst { width: 232px; height: 232px; margin: -116px 0 0 -116px; }
-.sm-art .rc-star { stroke-width: 2px; vector-effect: non-scaling-stroke; }
+.sm-art .rc-burst { width: 256px; height: 256px; margin: -128px 0 0 -128px; }
 
-/* The stamp: a solid ink ring with a dashed ring inside, on --surface, tilted like a real rubber stamp. */
-.sm-stamp {
-  position: relative; box-sizing: border-box; width: 136px; height: 136px; padding: 16px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  border: 2px solid var(--ink); border-radius: 50%; background: var(--surface); color: var(--ink);
-  transform: rotate(-8deg);
-}
-.sm-stamp::before {
-  content: ''; position: absolute; inset: 5px; border: 2px dashed var(--ink); border-radius: 50%; pointer-events: none;
-}
-.sm-stamp .rc-stamp { width: 36px; height: 36px; }
-.sm-name { max-width: 100%; font: 700 16px/1.15 var(--serif); overflow-wrap: anywhere; }
-.sm-word { font: 700 14px/1.2 var(--sans); letter-spacing: 0.12em; }
+/* The stamp, tilted like a real rubber stamp. Lines keep 2-3 px whatever the drawn size. */
+.sm-stamp { position: relative; display: block; transform: rotate(-8deg); }
+.sm-disc { fill: var(--surface); }
+.sm-ring, .sm-ring-dashed { fill: none; stroke: var(--ink); vector-effect: non-scaling-stroke; }
+.sm-ring { stroke-width: 3px; }
+.sm-ring-dashed { stroke-width: 2px; stroke-dasharray: 6 4; }
+.sm-text { fill: var(--ink); font-family: var(--serif); font-weight: 700; letter-spacing: 1px; }
+.sm-text-word { font-family: var(--sans); letter-spacing: 3px; }
+.sm-star { fill: var(--art-yellow); stroke: var(--ink); stroke-width: 2px; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+
+.rc .sm-band + p { margin-top: 12px; }
 
 @media (prefers-reduced-motion: no-preference) {
   /* Timeline (the card's own 250 ms entrance runs underneath): the stamp thumps down 100-700 ms,
@@ -36,6 +41,5 @@
     60% { opacity: 1; transform: rotate(-8deg) scale(0.94); }
     to { opacity: 1; transform: rotate(-8deg) scale(1); }
   }
-  .sm-stamp .rc-stamp { animation: none; }            /* the stamp thumps as one piece */
   .sm-art .rc-burst { animation-delay: 450ms; }      /* ResultsCard's 800 ms burst, after the thump */
 }
