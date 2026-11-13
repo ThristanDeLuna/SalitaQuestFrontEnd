@@ -1,0 +1,44 @@
+/* Rail cards (shell right rail, 300 px). Every class starts with rl- so it cannot clash.
+   Colours come from the :root tokens in src/index.css; --art-* is used only as a fill. */
+
+.rl-rail { display: grid; gap: 10px; width: 100%; max-width: 300px; }
+.rl-rail .banner { margin: 0; }
+.rl-card { display: grid; gap: 8px; }
+/* The same pop-out look as the game stages (.wp-stage): ink border, 16px corners, offset ink shadow.
+   Written as .rl-rail .rl-card so it wins over the plain .card rule whatever the stylesheet order. */
+.rl-rail .rl-card { background: var(--surface); border: 2px solid var(--ink); border-radius: 16px; box-shadow: 4px 4px 0 var(--ink); padding: 10px 14px; }
+.rl-card .muted { margin: 0; }
+.rl-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.rl-head h2 { margin: 0; }
+.rl-aside { font-weight: 700; color: var(--ink); }
+
+/* Thin bar: the number next to it says the same thing. */
+.rl-bar { height: 8px; border-radius: 4px; background: var(--info-tint); overflow: hidden; }
+.rl-fill { height: 100%; background: var(--art-water-deep); }
+
+.rl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.rl-row { display: flex; align-items: center; gap: 12px; }
+
+/* A circle: filled with a check when done, an empty ring when not. */
+.rl-circle {
+  flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; box-sizing: border-box;
+  border: 2px solid var(--ink); border-radius: 50%; background: var(--surface);
+  font-size: 14px; font-weight: 700; line-height: 1; color: var(--ink);
+}
+.rl-day .rl-circle { width: 28px; height: 28px; }   /* the week dots stay at least 28 px */
+.rl-on { background: var(--ink); color: var(--surface); }   /* the check is text, so no --art-* colour here */
+
+.rl-week { list-style: none; margin: 0; padding: 0; display: flex; justify-content: space-between; }
+.rl-day { display: grid; justify-items: center; gap: 4px; font-size: 14px; color: var(--text-muted); }
+
+.rl-island { display: grid; gap: 2px; }
+.rl-island-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.rl-island-top strong { color: var(--ink); }
+
+.rl-goal { margin: 0; }
+
+/* Text only screen readers hear. */
+.rl-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
