@@ -24,11 +24,28 @@
 .rc-ribbon:focus:not(:focus-visible) { outline: none; }
 
 .rc-score { font: 700 40px/1.2 var(--serif); color: var(--ink); }
-.rc-medal { font-weight: 700; color: var(--ink); }
-.rc-medal-symbol { position: relative; display: inline-block; margin-right: 8px; font-size: 28px; vertical-align: middle; }
-/* The star ring, centred on the medal; small enough to stay clear of the score and the medal's name. */
+.rc-coach { font-size: 15px; font-weight: 700; color: var(--ink); text-wrap: balance; }   /* 15 px keeps the longest line on one line at 320 px */
+
+/* The medal: a 72 px round badge, 2px ink outline, filled with its --medal-* token; the word inside in ink
+   (ink text on the medal tokens is allowed). No medal: a --surface circle with "-" and "No medal yet" under it. */
+.rc-medal { display: grid; justify-items: center; gap: 4px; margin: 16px 0; }
+.rc .rc-medal-badge {
+  position: relative; display: grid; place-items: center; width: 72px; height: 72px; margin: 0;
+  border: 2px solid var(--ink); border-radius: 50%; color: var(--ink); font: 700 16px/1 var(--sans);
+}
+.rc-medal-gold { background: var(--medal-gold); }
+.rc-medal-silver { background: var(--medal-silver); }
+.rc-medal-bronze { background: var(--medal-bronze); }
+.rc-medal-none { background: var(--surface); font-size: 24px; }
+.rc .rc-medal-text { margin: 0; font-weight: 700; color: var(--ink); }
+/* Words for screen readers only ("Gold" + " medal"). */
+.rc-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* The star ring, centred on the medal. Drawn at 112 px round the 72 px badge: the stars sit 40-56 px from its
+   centre, just outside the badge, and the badge's 16 px margins keep them off the lines above and below. */
 .rc-burst { position: absolute; left: 50%; top: 50%; margin: -24px 0 0 -24px; pointer-events: none; }
-.rc-star { stroke: var(--ink); stroke-width: 1; stroke-linejoin: round; }
+.rc-medal-badge .rc-burst { width: 112px; height: 112px; margin: -56px 0 0 -56px; }
+.rc-star { stroke: var(--ink); stroke-width: 2px; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .rc-star-0 { fill: var(--art-yellow); }
 .rc-star-1 { fill: var(--art-red); }
 .rc-star-2 { fill: var(--art-pad); }
@@ -71,7 +88,7 @@
     60% { opacity: 1; transform: scale(1.15) rotate(10deg); }
   }
 
-  .rc-stamp { animation: rc-stamp-in 400ms ease-out; }
+  .rc-stamp, .rc-medal-badge { animation: rc-stamp-in 400ms ease-out; }
   @keyframes rc-stamp-in {
     0% { opacity: 0; transform: scale(0.4); }
     70% { opacity: 1; transform: scale(1.15); }
