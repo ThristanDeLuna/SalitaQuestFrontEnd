@@ -29,3 +29,30 @@
 
 /* Withdraw: the same game button look as Send, Reject and Approve. */
 .sg-row .btn { min-height: 48px; border-width: 2px; border-radius: 12px; box-shadow: 0 4px 0 var(--ink); }
+
+/* 7. Polish (Nov 14): a wider centered block, the form as a card, Word and Region side by side.
+   Only .sg-page and .sg-form rules, so Admin Pending and the shared classes are not changed. */
+
+/* The title, the tabs and the card are one block, at most 760 px wide, centered in the main area. */
+.sg-page { max-width: 760px; margin: 0 auto; }
+.sg-page .list { max-width: none; }   /* the My words list uses the full block width */
+
+/* The form is a card with the same look as the rail cards (RailCards.css): ink border, 16px corners, offset shadow. */
+.form.sg-form { max-width: none; padding: 16px; background: var(--surface); border: 2px solid var(--ink); border-radius: 16px; box-shadow: 4px 4px 0 var(--ink); }
+
+/* Word and Region: one column on phones, two columns from 700 px. */
+.sg-two { display: grid; gap: 8px 16px; }
+.sg-field { display: grid; gap: 8px; min-width: 0; }
+
+/* Meaning field with the small button: stacked on phones, side by side from 700 px. */
+.sg-meaning { display: grid; gap: 8px; }
+.sg-suggest { min-height: 48px; white-space: nowrap; }
+.sg-hintline { margin: 0; font-size: 14px; }
+
+.form.sg-form [role="status"] { margin: 0; }   /* the empty status line adds no extra space under Send */
+
+@media (min-width: 700px) {
+  .form.sg-form { padding: 24px; }
+  .sg-two { grid-template-columns: 1fr 1fr; }
+  .sg-meaning { grid-template-columns: 1fr auto; }
+}

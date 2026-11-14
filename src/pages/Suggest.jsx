@@ -62,25 +62,33 @@ function NewWord({ onSent }) {
 
   return (
     <form onSubmit={submit} className="form sg-form">
-      {/* Mockup order: Word first, then Region */}
-      <label htmlFor="word">Word</label>
-      <input id="word" value={word} maxLength={100} required onChange={(e) => setWord(e.target.value)} />
+      {/* Word and Region side by side on wide screens, stacked on phones (Suggest.css) */}
+      <div className="sg-two">
+        <div className="sg-field">
+          <label htmlFor="word">Word</label>
+          <input id="word" value={word} maxLength={100} required onChange={(e) => setWord(e.target.value)} />
+        </div>
+        <div className="sg-field">
+          <label htmlFor="region">Region</label>
+          <select id="region" value={region} onChange={(e) => { setRegion(e.target.value); setHint(null); }}>
+            {REGIONS.map(([code, label]) => <option key={code} value={code}>{label}</option>)}
+          </select>
+        </div>
+      </div>
 
-      <label htmlFor="region">Region</label>
-      <select id="region" value={region} onChange={(e) => { setRegion(e.target.value); setHint(null); }}>
-        {REGIONS.map(([code, label]) => <option key={code} value={code}>{label}</option>)}
-      </select>
-
-      <button type="button" className="btn" onClick={suggest} disabled={busy}>Suggest meaning</button>
+      {/* The small "Suggest meaning" button sits next to the field it helps to fill */}
+      <label htmlFor="meaning">Meaning in English</label>
+      <div className="sg-meaning">
+        <input id="meaning" value={meaning} maxLength={255} required onChange={(e) => setMeaning(e.target.value)} />
+        <button type="button" className="btn sg-suggest" onClick={suggest} disabled={busy}>Suggest meaning</button>
+      </div>
+      <p className="muted sg-hintline">Only a hint. Check it, then choose Use this.</p>
       {hint && (
         <p className="muted">
           Machine suggestion (it may be wrong): {hint}{' '}
           <button type="button" className="btn" onClick={() => setMeaning(hint)}>Use this</button>
         </p>
       )}
-
-      <label htmlFor="meaning">Meaning in English</label>
-      <input id="meaning" value={meaning} maxLength={255} required onChange={(e) => setMeaning(e.target.value)} />
 
       <button type="submit" className="btn primary" disabled={busy}>Send for approval</button>
 
@@ -147,13 +155,13 @@ export default function Suggest() {
   const refresh = () => setReload((n) => n + 1);
 
   return (
-    <>
+    <div className="sg-page">
       <h1>Suggest a word</h1>
       <div className="seg" role="tablist">
         <button type="button" role="tab" aria-selected={tab === 'new'} onClick={() => setTab('new')}>New word</button>
         <button type="button" role="tab" aria-selected={tab === 'mine'} onClick={() => setTab('mine')}>My words</button>
       </div>
       {tab === 'new' ? <NewWord onSent={refresh} /> : <MyWords reload={reload} onChange={refresh} />}
-    </>
+    </div>
   );
 }
