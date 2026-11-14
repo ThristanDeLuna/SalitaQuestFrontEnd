@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import { useSummary } from '../auth/useSummary';
+import Leaderboard from './Leaderboard';
 import {
   badgeInfo, bestScoreLine, comingSoonLabel, daysLabel, questList, regionChipText, starsPercent,
   stickerHeading, weekDotLabel,
 } from './passportLogic';
 import './Passport.css';
 
-// The Passport (wireframe page 11): the player's progress in three tabs.
+// The Passport (wireframe page 11): the player's progress in four tabs (the fourth, Ranks, is the leaderboard).
 // It reads the shared summary (GET /api/me/summary, fetched once by SummaryProvider);
 // it does not fetch the summary itself. The summary has no region names, so this page
 // asks the public GET /api/regions for them and shows the region code until they arrive.
@@ -18,6 +19,7 @@ const TABS = [
   ['progress', 'Progress'],
   ['stickers', 'Stickers'],
   ['badges', 'Badges'],
+  ['ranks', 'Ranks'],
 ];
 
 // ---------- Progress: stars card, streak card, islands, today's quests ----------
@@ -169,6 +171,8 @@ export default function Passport() {
   const { summary, loading, error, reload } = useSummary();
   const [tab, setTab] = useState('progress');
   const [names, setNames] = useState({});            // region code -> name, empty until it arrives
+  // The leaderboard, kept here once the Ranks tab has loaded it, so coming back to the tab does not ask again.
+  const [ranks, setRanks] = useState(null);
 
   // Region names are only a nicer label: if this fails or is slow, the code is shown instead.
   useEffect(() => {
@@ -212,6 +216,7 @@ export default function Passport() {
         {tab === 'progress' && <ProgressTab summary={summary} nameOf={nameOf} />}
         {tab === 'stickers' && <StickersTab summary={summary} nameOf={nameOf} />}
         {tab === 'badges' && <BadgesTab summary={summary} />}
+        {tab === 'ranks' && <Leaderboard saved={ranks} onSaved={setRanks} />}
       </section>
     </>
   );
