@@ -14,6 +14,11 @@
 }
 .pp-tab:hover { background: var(--surface); }
 .pp-active, .pp-active:hover { font-weight: 700; background: var(--ink); color: var(--surface); }
+/* Four tabs must fit at 320 px: less side padding on small phones (the text stays 15 px, the tap target 44 px). */
+@media (max-width: 400px) {
+  .pp-tabs { gap: 2px; }
+  .pp-tab { padding: 0 2px; }
+}
 
 .pp-panel h2 { margin: 0 0 8px; }
 
