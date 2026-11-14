@@ -292,11 +292,15 @@ export default function RegionMap() {
       {regions && (
         <>
           <h2 className="rm-list-title">All regions</h2>
-          <ul className="list rm-list">
+                    <ul className="list rm-list">
             {regions.map((r) => (
-              <li key={r.code} className="card">
-                <strong>{r.name}</strong> <span className="chip">{STATES[states[r.code]].label}</span>
+              <li key={r.code} className="card rm-region">
+                <div className="rm-region-head">
+                  <strong className="rm-region-name">{r.name}</strong>
+                  <span className="chip">{STATES[states[r.code]].label}</span>
+                </div>
                 <p className="muted">{r.area}</p>
+                <p className="rm-region-count">{r.word_count} words &middot; {r.audio_word_count} with audio</p>
                 <Link className="btn" to={`/regions/${r.code}`}>Browse words</Link>
               </li>
             ))}
