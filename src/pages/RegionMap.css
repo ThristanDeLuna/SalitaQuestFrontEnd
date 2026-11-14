@@ -135,3 +135,35 @@
 .rm-todo { border-style: dashed; background: transparent; }
 .rm-play { display: flex; justify-content: center; width: 100%; min-height: 48px; box-shadow: 0 4px 0 var(--ink); }
 .rm-browse { display: flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 12px; text-align: center; color: var(--ink); font-weight: 700; text-decoration: underline; }
+/* "All regions" list: one column as wide as the map, with the same chunky game look as the bottom sheet
+   (dark outline, shadow underneath). Scoped to .rm-list so the shared .card is not changed. */
+ul.rm-list { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; max-width: none; margin: 0; padding: 0; list-style: none; }
+.rm-list .rm-region { max-width: none; padding: 14px 16px; border: 3px solid var(--ink); border-radius: 12px; box-shadow: 0 4px 0 var(--ink); }
+.rm-region-head { display: flex; align-items: center; gap: 8px; }
+.rm-region-name { font: 700 20px/1.2 var(--serif); color: var(--ink); }
+.rm-region-count { font-size: 14px; font-weight: 700; color: var(--ink); }
+.rm-list .rm-region .btn { width: 100%; min-height: 44px; }
+/* wide screens: text on the left, the button on the right, so the row fills the width */
+@media (min-width: 700px) {
+  .rm-list .rm-region { display: grid; grid-template-columns: 1fr auto; column-gap: 16px; align-items: center; }
+  .rm-list .rm-region > .rm-region-head,
+  .rm-list .rm-region > p { grid-column: 1; }
+  .rm-list .rm-region .btn { grid-column: 2; grid-row: 1 / span 3; width: auto; min-width: 160px; }
+}
+/* "All regions" list: two columns on wide screens, one on phones, as wide as the map, with the same chunky
+   game look as the bottom sheet (dark outline, shadow underneath). Scoped to .rm-list so the shared .card is not changed. */
+ul.rm-list { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; max-width: none; margin: 0; padding: 0; list-style: none; }
+@media (min-width: 700px) {
+  ul.rm-list { grid-template-columns: 1fr 1fr; }
+  /* with an odd number of regions the last card spans both columns, so the grid stays balanced */
+  @media (min-width: 700px) {
+  ul.rm-list { grid-template-columns: 1fr 1fr; }
+  /* with an odd number of regions the last card keeps the same size as the others and is centered */
+  ul.rm-list > li:last-child:nth-child(odd) { grid-column: 1 / -1; justify-self: center; width: calc((100% - 16px) / 2); }
+}
+}
+.rm-list .rm-region { max-width: none; padding: 14px 16px; border: 3px solid var(--ink); border-radius: 12px; box-shadow: 0 4px 0 var(--ink); }
+.rm-region-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.rm-region-name { font: 700 20px/1.2 var(--serif); color: var(--ink); }
+.rm-region-count { font-size: 14px; font-weight: 700; color: var(--ink); }
+.rm-list .rm-region .btn { width: 100%; min-height: 44px; }
